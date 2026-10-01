@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RecKind, Recommendation, SUGGESTED_QUESTIONS, Urgency, answerQuestion } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
+import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 
 type Tab = 'recs' | 'suppliers' | 'anomalies' | 'copilot';
@@ -18,7 +19,8 @@ export function AiView() {
   const [tab, setTab] = useState<Tab>('recs');
   const [kindFilter, setKindFilter] = useState<RecKind | ''>('');
   const [open, setOpen] = useState<string>('');
-  const [author, setAuthor] = useState('Planeador Compras (demo)');
+  const { user: authUser } = useAuth();
+  const [author, setAuthor] = useState(authUser?.name ?? 'Planeador Compras');
   const [reason, setReason] = useState('');
   const [chat, setChat] = useState<{ q: string; lines: string[] }[]>([]);
   const [question, setQuestion] = useState('');

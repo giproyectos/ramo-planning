@@ -4,6 +4,7 @@ import { FC_N1_ID, FC_PBO_ID, MODEL_LABELS, filterSkus, weeklyTotals } from '@ra
 import { summarizeIssues } from '@ramo/ingest';
 import { buildMd61 } from '@ramo/sap-out';
 import { useRamoPlan } from '../../ramo/store';
+import { useAuth } from '../../ramo/auth';
 import { SAMPLE_HISTORY_LIMPIO, SAMPLE_HISTORY_SUCIO } from '../../ramo/samples';
 import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { DemandChart } from './DemandChart';
@@ -37,7 +38,8 @@ export function DemandView() {
   const [blockWeek, setBlockWeek] = useState('');
   const [delta, setDelta] = useState('3000');
   const [reason, setReason] = useState('');
-  const [author, setAuthor] = useState('Planeador Demanda (demo)');
+  const { user: authUser } = useAuth();
+  const [author, setAuthor] = useState(authUser?.name ?? 'Planeador Demanda');
   const [role, setRole] = useState<Role>('demand');
   const [downloaded, setDownloaded] = useState(false);
 

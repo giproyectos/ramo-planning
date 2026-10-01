@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { AllocationReason, DrpCell, allocateScarcity, scarcityRequests, supplyGaps } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
+import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 
 const PRIORITY_LABEL = { HIGH: 'Alta', NORMAL: 'Normal', LOW: 'Baja' } as const;
@@ -27,7 +28,8 @@ export function DrpView() {
   const [scWeek, setScWeek] = useState('');
   const [gapPctInput, setGapPctInput] = useState('');
   const [overrides, setOverrides] = useState<Record<string, string>>({});
-  const [author, setAuthor] = useState('Planeador Distribución (demo)');
+  const { user: authUser } = useAuth();
+  const [author, setAuthor] = useState(authUser?.name ?? 'Planeador Distribución');
   const [reason, setReason] = useState('');
   const [approved, setApproved] = useState(false);
 

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { MeasureView, convertCommercialQty } from '@ramo/domain';
 import { CYCLE_ORDER } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
+import { useAuth } from '../../ramo/auth';
 import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
 
@@ -13,7 +14,8 @@ export function MpsView() {
   const [week, setWeek] = useState(weeks[1] ?? weeks[0]);
   const [delta, setDelta] = useState('-1000');
   const [reason, setReason] = useState('');
-  const [author, setAuthor] = useState('Daniel (demo)');
+  const { user: authUser } = useAuth();
+  const [author, setAuthor] = useState(authUser?.name ?? 'Daniel');
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const received = stageIdx >= CYCLE_ORDER.indexOf('SENT_TO_MPS');

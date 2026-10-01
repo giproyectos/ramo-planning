@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { MAKE_TO_ORDER_FLOWS, toProductiveQty } from '@ramo/domain';
 import { CYCLE_ORDER, LoadStatus, lineAvailableHours, weekExceptions } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
+import { useAuth } from '../../ramo/auth';
 import { EXCEPTION_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
 
@@ -14,7 +15,8 @@ export function CrpView() {
   const [sel, setSel] = useState<{ week: string; crewId: string }>({ week: weeks[1] ?? weeks[0], crewId: 'C-BARMINI' });
   const [extra, setExtra] = useState('2');
   const [reason, setReason] = useState('');
-  const [author, setAuthor] = useState('Miguel (demo)');
+  const { user: authUser } = useAuth();
+  const [author, setAuthor] = useState(authUser?.name ?? 'Miguel');
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const editable = (stage === 'DRAFT' || stage === 'FINAL_ALERTS') && can('capacity.edit');
