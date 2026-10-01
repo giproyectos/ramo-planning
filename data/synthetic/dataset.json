@@ -1924,5 +1924,71 @@
       "role": "demand",
       "createdAt": "2026-10-01T09:00:00Z"
     }
+  ],
+  "inventory": [
+    {
+      "skuId": "SK-001",
+      "onHandCommercial": 11310
+    },
+    {
+      "skuId": "SK-002",
+      "onHandCommercial": 7540
+    },
+    {
+      "skuId": "SK-003",
+      "onHandCommercial": 1089
+    },
+    {
+      "skuId": "SK-004",
+      "onHandCommercial": 891
+    },
+    {
+      "skuId": "SK-005",
+      "onHandCommercial": 8800
+    },
+    {
+      "skuId": "SK-006",
+      "onHandCommercial": 817
+    },
+    {
+      "skuId": "SK-007",
+      "onHandCommercial": 7119
+    },
+    {
+      "skuId": "SK-008",
+      "onHandCommercial": 2813
+    }
+  ],
+  "openOrders": [
+    {
+      "skuId": "SK-001",
+      "weekStart": "2026-10-05",
+      "commercialQty": 9048
+    },
+    {
+      "skuId": "SK-001",
+      "weekStart": "2026-10-12",
+      "commercialQty": 9048
+    },
+    {
+      "skuId": "SK-002",
+      "weekStart": "2026-10-05",
+      "commercialQty": 6032
+    },
+    {
+      "skuId": "SK-002",
+      "weekStart": "2026-10-12",
+      "commercialQty": 6032
+    },
+    {
+      "skuId": "SK-007",
+      "weekStart": "2026-10-05",
+      "commercialQty": 5695
+    },
+    {
+      "skuId": "SK-007",
+      "weekStart": "2026-10-12",
+      "commercialQty": 5695
+    }
   ]
 }

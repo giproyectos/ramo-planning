@@ -107,6 +107,41 @@ export interface BuildingBlock {
   createdAt: string;
 }
 
+/** Inventario disponible al corte (en unidades comerciales). */
+export interface InventoryPosition {
+  skuId: string;
+  onHandCommercial: number;
+}
+
+/** Orden de producción abierta / en curso que ya cubre demanda futura. */
+export interface OpenOrder {
+  skuId: string;
+  weekStart: string;
+  commercialQty: number;
+}
+
+/** Ajuste de Daniel (MPS final) sobre la producción neta de un SKU en una semana. */
+export interface MpsAdjustment {
+  id: string;
+  skuId: string;
+  weekStart: string;
+  deltaCommercialQty: number;
+  reason: string;
+  author: string;
+  createdAt: string;
+}
+
+/** Decisión de capacidad de Miguel/Alejandro: horas extra en una tripulación una semana. */
+export interface CapacityDecision {
+  id: string;
+  crewId: string;
+  weekStart: string;
+  extraHours: number;
+  reason: string;
+  author: string;
+  createdAt: string;
+}
+
 export interface RamoDataset {
   synthetic: boolean;
   plants: Plant[];
@@ -117,4 +152,6 @@ export interface RamoDataset {
   versions: PlanVersion[];
   demand: DemandRecord[];
   buildingBlocks: BuildingBlock[];
+  inventory: InventoryPosition[];
+  openOrders: OpenOrder[];
 }

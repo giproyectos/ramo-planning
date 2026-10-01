@@ -110,5 +110,16 @@ export function validateDataset(ds: RamoDataset): ValidationIssue[] {
     if (b.scope.weekStart && !isMonday(b.scope.weekStart)) add('WEEK_NOT_MONDAY', p, `weekStart debe ser un lunes válido: ${b.scope.weekStart}`);
   }
 
+  ds.inventory.forEach((inv, i) => {
+    if (!skus.has(inv.skuId)) add('UNKNOWN_SKU', `inventory[${i}]`, `SKU inexistente: ${inv.skuId}`);
+    if (inv.onHandCommercial < 0) add('NEGATIVE_QTY', `inventory[${i}]`, 'inventario negativo');
+  });
+  ds.openOrders.forEach((o, i) => {
+    const p = `openOrders[${i}]`;
+    if (!skus.has(o.skuId)) add('UNKNOWN_SKU', p, `SKU inexistente: ${o.skuId}`);
+    if (!isMonday(o.weekStart)) add('WEEK_NOT_MONDAY', p, `weekStart debe ser un lunes válido: ${o.weekStart}`);
+    if (o.commercialQty < 0) add('NEGATIVE_QTY', p, 'cantidad negativa');
+  });
+
   return issues;
 }

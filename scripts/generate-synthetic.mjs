@@ -121,7 +121,15 @@ const buildingBlocks = [
   { id: 'BB-003', versionId: 'V-N1-2026-W40', scope: { skuId: 'SK-008', weekStart: '2026-11-02' }, deltaCommercialQty: 800, reason: 'Reposición por quiebre de inventario en agencias (sint.)', author: 'Planeador Demanda (sint.)', role: 'demand', createdAt: '2026-10-01T09:00:00Z' },
 ];
 
-const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks };
+// Inventario al corte: ~25 % de la demanda semanal base (Barras casi sin colchón). Órdenes abiertas: ponqués y maicitos en las 2 primeras semanas.
+const inventory = skus.map((s) => ({ skuId: s.id, onHandCommercial: Math.round(baseQty(s, 0) * (['SK-003', 'SK-004'].includes(s.id) ? 0.03 : 0.25)) }));
+const openOrders = [];
+for (const id of ['SK-001', 'SK-002', 'SK-007']) {
+  const s = skus.find((x) => x.id === id);
+  weeks.slice(0, 2).forEach((w, i) => openOrders.push({ skuId: id, weekStart: w, commercialQty: Math.round(baseQty(s, i) * 0.2) }));
+}
+
+const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(dataset, null, 2) + '\n');
 console.log(`dataset.json: ${skus.length} SKUs, ${lines.length} líneas, ${demand.length} filas de demanda`);
