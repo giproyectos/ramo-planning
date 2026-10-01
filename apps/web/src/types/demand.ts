@@ -1,4 +1,4 @@
-export type ProcessStep = 'sop' | 'drp' | 'mps' | 'crp' | 'mrp' | 'process_map';
+export type ProcessStep = 'sop' | 'drp' | 'mps' | 'crp' | 'mrp' | 'process_map' | 'data';
 
 export type PlanningScenario = 'baseline' | 'surge' | 'constrained';
 

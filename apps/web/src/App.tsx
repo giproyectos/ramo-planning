@@ -30,7 +30,8 @@ import { SOPModule } from './components/sop/SOPModule';
 import { DRPModule } from './components/drp/DRPModule';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
-import { RamoPlanProvider } from './ramo/store';
+import { DataView } from './components/ramo/DataView';
+import { RamoPlanProvider, useRamoPlan } from './ramo/store';
 import { MRPModule } from './components/mrp/MRPModule';
 import { ExportModal } from './components/common/ExportModal';
 import { CommandPalette } from './components/common/CommandPalette';
@@ -56,6 +57,7 @@ export default function App() {
 
 function AppContent() {
   const { t } = useTranslation();
+  const { baseline } = useRamoPlan();
   const [currentStep, setCurrentStep] = useState<ProcessStep>('process_map');
   const [scenario, setScenario] = useState<PlanningScenario>('baseline');
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
@@ -319,6 +321,7 @@ function AppContent() {
         mpsStatus={mpsStatusText}
         crpStatus={crpStatusText}
         mrpPendingCount={pendingActionCount}
+        dataBadge={baseline?.usable ? 'SAP' : 'Mock'}
         alertCount={pendingActionCount + (maxWcUtil > 100 ? 1 : 0)}
         onOpenScenarioModal={() => setIsScenarioModalOpen(true)}
       />
@@ -428,6 +431,8 @@ function AppContent() {
           {currentStep === 'mps' && <MpsView />}
 
           {currentStep === 'crp' && <CrpView />}
+
+          {currentStep === 'data' && <DataView />}
 
           {currentStep === 'mrp' && (
             <MRPModule

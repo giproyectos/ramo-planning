@@ -8,9 +8,9 @@ Estado: **borrador**. Lo marcado como *por confirmar* sale de las reuniones del 
 | `Line.rate`, horas por línea y fecha | Tabla Z ("tabla de liberación") | **Por confirmar nombre de la tabla** (Diana no lo recordaba) |
 | `Line`, `Crew` | No existen en SAP (solo puestos de trabajo) | Dato nuevo; fuente inicial: Excel de Miguel |
 | `LineCalendar` | Excel de Miguel (festivos, paradas, mantenimiento) | Por levantar |
-| Inventarios (base 1) | Descarga SAP cada lunes ~8 am, corte 8 am + 1 mes de movimientos | Fase 3 |
-| Abastecimiento (base 2) | Movimientos de triangulación en zona franca (0004→0060, Intercomex): neteo de doble conteo y faltante después de las 2 pm | Fase 3 |
-| Trazabilidad de despachos (base 3) | Transacción Z de consulta (solo lectura): qué falta por entregar entre 8 am y 2 pm | Fase 3; aclarar a Alfredo (ABAP) que no escribe |
+| Inventarios (base 1) | Descarga SAP cada lunes ~8 am, corte 8 am + 1 mes de movimientos | Fase 3: parser y validación hechos con formato supuesto (ver formatos-bases-sap.md) |
+| Abastecimiento (base 2) | Movimientos de triangulación en zona franca (0004→0060, Intercomex): neteo de doble conteo y faltante después de las 2 pm | Fase 3: parser y neteo hechos con formato supuesto |
+| Trazabilidad de despachos (base 3) | Transacción Z de consulta (solo lectura): qué falta por entregar entre 8 am y 2 pm | Fase 3: parser hecho con formato supuesto; aclarar a Alfredo (ABAP) que no escribe |
 | `DemandRecord` (carga a SAP) | Gestión de Demanda vía MD61 / LSMW (o BAPI) | Fase 4 |
 | Órdenes provisionales (salida MPS final) | Hoy: archivo por planta cargado a mano con LSMW; el flujo automático por archivo plano se rompió con una migración de SAP | Fase 8 |
 | Explosión de materiales | MD04 / MD5A; COISPI; tabla Z1 propia de Diana | Fase 6 |

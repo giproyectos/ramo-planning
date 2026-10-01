@@ -4,13 +4,13 @@ Piloto de planeación para Ramo (GI Proyectos): Demanda → DRP → MPS/CRP → 
 
 - Plan completo: [docs/plan-adaptacion.md](docs/plan-adaptacion.md)
 - Origen: copia sin historial de `giproyectos/demad-app@66adddf` (ese repo no se modifica).
-- Estado: **Fase 2** (MPS + CRP como ciclo Miguel ↔ Daniel, con datos sintéticos). Las vistas CRP y MPS final de `apps/web` ya usan el motor; S&OP, DRP y MRP siguen siendo la demo genérica (placeholder). Ver [ADR 0001](docs/adr/0001-modelo-de-dominio.md), [ADR 0002](docs/adr/0002-mps-crp-fase-2.md) y [mapeo SAP](docs/mapeo-sap.md).
+- Estado: **Fase 3** (ingesta de las 3 bases SAP, con formato supuesto y datos sintéticos) sobre la Fase 2 (MPS + CRP como ciclo Miguel ↔ Daniel). Las vistas CRP, MPS final y Datos SAP usan el motor; S&OP, DRP y MRP siguen siendo la demo genérica (placeholder). Ver ADR [0001](docs/adr/0001-modelo-de-dominio.md), [0002](docs/adr/0002-mps-crp-fase-2.md), [0003](docs/adr/0003-ingesta-bases-sap-fase-3.md), [formatos de las bases](docs/formatos-bases-sap.md) y [mapeo SAP](docs/mapeo-sap.md).
 
 ## Estructura
 - `apps/web` — interfaz (React + Vite)
 - `packages/domain` — modelo de dominio de Ramo
 - `packages/engine` — motor de cálculo puro, con pruebas
-- `packages/ingest` — lectura de las 3 bases SAP y Excel
+- `packages/ingest` — lectura y validación de las 3 bases SAP (CSV)
 - `packages/sap-out` — archivos de salida hacia SAP
 - `data/synthetic` — datos sintéticos (los reales nunca se versionan)
 

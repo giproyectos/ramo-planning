@@ -7,6 +7,7 @@ import {
   CalendarRange,
   Cpu,
   Boxes,
+  Database,
 } from 'lucide-react';
 import { useTranslation } from '../i18n/i18n';
 
@@ -20,6 +21,7 @@ interface SidebarProps {
   mpsStatus: string;
   crpStatus: string;
   mrpPendingCount: number;
+  dataBadge: string;
   alertCount: number;
   onOpenScenarioModal: () => void;
 }
@@ -33,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   mpsStatus,
   crpStatus,
   mrpPendingCount,
+  dataBadge,
   onOpenScenarioModal,
 }) => {
   const { t } = useTranslation();
@@ -99,6 +102,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Boxes,
       badge: t('common.sidebar.nav.mrp.badge', { count: mrpPendingCount }),
       badgeBg: 'bg-[#DDCBF5]',
+    },
+    {
+      id: 'data',
+      stepNumber: 'SAP',
+      code: 'DATA',
+      name: t('common.sidebar.nav.data.name'),
+      icon: Database,
+      badge: dataBadge,
+      badgeBg: dataBadge === 'SAP' ? 'bg-[#7AFFA1]' : 'bg-[#FFF87C]',
     },
   ];
 

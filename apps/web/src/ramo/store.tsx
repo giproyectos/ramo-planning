@@ -10,6 +10,7 @@ import {
   demandForHorizon,
   snapshotCycle,
 } from '@ramo/engine';
+import { Baseline, IngestTexts, applyBaseline, ingestBaseline } from '@ramo/ingest';
 import raw from '../../../../data/synthetic/dataset.json';
 
 export interface LogEntry {
@@ -19,7 +20,12 @@ export interface LogEntry {
 }
 
 interface RamoPlanState {
+  /** Dataset activo: el sintético, o el mismo con el inventario de la línea base SAP si hay una cargada. */
   dataset: RamoDataset;
+  baseline: Baseline | null;
+  baselineCutAt: string;
+  loadBaseline: (texts: IngestTexts, cutAt: string) => Baseline;
+  clearBaseline: () => void;
   weeks: string[];
   baseNet: NetPlanRow[];
   stage: CycleStage;
@@ -42,9 +48,11 @@ interface RamoPlanState {
 
 const Ctx = createContext<RamoPlanState | null>(null);
 
-const dataset = raw as unknown as RamoDataset;
-const issues = validateDataset(dataset);
+const baseDataset = raw as unknown as RamoDataset;
+const issues = validateDataset(baseDataset);
 if (issues.length > 0) console.warn('[ramo] dataset con problemas de integridad', issues);
+
+export const DEFAULT_CUT_AT = '2026-10-05T08:00';
 
 const now = () => new Date().toISOString();
 let seq = 0;
@@ -56,13 +64,17 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const [decisions, setDecisions] = useState<CapacityDecision[]>([]);
   const [adjustments, setAdjustments] = useState<MpsAdjustment[]>([]);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [baseline, setBaseline] = useState<Baseline | null>(null);
+  const [baselineCutAt, setBaselineCutAt] = useState(DEFAULT_CUT_AT);
+
+  const dataset = useMemo(() => (baseline?.usable ? applyBaseline(baseDataset, baseline) : baseDataset), [baseline]);
 
   const { baseNet, weeks } = useMemo(() => {
-    const n1 = dataset.versions.filter((v) => v.kind === 'WEEKLY_N1').sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
-    const pbo = dataset.versions.filter((v) => v.kind === 'PBO_MONTHLY').sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+    const n1 = baseDataset.versions.filter((v) => v.kind === 'WEEKLY_N1').sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+    const pbo = baseDataset.versions.filter((v) => v.kind === 'PBO_MONTHLY').sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
     const net = computeNetProduction(dataset, demandForHorizon(dataset, n1.id, pbo.id));
     return { baseNet: net, weeks: [...new Set(net.map((r) => r.weekStart))].sort() };
-  }, []);
+  }, [dataset]);
 
   const miguelView = useMemo(
     () =>
@@ -70,9 +82,9 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
         decisions,
         adjustments: CYCLE_ORDER.indexOf(stage) >= CYCLE_ORDER.indexOf('MPS_FINAL') ? adjustments : [],
       }, { crewMode }),
-    [baseNet, decisions, adjustments, stage, crewMode],
+    [dataset, baseNet, decisions, adjustments, stage, crewMode],
   );
-  const danielView = useMemo(() => snapshotCycle(dataset, baseNet, { decisions, adjustments }, { crewMode }), [baseNet, decisions, adjustments, crewMode]);
+  const danielView = useMemo(() => snapshotCycle(dataset, baseNet, { decisions, adjustments }, { crewMode }), [dataset, baseNet, decisions, adjustments, crewMode]);
 
   const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
 
@@ -91,8 +103,27 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     [addLog],
   );
 
+  const loadBaseline = useCallback((texts: IngestTexts, cutAt: string) => {
+    const b = ingestBaseline({ dataset: baseDataset, cutAt }, texts);
+    setBaseline(b);
+    setBaselineCutAt(cutAt);
+    const errors = b.issues.filter((i) => i.severity === 'error').length;
+    const warnings = b.issues.filter((i) => i.severity === 'warning').length;
+    addLog('Sistema', b.usable
+      ? `Bases SAP cargadas (corte ${cutAt.replace('T', ' ')}): inventario disponible actualizado; ${errors} error(es), ${warnings} advertencia(s)`
+      : `Bases SAP rechazadas: ${errors} error(es); se mantiene el inventario sintético`);
+    return b;
+  }, [addLog]);
+
   const value: RamoPlanState = {
     dataset,
+    baseline,
+    baselineCutAt,
+    loadBaseline,
+    clearBaseline: () => {
+      setBaseline(null);
+      addLog('Sistema', 'Bases SAP retiradas: se vuelve al inventario sintético');
+    },
     weeks,
     baseNet,
     stage,

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm run dev -w @ramo/web",
     "build": "npm run build -w @ramo/web",
-    "synthetic": "node scripts/generate-synthetic.mjs",
+    "synthetic": "node scripts/generate-synthetic.mjs && node scripts/generate-synthetic-sap.mjs",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
   },

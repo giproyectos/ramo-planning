@@ -4,5 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "main": "src/index.ts",
-  "scripts": { "lint": "tsc --noEmit", "test": "vitest run --passWithNoTests" }
+  "dependencies": {
+    "@ramo/domain": "*"
+  },
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@ramo/engine": "*"
+  }
 }
