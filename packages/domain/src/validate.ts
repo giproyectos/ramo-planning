@@ -1,4 +1,4 @@
-import { RamoDataset } from './types';
+import { DistributionNode, RamoDataset } from './types';
 
 export interface ValidationIssue {
   code: string;
@@ -121,5 +121,27 @@ export function validateDataset(ds: RamoDataset): ValidationIssue[] {
     if (o.commercialQty < 0) add('NEGATIVE_QTY', p, 'cantidad negativa');
   });
 
+  validateNodes(ds, add);
+
   return issues;
+}
+
+function validateNodes(ds: RamoDataset, add: (code: string, path: string, message: string) => void) {
+  const nodes = ds.nodes;
+  if (!nodes || nodes.length === 0) return;
+  for (const id of duplicates(nodes.map((n) => n.id))) add('DUPLICATE_ID', 'nodes', `id repetido: ${id}`);
+  const cedis = nodes.filter((n) => n.type === 'CEDI');
+  if (cedis.length !== 1) add('NODE_CEDI_COUNT', 'nodes', `debe haber exactamente un CEDI (hay ${cedis.length})`);
+  const ids = new Set(nodes.map((n) => n.id));
+  for (const n of nodes) {
+    const p = `nodes.${n.id}`;
+    if (n.type === 'AGENCY' && (!n.parentId || !ids.has(n.parentId) || nodes.find((x) => x.id === n.parentId)?.type !== 'CEDI')) add('NODE_PARENT', p, 'una agencia debe colgar de un CEDI existente');
+    if (!Number.isInteger(n.leadTimeWeeks) || n.leadTimeWeeks < 0) add('NODE_LEAD_TIME', p, 'leadTimeWeeks debe ser un entero >= 0');
+    if (n.demandShare < 0 || n.inventoryShare < 0) add('NODE_SHARE', p, 'las participaciones no pueden ser negativas');
+    if (n.minCoverDays < 0) add('NODE_MIN_COVER', p, 'minCoverDays no puede ser negativo');
+    if (!(n.storageCapacity > 0)) add('NODE_CAPACITY', p, 'storageCapacity debe ser > 0');
+  }
+  const sum = (f: (n: DistributionNode) => number) => nodes.reduce((a, n) => a + f(n), 0);
+  if (Math.abs(sum((n) => n.demandShare) - 1) > 0.001) add('NODE_SHARE_SUM', 'nodes', `las participaciones de demanda deben sumar 1 (suman ${sum((n) => n.demandShare).toFixed(3)})`);
+  if (Math.abs(sum((n) => n.inventoryShare) - 1) > 0.001) add('NODE_SHARE_SUM', 'nodes', `las participaciones de inventario deben sumar 1 (suman ${sum((n) => n.inventoryShare).toFixed(3)})`);
 }

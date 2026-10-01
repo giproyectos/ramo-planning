@@ -5,3 +5,5 @@ export * from './demandPlan';
 export * from './mps';
 export * from './crp';
 export * from './cycle';
+export * from './drp';
+export * from './scarcity';

@@ -109,6 +109,30 @@ export interface BuildingBlock {
   createdAt: string;
 }
 
+export type NodeType = 'CEDI' | 'AGENCY';
+/** Prioridad del canal: define el nivel de servicio del stock de seguridad y el orden de los mínimos de cobertura en escasez. */
+export type NodePriority = 'HIGH' | 'NORMAL' | 'LOW';
+
+/** Nodo de la red de distribución (planta → CEDI → agencias). */
+export interface DistributionNode {
+  id: string;
+  name: string;
+  type: NodeType;
+  /** Nodo que lo abastece (las agencias cuelgan del CEDI; el CEDI se abastece de planta). */
+  parentId?: string;
+  /** Semanas entre liberar la orden y recibir (0 = misma semana). El CEDI lo cuenta desde la planta. */
+  leadTimeWeeks: number;
+  /** Fracción de la demanda CEDI del SKU que consume el propio nodo (la suma sobre todos los nodos es 1). */
+  demandShare: number;
+  /** Fracción del inventario de la red que se asume en este nodo (la suma es 1). Supuesto hasta tener MD04/MD5A por nodo. */
+  inventoryShare: number;
+  priority: NodePriority;
+  /** Días de demanda que se protegen primero cuando la producción no alcanza. */
+  minCoverDays: number;
+  /** Capacidad de almacenamiento del nodo, en cajas (todos los SKUs). */
+  storageCapacity: number;
+}
+
 /** Venta histórica semanal por SKU y flujo (cajas). `priorForecast` es el pronóstico que el proceso vigente emitió para esa semana. */
 export interface DemandHistoryRow {
   skuId: string;
@@ -165,4 +189,6 @@ export interface RamoDataset {
   buildingBlocks: BuildingBlock[];
   inventory: InventoryPosition[];
   openOrders: OpenOrder[];
+  /** Red de distribución; opcional para datasets que no usan DRP. */
+  nodes?: DistributionNode[];
 }

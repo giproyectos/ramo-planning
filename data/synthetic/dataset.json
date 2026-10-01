@@ -1930,11 +1930,11 @@
   "inventory": [
     {
       "skuId": "SK-001",
-      "onHandCommercial": 11310
+      "onHandCommercial": 45240
     },
     {
       "skuId": "SK-002",
-      "onHandCommercial": 7540
+      "onHandCommercial": 30160
     },
     {
       "skuId": "SK-003",
@@ -1946,19 +1946,19 @@
     },
     {
       "skuId": "SK-005",
-      "onHandCommercial": 8800
+      "onHandCommercial": 35200
     },
     {
       "skuId": "SK-006",
-      "onHandCommercial": 817
+      "onHandCommercial": 3267
     },
     {
       "skuId": "SK-007",
-      "onHandCommercial": 7119
+      "onHandCommercial": 28474
     },
     {
       "skuId": "SK-008",
-      "onHandCommercial": 2813
+      "onHandCommercial": 11250
     }
   ],
   "openOrders": [
@@ -1991,6 +1991,67 @@
       "skuId": "SK-007",
       "weekStart": "2026-10-12",
       "commercialQty": 5695
+    }
+  ],
+  "nodes": [
+    {
+      "id": "N-CEDI",
+      "name": "CEDI principal (sint.)",
+      "type": "CEDI",
+      "leadTimeWeeks": 1,
+      "demandShare": 0.3,
+      "inventoryShare": 0.4,
+      "priority": "NORMAL",
+      "minCoverDays": 0,
+      "storageCapacity": 400000
+    },
+    {
+      "id": "N-A1",
+      "name": "Agencia 1 · canal moderno (sint.)",
+      "type": "AGENCY",
+      "parentId": "N-CEDI",
+      "leadTimeWeeks": 0,
+      "demandShare": 0.25,
+      "inventoryShare": 0.15,
+      "priority": "HIGH",
+      "minCoverDays": 4,
+      "storageCapacity": 90000
+    },
+    {
+      "id": "N-A2",
+      "name": "Agencia 2 (sint.)",
+      "type": "AGENCY",
+      "parentId": "N-CEDI",
+      "leadTimeWeeks": 0,
+      "demandShare": 0.18,
+      "inventoryShare": 0.15,
+      "priority": "NORMAL",
+      "minCoverDays": 2,
+      "storageCapacity": 70000
+    },
+    {
+      "id": "N-A3",
+      "name": "Agencia 3 · ciudad lejana (sint.)",
+      "type": "AGENCY",
+      "parentId": "N-CEDI",
+      "leadTimeWeeks": 1,
+      "demandShare": 0.15,
+      "inventoryShare": 0.15,
+      "priority": "NORMAL",
+      "minCoverDays": 2,
+      "storageCapacity": 60000
+    },
+    {
+      "id": "N-A4",
+      "name": "Agencia 4 · canal tradicional (sint.)",
+      "type": "AGENCY",
+      "parentId": "N-CEDI",
+      "leadTimeWeeks": 1,
+      "demandShare": 0.12,
+      "inventoryShare": 0.15,
+      "priority": "LOW",
+      "minCoverDays": 1,
+      "storageCapacity": 45000
     }
   ]
 }

@@ -6,12 +6,16 @@ import {
   CycleSnapshot,
   FC_N1_ID,
   FC_PBO_ID,
+  DrpResult,
   ForecastRun,
+  SafetyPolicy,
   CycleStage,
   NetPlanRow,
   applyBuildingBlocks,
   computeNetProduction,
   demandForHorizon,
+  plantRequirementRecords,
+  runDrp,
   runForecast,
   snapshotCycle,
   withForecastVersions,
@@ -46,6 +50,20 @@ interface RamoPlanState {
   /** Si es true, el MPS y el CRP usan el plan de demanda generado en vez de la demanda sintética fija. */
   useForecast: boolean;
   setUseForecast: (v: boolean) => void;
+  /** DRP de la red (agencias → CEDI → planta); null si el dataset no define red. */
+  drp: DrpResult | null;
+  /** Si es true, la necesidad de producción del DRP es la entrada del MPS (y el inventario ya lo neteó el DRP). */
+  useDrp: boolean;
+  setUseDrp: (v: boolean) => void;
+  drpPolicy: SafetyPolicy;
+  setDrpPolicy: (p: SafetyPolicy) => void;
+  staticDays: number;
+  setStaticDays: (d: number) => void;
+  /** Suponer que el flujo en camino durante el plazo es el de régimen (hasta cargar tránsito y órdenes abiertas reales). */
+  drpPipeline: boolean;
+  setDrpPipeline: (v: boolean) => void;
+  /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
+  logEvent: (actor: string, text: string) => void;
   userBlocks: BuildingBlock[];
   addBlock: (b: Omit<BuildingBlock, 'id' | 'versionId' | 'createdAt'>) => void;
   removeBlock: (id: string) => void;
@@ -107,6 +125,10 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const [historyLabel, setHistoryLabel] = useState('ejemplo sintético limpio');
   const [useForecast, setUseForecast] = useState(true);
   const [userBlocks, setUserBlocks] = useState<BuildingBlock[]>([]);
+  const [useDrpFlag, setUseDrp] = useState(true);
+  const [drpPolicy, setDrpPolicy] = useState<SafetyPolicy>('DYNAMIC');
+  const [staticDays, setStaticDays] = useState(3);
+  const [drpPipeline, setDrpPipeline] = useState(true);
 
   const history = useMemo(() => parseDemandHistory(historyText, { dataset: baseDataset, cutAt: baselineCutAt }), [historyText, baselineCutAt]);
   const targetStart = useMemo(() => nextMonday(baselineCutAt.slice(0, 10)), [baselineCutAt]);
@@ -129,12 +151,39 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const source = usingForecast ? forecastDs! : baseDataset;
   const dataset = useMemo(() => (baseline?.usable ? applyBaseline(source, baseline) : source), [source, baseline]);
 
-  const { baseNet, weeks } = useMemo(() => {
+  // Demanda del horizonte (N+1 con sus building blocks; el PBO completa si falta): es lo que entra al DRP.
+  const horizonDemand = useMemo(() => {
     const latest = (kind: 'WEEKLY_N1' | 'PBO_MONTHLY') => baseDataset.versions.filter((v) => v.kind === kind).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0].id;
     const [n1Id, pboId] = usingForecast ? [FC_N1_ID, FC_PBO_ID] : [latest('WEEKLY_N1'), latest('PBO_MONTHLY')];
-    const net = computeNetProduction(dataset, demandForHorizon(dataset, n1Id, pboId));
-    return { baseNet: net, weeks: [...new Set(net.map((r) => r.weekStart))].sort() };
+    return demandForHorizon(dataset, n1Id, pboId);
   }, [dataset, usingForecast]);
+
+  // σ del error de pronóstico a 1 semana por SKU: base del stock de seguridad dinámico (solo si hay pronóstico).
+  const sigmaBySku = useMemo(
+    () => (usingForecast && forecast ? Object.fromEntries(forecast.n1.skus.map((s) => [s.skuId, s.backtest.sd[0]])) : undefined),
+    [usingForecast, forecast],
+  );
+
+  const drp = useMemo(
+    () => (dataset.nodes && dataset.nodes.length > 0 ? runDrp(dataset, horizonDemand, { policy: drpPolicy, staticDays, sigmaBySku, pipeline: drpPipeline ? 'STEADY_STATE' : 'NONE' }) : null),
+    [dataset, horizonDemand, drpPolicy, staticDays, sigmaBySku, drpPipeline],
+  );
+  const usingDrp = useDrpFlag && drp !== null && drp.weeks.length > 0;
+
+  const { baseNet, weeks } = useMemo(() => {
+    if (!usingDrp || !drp) {
+      const net = computeNetProduction(dataset, horizonDemand);
+      return { baseNet: net, weeks: [...new Set(net.map((r) => r.weekStart))].sort() };
+    }
+    // El DRP ya neteó el inventario de la red: el MPS recibe su necesidad de producción (CEDI) más los pedidos bajo pedido,
+    // y solo descuenta las órdenes en curso. Se rellenan con 0 las semanas sin necesidad para no perder columnas del horizonte.
+    const required = plantRequirementRecords(drp);
+    const have = new Set(required.map((r) => `${r.skuId}|${r.weekStart}`));
+    const pad = dataset.skus.flatMap((s) => (drp.rows.some((r) => r.skuId === s.id) ? drp.weeks.filter((w) => !have.has(`${s.id}|${w}`)).map((w) => ({ versionId: 'DRP', skuId: s.id, weekStart: w, flow: 'CEDI' as const, commercialQty: 0 })) : []));
+    const mto = horizonDemand.filter((d) => d.flow !== 'CEDI');
+    const net = computeNetProduction({ ...dataset, inventory: [] }, [...required, ...pad, ...mto]);
+    return { baseNet: net, weeks: [...new Set(net.map((r) => r.weekStart))].sort() };
+  }, [dataset, horizonDemand, drp, usingDrp]);
 
   const miguelView = useMemo(
     () =>
@@ -208,6 +257,16 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     consensus,
     useForecast: usingForecast,
     setUseForecast,
+    drp,
+    useDrp: usingDrp,
+    setUseDrp,
+    drpPolicy,
+    setDrpPolicy,
+    staticDays,
+    setStaticDays,
+    drpPipeline,
+    setDrpPipeline,
+    logEvent: addLog,
     userBlocks,
     addBlock,
     removeBlock: (id) => setUserBlocks((p) => p.filter((b) => b.id !== id)),

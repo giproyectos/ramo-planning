@@ -27,7 +27,7 @@ import { Header } from './components/Header';
 import { GlassAtmosphere } from './components/common/GlassAtmosphere';
 import { ProcessMapModule } from './components/pipeline/ProcessMapModule';
 import { DemandView } from './components/ramo/DemandView';
-import { DRPModule } from './components/drp/DRPModule';
+import { DrpView } from './components/ramo/DrpView';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
 import { DataView } from './components/ramo/DataView';
@@ -406,17 +406,7 @@ function AppContent() {
 
           {currentStep === 'sop' && <DemandView />}
 
-          {currentStep === 'drp' && (
-            <DRPModule
-              depots={depots}
-              rows={drpRows}
-              onUpdateRows={(newRows) => {
-                setDrpRows(newRows);
-                showToast(t('common.toasts.drpAdjusted'), 'info');
-              }}
-              onPromoteToMPS={handlePromoteDRPtoMPS}
-            />
-          )}
+          {currentStep === 'drp' && <DrpView />}
 
           {currentStep === 'mps' && <MpsView />}
 

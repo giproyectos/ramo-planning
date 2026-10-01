@@ -121,15 +121,24 @@ const buildingBlocks = [
   { id: 'BB-003', versionId: 'V-N1-2026-W40', scope: { skuId: 'SK-008', weekStart: '2026-11-02' }, deltaCommercialQty: 800, reason: 'Reposición por quiebre de inventario en agencias (sint.)', author: 'Planeador Demanda (sint.)', role: 'demand', createdAt: '2026-10-01T09:00:00Z' },
 ];
 
-// Inventario al corte: ~25 % de la demanda semanal base (Barras casi sin colchón). Órdenes abiertas: ponqués y maicitos en las 2 primeras semanas.
-const inventory = skus.map((s) => ({ skuId: s.id, onHandCommercial: Math.round(baseQty(s, 0) * (['SK-003', 'SK-004'].includes(s.id) ? 0.03 : 0.25)) }));
+// Inventario al corte: ~1 semana de demanda base (Barras casi sin colchón, para mantener su sobrecarga). Órdenes abiertas: ponqués y maicitos en las 2 primeras semanas.
+const inventory = skus.map((s) => ({ skuId: s.id, onHandCommercial: Math.round(baseQty(s, 0) * (['SK-003', 'SK-004'].includes(s.id) ? 0.03 : 1.0)) }));
 const openOrders = [];
 for (const id of ['SK-001', 'SK-002', 'SK-007']) {
   const s = skus.find((x) => x.id === id);
   weeks.slice(0, 2).forEach((w, i) => openOrders.push({ skuId: id, weekStart: w, commercialQty: Math.round(baseQty(s, i) * 0.2) }));
 }
 
-const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders };
+// Red de distribución: planta → CEDI → 4 agencias. Participaciones y capacidades inventadas (se afinan con datos reales de Diana).
+const nodes = [
+  { id: 'N-CEDI', name: 'CEDI principal (sint.)', type: 'CEDI', leadTimeWeeks: 1, demandShare: 0.3, inventoryShare: 0.4, priority: 'NORMAL', minCoverDays: 0, storageCapacity: 400000 },
+  { id: 'N-A1', name: 'Agencia 1 · canal moderno (sint.)', type: 'AGENCY', parentId: 'N-CEDI', leadTimeWeeks: 0, demandShare: 0.25, inventoryShare: 0.15, priority: 'HIGH', minCoverDays: 4, storageCapacity: 90000 },
+  { id: 'N-A2', name: 'Agencia 2 (sint.)', type: 'AGENCY', parentId: 'N-CEDI', leadTimeWeeks: 0, demandShare: 0.18, inventoryShare: 0.15, priority: 'NORMAL', minCoverDays: 2, storageCapacity: 70000 },
+  { id: 'N-A3', name: 'Agencia 3 · ciudad lejana (sint.)', type: 'AGENCY', parentId: 'N-CEDI', leadTimeWeeks: 1, demandShare: 0.15, inventoryShare: 0.15, priority: 'NORMAL', minCoverDays: 2, storageCapacity: 60000 },
+  { id: 'N-A4', name: 'Agencia 4 · canal tradicional (sint.)', type: 'AGENCY', parentId: 'N-CEDI', leadTimeWeeks: 1, demandShare: 0.12, inventoryShare: 0.15, priority: 'LOW', minCoverDays: 1, storageCapacity: 45000 },
+];
+
+const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(dataset, null, 2) + '\n');
 console.log(`dataset.json: ${skus.length} SKUs, ${lines.length} líneas, ${demand.length} filas de demanda`);
