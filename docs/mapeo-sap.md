@@ -14,7 +14,7 @@ Estado: **borrador**. Lo marcado como *por confirmar* sale de las reuniones del 
 | `DemandRecord` (carga a SAP) | Gestión de Demanda vía MD61 / LSMW (o BAPI) | Fase 4: archivo generado para revisión (formato supuesto); la carga sigue siendo manual |
 | Órdenes provisionales (salida MPS final) | Hoy: archivo por planta cargado a mano con LSMW; el flujo automático por archivo plano se rompió con una migración de SAP | Fase 8 |
 | Red de distribución e inventario por nodo (DRP) | Descargas MD04 / MD5A que Diana usa en su Excel de DRP; maestro de nodos y plazos | Fase 5: red **sintética** (nodos, plazos, participaciones, capacidades); falta la fuente real |
-| Explosión de materiales | MD04 / MD5A; COISPI; tabla Z1 propia de Diana | Fase 6 |
+| Explosión de materiales, listas de materiales (incluye mezclas de la planta secreta), inventario de insumos y órdenes de compra abiertas | MD04 / MD5A; COISPI; tabla Z1 propia de Diana; maestro de materiales y registros info | Fase 6: tablero de riesgo con datos **sintéticos** (explosión propia de solo lectura); falta la fuente real y la decisión frente a la simulación nativa de SAP (ADR 0006) |
 | Cuota reguladora | Arreglo de cuotas SAP (ME01 / MEQ1 / ME11) | Fase 7 |
 
 ## Pendiente de confirmar

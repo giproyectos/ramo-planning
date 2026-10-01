@@ -32,3 +32,10 @@ export function weekExceptions(cal: LineCalendar, weekStart: string) {
   const days = new Set(weekDays(weekStart));
   return cal.exceptions.filter((e) => days.has(e.date));
 }
+
+/** Horas disponibles de una línea un día concreto (la excepción manda sobre el calendario base). */
+export function dayHours(cal: LineCalendar, date: string): number {
+  const exception = cal.exceptions.find((e) => e.date === date);
+  if (exception) return exception.hours;
+  return cal.workingWeekdays.includes(isoWeekday(date)) ? cal.baseHoursPerDay : 0;
+}

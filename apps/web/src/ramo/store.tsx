@@ -9,6 +9,7 @@ import {
   DrpResult,
   ForecastRun,
   SafetyPolicy,
+  SupplyRiskResult,
   CycleStage,
   NetPlanRow,
   applyBuildingBlocks,
@@ -17,6 +18,7 @@ import {
   plantRequirementRecords,
   runDrp,
   runForecast,
+  runSupplyRisk,
   snapshotCycle,
   withForecastVersions,
 } from '@ramo/engine';
@@ -50,6 +52,8 @@ interface RamoPlanState {
   /** Si es true, el MPS y el CRP usan el plan de demanda generado en vez de la demanda sintética fija. */
   useForecast: boolean;
   setUseForecast: (v: boolean) => void;
+  /** Riesgo de abastecimiento de insumos y empaques a partir del plan de producción final (MPS con los ajustes de Daniel); null si no hay materiales. */
+  supplyRisk: SupplyRiskResult | null;
   /** DRP de la red (agencias → CEDI → planta); null si el dataset no define red. */
   drp: DrpResult | null;
   /** Si es true, la necesidad de producción del DRP es la entrada del MPS (y el inventario ya lo neteó el DRP). */
@@ -195,6 +199,11 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   );
   const danielView = useMemo(() => snapshotCycle(dataset, baseNet, { decisions, adjustments }, { crewMode }), [dataset, baseNet, decisions, adjustments, crewMode]);
 
+  const supplyRisk = useMemo(
+    () => (dataset.materials && dataset.materials.length > 0 ? runSupplyRisk(dataset, danielView.net) : null),
+    [dataset, danielView.net],
+  );
+
   const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
 
   const addDecision = useCallback<RamoPlanState['addDecision']>(
@@ -257,6 +266,7 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     consensus,
     useForecast: usingForecast,
     setUseForecast,
+    supplyRisk,
     drp,
     useDrp: usingDrp,
     setUseDrp,

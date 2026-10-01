@@ -32,7 +32,7 @@ import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
 import { DataView } from './components/ramo/DataView';
 import { RamoPlanProvider, useRamoPlan } from './ramo/store';
-import { MRPModule } from './components/mrp/MRPModule';
+import { MrpView } from './components/ramo/MrpView';
 import { ExportModal } from './components/common/ExportModal';
 import { CommandPalette } from './components/common/CommandPalette';
 import { AlertsDrawer } from './components/common/AlertsDrawer';
@@ -414,14 +414,7 @@ function AppContent() {
 
           {currentStep === 'data' && <DataView />}
 
-          {currentStep === 'mrp' && (
-            <MRPModule
-              records={mrpRecords}
-              actionMessages={actionMessages}
-              onExecuteAction={handleExecuteAction}
-              onExecuteAllActions={handleExecuteAllActions}
-            />
-          )}
+          {currentStep === 'mrp' && <MrpView />}
         </main>
 
         {/* Enterprise Status Footer */}

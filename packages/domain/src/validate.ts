@@ -1,5 +1,6 @@
 import { DistributionNode, RamoDataset } from './types';
 
+
 export interface ValidationIssue {
   code: string;
   path: string;
@@ -122,6 +123,7 @@ export function validateDataset(ds: RamoDataset): ValidationIssue[] {
   });
 
   validateNodes(ds, add);
+  validateMaterials(ds, add);
 
   return issues;
 }
@@ -144,4 +146,64 @@ function validateNodes(ds: RamoDataset, add: (code: string, path: string, messag
   const sum = (f: (n: DistributionNode) => number) => nodes.reduce((a, n) => a + f(n), 0);
   if (Math.abs(sum((n) => n.demandShare) - 1) > 0.001) add('NODE_SHARE_SUM', 'nodes', `las participaciones de demanda deben sumar 1 (suman ${sum((n) => n.demandShare).toFixed(3)})`);
   if (Math.abs(sum((n) => n.inventoryShare) - 1) > 0.001) add('NODE_SHARE_SUM', 'nodes', `las participaciones de inventario deben sumar 1 (suman ${sum((n) => n.inventoryShare).toFixed(3)})`);
+}
+
+function validateMaterials(ds: RamoDataset, add: (code: string, path: string, message: string) => void) {
+  const materials = ds.materials ?? [];
+  const bom = ds.bom ?? [];
+  const pos = ds.purchaseOrders ?? [];
+  if (materials.length === 0 && bom.length === 0 && pos.length === 0) return;
+
+  for (const id of duplicates(materials.map((m) => m.id))) add('DUPLICATE_ID', 'materials', `id repetido: ${id}`);
+  const mat = new Map(materials.map((m) => [m.id, m]));
+  const skus = new Set(ds.skus.map((s) => s.id));
+
+  for (const m of materials) {
+    const p = `materials.${m.id}`;
+    if (skus.has(m.id)) add('MATERIAL_ID_CLASH', p, 'el id del material coincide con el de un SKU');
+    if (m.stock < 0) add('NEGATIVE_QTY', p, 'inventario negativo');
+    if (!(m.leadTimeDays >= 0)) add('MATERIAL_LEAD_TIME', p, 'leadTimeDays debe ser >= 0');
+    if (!(m.moq > 0)) add('MATERIAL_MOQ', p, 'moq debe ser > 0');
+    if (m.type !== 'MIX') {
+      const total = m.suppliers.reduce((a, s) => a + s.share, 0);
+      if (m.suppliers.length === 0) add('MATERIAL_SUPPLIER', p, 'un insumo o empaque necesita al menos un proveedor');
+      else if (Math.abs(total - 1) > 0.001) add('MATERIAL_QUOTA_SUM', p, `la cuota de proveedores debe sumar 1 (suma ${total.toFixed(3)})`);
+    }
+  }
+
+  const children = new Map<string, string[]>();
+  bom.forEach((b, i) => {
+    const p = `bom[${i}]`;
+    if (!skus.has(b.parentId) && !mat.has(b.parentId)) add('BOM_UNKNOWN_PARENT', p, `padre inexistente: ${b.parentId}`);
+    if (!mat.has(b.componentId)) add('BOM_UNKNOWN_COMPONENT', p, `componente inexistente: ${b.componentId}`);
+    if (!(b.quantityPer > 0)) add('BOM_QUANTITY', p, 'quantityPer debe ser > 0');
+    if (b.scrapPct < 0 || b.scrapPct > 50) add('BOM_SCRAP', p, 'scrapPct fuera de 0–50');
+    if (mat.get(b.parentId) && mat.get(b.parentId)!.type !== 'MIX') add('BOM_PARENT_NOT_MIX', p, `un material solo puede tener lista de materiales si es una mezcla (${b.parentId})`);
+    children.set(b.parentId, [...(children.get(b.parentId) ?? []), b.componentId]);
+  });
+  if (bom.length > 0) {
+    const dup = duplicates(bom.map((b) => `${b.parentId}>${b.componentId}`));
+    for (const d of dup) add('BOM_DUPLICATE_LINE', 'bom', `línea repetida: ${d}`);
+  }
+
+  // Ciclos entre mezclas (A contiene B que contiene A).
+  const state = new Map<string, 0 | 1 | 2>();
+  const visit = (id: string): boolean => {
+    if (state.get(id) === 1) return true;
+    if (state.get(id) === 2) return false;
+    state.set(id, 1);
+    for (const c of children.get(id) ?? []) if (visit(c)) return true;
+    state.set(id, 2);
+    return false;
+  };
+  for (const id of children.keys()) if (visit(id)) { add('BOM_CYCLE', 'bom', `ciclo en la lista de materiales desde ${id}`); break; }
+
+  pos.forEach((o, i) => {
+    const p = `purchaseOrders[${i}]`;
+    const m = mat.get(o.materialId);
+    if (!m) add('PO_UNKNOWN_MATERIAL', p, `material inexistente: ${o.materialId}`);
+    else if (m.type === 'MIX') add('PO_ON_MIX', p, 'las mezclas no se compran');
+    if (!isIsoDate(o.dueDate)) add('INVALID_DATE', p, `fecha inválida: ${o.dueDate}`);
+    if (!(o.qty > 0)) add('NEGATIVE_QTY', p, 'cantidad de la orden debe ser > 0');
+  });
 }

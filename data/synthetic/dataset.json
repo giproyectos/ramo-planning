@@ -2053,5 +2053,667 @@
       "minCoverDays": 1,
       "storageCapacity": 45000
     }
+  ],
+  "materials": [
+    {
+      "id": "MT-HARINA",
+      "name": "Harina de trigo (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 101300,
+      "leadTimeDays": 7,
+      "safetyDays": 3,
+      "moq": 1000,
+      "suppliers": [
+        {
+          "supplier": "Molino Norte",
+          "share": 0.7
+        },
+        {
+          "supplier": "Molino Sur",
+          "share": 0.3
+        }
+      ]
+    },
+    {
+      "id": "MT-AZUCAR",
+      "name": "Azúcar (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 21700,
+      "leadTimeDays": 5,
+      "safetyDays": 3,
+      "moq": 1000,
+      "suppliers": [
+        {
+          "supplier": "Ingenio A",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-CACAO",
+      "name": "Cacao importado (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 10750,
+      "leadTimeDays": 30,
+      "safetyDays": 5,
+      "moq": 500,
+      "suppliers": [
+        {
+          "supplier": "Cacao Import 1",
+          "share": 0.6
+        },
+        {
+          "supplier": "Cacao Import 2",
+          "share": 0.4
+        }
+      ]
+    },
+    {
+      "id": "MT-HUEVO",
+      "name": "Huevo líquido (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 5080,
+      "leadTimeDays": 2,
+      "safetyDays": 1,
+      "moq": 200,
+      "suppliers": [
+        {
+          "supplier": "Avícola A",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-ACEITE",
+      "name": "Aceite vegetal (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 29050,
+      "leadTimeDays": 7,
+      "safetyDays": 3,
+      "moq": 500,
+      "suppliers": [
+        {
+          "supplier": "Aceites S.A.",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-VAINILLA",
+      "name": "Esencia de vainilla (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 1722.5,
+      "leadTimeDays": 20,
+      "safetyDays": 5,
+      "moq": 25,
+      "suppliers": [
+        {
+          "supplier": "Sabores B",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-AVENA",
+      "name": "Avena (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 16950,
+      "leadTimeDays": 10,
+      "safetyDays": 3,
+      "moq": 500,
+      "suppliers": [
+        {
+          "supplier": "Cereales C",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-JARABE",
+      "name": "Jarabe de glucosa (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 14350,
+      "leadTimeDays": 8,
+      "safetyDays": 3,
+      "moq": 500,
+      "suppliers": [
+        {
+          "supplier": "Jarabes D",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-MAIZ",
+      "name": "Maíz para snacks (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 161800,
+      "leadTimeDays": 21,
+      "safetyDays": 5,
+      "moq": 1000,
+      "suppliers": [
+        {
+          "supplier": "Maíz Import 1",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-SAL",
+      "name": "Sal (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 9800,
+      "leadTimeDays": 5,
+      "safetyDays": 3,
+      "moq": 500,
+      "suppliers": [
+        {
+          "supplier": "Salinas E",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-POLVO",
+      "name": "Polvo de hornear (sint.)",
+      "type": "RAW",
+      "unit": "kg",
+      "stock": 4610,
+      "leadTimeDays": 14,
+      "safetyDays": 3,
+      "moq": 25,
+      "suppliers": [
+        {
+          "supplier": "Química F",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-FILM-P",
+      "name": "Película ponqué (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 5170000,
+      "leadTimeDays": 28,
+      "safetyDays": 7,
+      "moq": 20000,
+      "suppliers": [
+        {
+          "supplier": "Empaques G",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-FILM-B",
+      "name": "Película barra (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 10182000,
+      "leadTimeDays": 28,
+      "safetyDays": 7,
+      "moq": 20000,
+      "suppliers": [
+        {
+          "supplier": "Empaques G",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-FILM-M",
+      "name": "Película mini (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 9052000,
+      "leadTimeDays": 28,
+      "safetyDays": 7,
+      "moq": 20000,
+      "suppliers": [
+        {
+          "supplier": "Empaques G",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-BOLSA-C",
+      "name": "Bolsa crispetas (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 56000,
+      "leadTimeDays": 21,
+      "safetyDays": 7,
+      "moq": 10000,
+      "suppliers": [
+        {
+          "supplier": "Plásticos H",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-BOLSA-M",
+      "name": "Bolsa maicitos (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 3905000,
+      "leadTimeDays": 21,
+      "safetyDays": 7,
+      "moq": 10000,
+      "suppliers": [
+        {
+          "supplier": "Plásticos H",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-BOLSA-T",
+      "name": "Bolsa tostadas (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 900000,
+      "leadTimeDays": 21,
+      "safetyDays": 7,
+      "moq": 10000,
+      "suppliers": [
+        {
+          "supplier": "Plásticos H",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MT-CAJA-A",
+      "name": "Caja corrugada A (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 303000,
+      "leadTimeDays": 12,
+      "safetyDays": 5,
+      "moq": 5000,
+      "suppliers": [
+        {
+          "supplier": "Cartones I",
+          "share": 0.5
+        },
+        {
+          "supplier": "Cartones J",
+          "share": 0.5
+        }
+      ]
+    },
+    {
+      "id": "MT-CAJA-B",
+      "name": "Caja corrugada B (sint.)",
+      "type": "PACKAGING",
+      "unit": "u",
+      "stock": 335000,
+      "leadTimeDays": 12,
+      "safetyDays": 5,
+      "moq": 5000,
+      "suppliers": [
+        {
+          "supplier": "Cartones I",
+          "share": 1
+        }
+      ]
+    },
+    {
+      "id": "MX-PONQ",
+      "name": "Premezcla ponqué · planta secreta (sint.)",
+      "type": "MIX",
+      "unit": "kg",
+      "stock": 0,
+      "leadTimeDays": 0,
+      "safetyDays": 0,
+      "moq": 1,
+      "suppliers": []
+    },
+    {
+      "id": "MX-BARRA",
+      "name": "Premezcla barra · planta secreta (sint.)",
+      "type": "MIX",
+      "unit": "kg",
+      "stock": 0,
+      "leadTimeDays": 0,
+      "safetyDays": 0,
+      "moq": 1,
+      "suppliers": []
+    }
+  ],
+  "bom": [
+    {
+      "parentId": "SK-001",
+      "componentId": "MX-PONQ",
+      "quantityPer": 0.55,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-001",
+      "componentId": "MT-HUEVO",
+      "quantityPer": 0.12,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-001",
+      "componentId": "MT-ACEITE",
+      "quantityPer": 0.05,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-001",
+      "componentId": "MT-CACAO",
+      "quantityPer": 0.08,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-001",
+      "componentId": "MT-FILM-P",
+      "quantityPer": 24,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-001",
+      "componentId": "MT-CAJA-A",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-002",
+      "componentId": "MX-PONQ",
+      "quantityPer": 0.55,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-002",
+      "componentId": "MT-HUEVO",
+      "quantityPer": 0.12,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-002",
+      "componentId": "MT-ACEITE",
+      "quantityPer": 0.05,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-002",
+      "componentId": "MT-VAINILLA",
+      "quantityPer": 0.01,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-002",
+      "componentId": "MT-FILM-P",
+      "quantityPer": 24,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-002",
+      "componentId": "MT-CAJA-A",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-003",
+      "componentId": "MX-BARRA",
+      "quantityPer": 0.3,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-003",
+      "componentId": "MT-JARABE",
+      "quantityPer": 0.1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-003",
+      "componentId": "MT-FILM-B",
+      "quantityPer": 24,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-003",
+      "componentId": "MT-CAJA-A",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-004",
+      "componentId": "MX-BARRA",
+      "quantityPer": 0.3,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-004",
+      "componentId": "MT-JARABE",
+      "quantityPer": 0.12,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-004",
+      "componentId": "MT-FILM-B",
+      "quantityPer": 24,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-004",
+      "componentId": "MT-CAJA-A",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-005",
+      "componentId": "MX-PONQ",
+      "quantityPer": 0.35,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-005",
+      "componentId": "MT-HUEVO",
+      "quantityPer": 0.08,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-005",
+      "componentId": "MT-CACAO",
+      "quantityPer": 0.05,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-005",
+      "componentId": "MT-FILM-M",
+      "quantityPer": 30,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-005",
+      "componentId": "MT-CAJA-B",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-006",
+      "componentId": "MT-MAIZ",
+      "quantityPer": 0.9,
+      "scrapPct": 3
+    },
+    {
+      "parentId": "SK-006",
+      "componentId": "MT-ACEITE",
+      "quantityPer": 0.12,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-006",
+      "componentId": "MT-SAL",
+      "quantityPer": 0.02,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-006",
+      "componentId": "MT-BOLSA-C",
+      "quantityPer": 12,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-006",
+      "componentId": "MT-CAJA-B",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-007",
+      "componentId": "MT-MAIZ",
+      "quantityPer": 1,
+      "scrapPct": 3
+    },
+    {
+      "parentId": "SK-007",
+      "componentId": "MT-ACEITE",
+      "quantityPer": 0.1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-007",
+      "componentId": "MT-SAL",
+      "quantityPer": 0.03,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-007",
+      "componentId": "MT-BOLSA-M",
+      "quantityPer": 24,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-007",
+      "componentId": "MT-CAJA-B",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-008",
+      "componentId": "MT-HARINA",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-008",
+      "componentId": "MT-ACEITE",
+      "quantityPer": 0.1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-008",
+      "componentId": "MT-SAL",
+      "quantityPer": 0.02,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-008",
+      "componentId": "MT-BOLSA-T",
+      "quantityPer": 20,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "SK-008",
+      "componentId": "MT-CAJA-B",
+      "quantityPer": 1,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "MX-PONQ",
+      "componentId": "MT-HARINA",
+      "quantityPer": 0.45,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "MX-PONQ",
+      "componentId": "MT-AZUCAR",
+      "quantityPer": 0.35,
+      "scrapPct": 2
+    },
+    {
+      "parentId": "MX-PONQ",
+      "componentId": "MT-POLVO",
+      "quantityPer": 0.02,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "MX-BARRA",
+      "componentId": "MT-AVENA",
+      "quantityPer": 0.5,
+      "scrapPct": 0
+    },
+    {
+      "parentId": "MX-BARRA",
+      "componentId": "MT-AZUCAR",
+      "quantityPer": 0.3,
+      "scrapPct": 2
+    },
+    {
+      "parentId": "MX-BARRA",
+      "componentId": "MT-JARABE",
+      "quantityPer": 0.2,
+      "scrapPct": 0
+    }
+  ],
+  "purchaseOrders": [
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "dueDate": "2026-10-27",
+      "qty": 15500
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "dueDate": "2026-10-23",
+      "qty": 97000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "dueDate": "2026-10-19",
+      "qty": 71000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "dueDate": "2026-11-09",
+      "qty": 7240000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "dueDate": "2026-10-14",
+      "qty": 200000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "dueDate": "2026-10-10",
+      "qty": 25000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "dueDate": "2026-10-17",
+      "qty": 22500
+    }
   ]
 }

@@ -74,6 +74,7 @@ const weightOf = Object.fromEntries(skuRows.map((r) => [r[0], r[10]]));
 // Utilización objetivo de cada línea sobre 80 h nominales/semana (Barras queda sobrecargada a propósito).
 const targetUtil = { 'L-PONQ': 0.78, 'L-BARR': 1.1, 'L-MINI': 0.55, 'L-CRISP': 0.7, 'L-MAIZ': 0.62, 'L-TOST': 0.45 };
 const NOMINAL_WEEK_HOURS = 80;
+const addDays = (iso, n) => { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 const weeks = [];
 for (let i = 0; i < 13; i++) {
@@ -138,7 +139,84 @@ const nodes = [
   { id: 'N-A4', name: 'Agencia 4 · canal tradicional (sint.)', type: 'AGENCY', parentId: 'N-CEDI', leadTimeWeeks: 1, demandShare: 0.12, inventoryShare: 0.15, priority: 'LOW', minCoverDays: 1, storageCapacity: 45000 },
 ];
 
-const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes };
+// Materiales, lista de materiales y órdenes de compra (todo ficticio). Las mezclas (MX-*) son ítems de paso de la "planta secreta".
+const L = (parentId, componentId, quantityPer, scrapPct = 0) => ({ parentId, componentId, quantityPer, scrapPct });
+const bom = [
+  // Ponqués (por caja de 24 u)
+  L('SK-001', 'MX-PONQ', 0.55), L('SK-001', 'MT-HUEVO', 0.12), L('SK-001', 'MT-ACEITE', 0.05), L('SK-001', 'MT-CACAO', 0.08), L('SK-001', 'MT-FILM-P', 24), L('SK-001', 'MT-CAJA-A', 1),
+  L('SK-002', 'MX-PONQ', 0.55), L('SK-002', 'MT-HUEVO', 0.12), L('SK-002', 'MT-ACEITE', 0.05), L('SK-002', 'MT-VAINILLA', 0.01), L('SK-002', 'MT-FILM-P', 24), L('SK-002', 'MT-CAJA-A', 1),
+  // Barras (por caja de 24 u)
+  L('SK-003', 'MX-BARRA', 0.3), L('SK-003', 'MT-JARABE', 0.1), L('SK-003', 'MT-FILM-B', 24), L('SK-003', 'MT-CAJA-A', 1),
+  L('SK-004', 'MX-BARRA', 0.3), L('SK-004', 'MT-JARABE', 0.12), L('SK-004', 'MT-FILM-B', 24), L('SK-004', 'MT-CAJA-A', 1),
+  // Mini (por caja de 30 u)
+  L('SK-005', 'MX-PONQ', 0.35), L('SK-005', 'MT-HUEVO', 0.08), L('SK-005', 'MT-CACAO', 0.05), L('SK-005', 'MT-FILM-M', 30), L('SK-005', 'MT-CAJA-B', 1),
+  // Snacks (la unidad productiva ya es kg)
+  L('SK-006', 'MT-MAIZ', 0.9, 3), L('SK-006', 'MT-ACEITE', 0.12), L('SK-006', 'MT-SAL', 0.02), L('SK-006', 'MT-BOLSA-C', 12), L('SK-006', 'MT-CAJA-B', 1),
+  L('SK-007', 'MT-MAIZ', 1.0, 3), L('SK-007', 'MT-ACEITE', 0.1), L('SK-007', 'MT-SAL', 0.03), L('SK-007', 'MT-BOLSA-M', 24), L('SK-007', 'MT-CAJA-B', 1),
+  L('SK-008', 'MT-HARINA', 1.0), L('SK-008', 'MT-ACEITE', 0.1), L('SK-008', 'MT-SAL', 0.02), L('SK-008', 'MT-BOLSA-T', 20), L('SK-008', 'MT-CAJA-B', 1),
+  // Mezclas (por kg de mezcla)
+  L('MX-PONQ', 'MT-HARINA', 0.45), L('MX-PONQ', 'MT-AZUCAR', 0.35, 2), L('MX-PONQ', 'MT-POLVO', 0.02),
+  L('MX-BARRA', 'MT-AVENA', 0.5), L('MX-BARRA', 'MT-AZUCAR', 0.3, 2), L('MX-BARRA', 'MT-JARABE', 0.2),
+];
+
+// [id, nombre, tipo, unidad, días de stock al corte, plazo (d), colchón (d), múltiplo de pedido, proveedores]
+const matRows = [
+  ['MT-HARINA', 'Harina de trigo (sint.)', 'RAW', 'kg', 20, 7, 3, 1000, [['Molino Norte', 0.7], ['Molino Sur', 0.3]]],
+  ['MT-AZUCAR', 'Azúcar (sint.)', 'RAW', 'kg', 6, 5, 3, 1000, [['Ingenio A', 1]]],
+  ['MT-CACAO', 'Cacao importado (sint.)', 'RAW', 'kg', 14, 30, 5, 500, [['Cacao Import 1', 0.6], ['Cacao Import 2', 0.4]]],
+  ['MT-HUEVO', 'Huevo líquido (sint.)', 'RAW', 'kg', 3, 2, 1, 200, [['Avícola A', 1]]],
+  ['MT-ACEITE', 'Aceite vegetal (sint.)', 'RAW', 'kg', 25, 7, 3, 500, [['Aceites S.A.', 1]]],
+  ['MT-VAINILLA', 'Esencia de vainilla (sint.)', 'RAW', 'kg', 40, 20, 5, 25, [['Sabores B', 1]]],
+  ['MT-AVENA', 'Avena (sint.)', 'RAW', 'kg', 12, 10, 3, 500, [['Cereales C', 1]]],
+  ['MT-JARABE', 'Jarabe de glucosa (sint.)', 'RAW', 'kg', 9, 8, 3, 500, [['Jarabes D', 1]]],
+  ['MT-MAIZ', 'Maíz para snacks (sint.)', 'RAW', 'kg', 35, 21, 5, 1000, [['Maíz Import 1', 1]]],
+  ['MT-SAL', 'Sal (sint.)', 'RAW', 'kg', 60, 5, 3, 500, [['Salinas E', 1]]],
+  ['MT-POLVO', 'Polvo de hornear (sint.)', 'RAW', 'kg', 30, 14, 3, 25, [['Química F', 1]]],
+  ['MT-FILM-P', 'Película ponqué (sint.)', 'PACKAGING', 'u', 20, 28, 7, 20000, [['Empaques G', 1]]],
+  ['MT-FILM-B', 'Película barra (sint.)', 'PACKAGING', 'u', 45, 28, 7, 20000, [['Empaques G', 1]]],
+  ['MT-FILM-M', 'Película mini (sint.)', 'PACKAGING', 'u', 60, 28, 7, 20000, [['Empaques G', 1]]],
+  ['MT-BOLSA-C', 'Bolsa crispetas (sint.)', 'PACKAGING', 'u', 10, 21, 7, 10000, [['Plásticos H', 1]]],
+  ['MT-BOLSA-M', 'Bolsa maicitos (sint.)', 'PACKAGING', 'u', 40, 21, 7, 10000, [['Plásticos H', 1]]],
+  ['MT-BOLSA-T', 'Bolsa tostadas (sint.)', 'PACKAGING', 'u', 28, 21, 7, 10000, [['Plásticos H', 1]]],
+  ['MT-CAJA-A', 'Caja corrugada A (sint.)', 'PACKAGING', 'u', 15, 12, 5, 5000, [['Cartones I', 0.5], ['Cartones J', 0.5]]],
+  ['MT-CAJA-B', 'Caja corrugada B (sint.)', 'PACKAGING', 'u', 30, 12, 5, 5000, [['Cartones I', 1]]],
+  ['MX-PONQ', 'Premezcla ponqué · planta secreta (sint.)', 'MIX', 'kg', 0, 0, 0, 1, []],
+  ['MX-BARRA', 'Premezcla barra · planta secreta (sint.)', 'MIX', 'kg', 0, 0, 0, 1, []],
+];
+
+// Consumo promedio por día calendario de cada material con la demanda base semanal (para dimensionar el inventario en días de cobertura).
+const coefOf = (parent, mult = 1, acc = {}) => {
+  for (const b of bom.filter((x) => x.parentId === parent)) {
+    const q = mult * b.quantityPer * (1 + b.scrapPct / 100);
+    if (b.componentId.startsWith('MX-')) coefOf(b.componentId, q, acc);
+    else acc[b.componentId] = (acc[b.componentId] ?? 0) + q;
+  }
+  return acc;
+};
+const weeklyUse = {};
+skus.forEach((s) => {
+  const w = baseQty(s, 0);
+  Object.entries(coefOf(s.id)).forEach(([m, q]) => { weeklyUse[m] = (weeklyUse[m] ?? 0) + w * q; });
+});
+const roundTo = (v, step) => Math.round(v / step) * step;
+const materials = matRows.map(([id, name, type, unit, days, leadTimeDays, safetyDays, moq, sup]) => ({
+  id, name, type, unit,
+  stock: type === 'MIX' ? 0 : roundTo(((weeklyUse[id] ?? 0) / 7) * days, Math.max(1, moq / 10)),
+  leadTimeDays, safetyDays, moq,
+  suppliers: sup.map(([supplier, share]) => ({ supplier, share })),
+}));
+
+// Órdenes de compra abiertas: [material, proveedor, día de llegada desde el corte, días de consumo que cubre]
+const poRows = [
+  ['MT-CACAO', 'Cacao Import 1', 22, 20], ['MT-MAIZ', 'Maíz Import 1', 18, 21], ['MT-HARINA', 'Molino Norte', 14, 14],
+  ['MT-FILM-P', 'Empaques G', 35, 28], ['MT-CAJA-A', 'Cartones I', 9, 10], ['MT-AZUCAR', 'Ingenio A', 5, 7], ['MT-JARABE', 'Jarabes D', 12, 14],
+];
+const purchaseOrders = poRows.map(([materialId, supplier, offset, cover]) => {
+  const m = materials.find((x) => x.id === materialId);
+  return { materialId, supplier, dueDate: addDays(weeks[0], offset), qty: roundTo(((weeklyUse[materialId] ?? 0) / 7) * cover, m.moq) };
+});
+
+const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(dataset, null, 2) + '\n');
 console.log(`dataset.json: ${skus.length} SKUs, ${lines.length} líneas, ${demand.length} filas de demanda`);

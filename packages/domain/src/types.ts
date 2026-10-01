@@ -133,6 +133,52 @@ export interface DistributionNode {
   storageCapacity: number;
 }
 
+export type MaterialType = 'RAW' | 'PACKAGING' | 'MIX';
+export type MaterialUnit = 'kg' | 'u' | 'l';
+
+export interface SupplierShare {
+  supplier: string;
+  /** Cuota reguladora: fracción de cada pedido que se asigna a este proveedor (la suma es 1). */
+  share: number;
+}
+
+/**
+ * Insumo, empaque o mezcla. Las mezclas (`MIX`, p. ej. las de la planta secreta) son ítems de paso: se explotan hacia sus
+ * componentes y no llevan inventario ni proveedor propios en este modelo.
+ */
+export interface Material {
+  id: string;
+  name: string;
+  type: MaterialType;
+  unit: MaterialUnit;
+  /** Inventario al corte (en `unit`). */
+  stock: number;
+  /** Plazo de entrega planeado en SAP, en días. */
+  leadTimeDays: number;
+  /** Días de consumo que se quiere mantener como colchón. */
+  safetyDays: number;
+  /** Cantidad mínima / múltiplo de pedido. */
+  moq: number;
+  suppliers: SupplierShare[];
+}
+
+/** Línea de la lista de materiales: `quantityPer` unidades del componente por cada unidad del padre (caja si el padre es un SKU). */
+export interface BomLine {
+  parentId: string;
+  componentId: string;
+  quantityPer: number;
+  /** Merma del componente, en % (la necesidad bruta es quantityPer × (1 + scrapPct/100)). */
+  scrapPct: number;
+}
+
+/** Orden de compra abierta: recepción programada de un insumo. */
+export interface PurchaseOrderLine {
+  materialId: string;
+  supplier: string;
+  dueDate: string;
+  qty: number;
+}
+
 /** Venta histórica semanal por SKU y flujo (cajas). `priorForecast` es el pronóstico que el proceso vigente emitió para esa semana. */
 export interface DemandHistoryRow {
   skuId: string;
@@ -191,4 +237,8 @@ export interface RamoDataset {
   openOrders: OpenOrder[];
   /** Red de distribución; opcional para datasets que no usan DRP. */
   nodes?: DistributionNode[];
+  /** Materiales, lista de materiales y órdenes de compra; opcionales para datasets que no usan el tablero de abastecimiento. */
+  materials?: Material[];
+  bom?: BomLine[];
+  purchaseOrders?: PurchaseOrderLine[];
 }

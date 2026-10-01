@@ -7,3 +7,4 @@ export * from './crp';
 export * from './cycle';
 export * from './drp';
 export * from './scarcity';
+export * from './supplyRisk';
