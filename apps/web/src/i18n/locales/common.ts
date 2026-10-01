@@ -8,6 +8,7 @@ export const common = {
       crp: 'Capacity Requirements (CRP)',
       mrp: 'Material Requirements (MRP)',
       data: 'SAP Data (Monday bases)',
+      ai: 'Recommendations (assisted planning)',
     },
     header: {
       searchPlaceholder: 'Search SKUs, BOM...',
@@ -32,6 +33,7 @@ export const common = {
         crp: { name: 'CRP (Miguel)' },
         mrp: { name: 'BOM Ledger', badge: '{count} Orders' },
         data: { name: 'SAP Data' },
+        ai: { name: 'Recommendations' },
       },
       badges: {
         approved: 'Approved',
@@ -92,6 +94,7 @@ export const common = {
       crp: 'Planificación de Capacidad (CRP)',
       mrp: 'Planificación de Materiales (MRP)',
       data: 'Datos SAP (bases del lunes)',
+      ai: 'Recomendaciones (planeación asistida)',
     },
     header: {
       searchPlaceholder: 'Buscar SKUs, BOM...',
@@ -116,6 +119,7 @@ export const common = {
         crp: { name: 'CRP (Miguel)' },
         mrp: { name: 'Libro Mayor BOM', badge: '{count} Órdenes' },
         data: { name: 'Datos SAP' },
+        ai: { name: 'Recomendaciones' },
       },
       badges: {
         approved: 'Aprobado',

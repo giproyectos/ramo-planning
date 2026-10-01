@@ -2324,7 +2324,7 @@
       "name": "Bolsa tostadas (sint.)",
       "type": "PACKAGING",
       "unit": "u",
-      "stock": 900000,
+      "stock": 836000,
       "leadTimeDays": 21,
       "safetyDays": 7,
       "moq": 10000,
@@ -2714,6 +2714,1950 @@
       "supplier": "Jarabes D",
       "dueDate": "2026-10-17",
       "qty": 22500
+    }
+  ],
+  "orderHistory": [
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2025-10-01",
+      "promisedDate": "2025-10-11",
+      "receivedDate": "2025-10-12",
+      "qty": 17000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2025-10-01",
+      "promisedDate": "2025-10-06",
+      "receivedDate": "2025-10-06",
+      "qty": 56000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2025-10-01",
+      "promisedDate": "2025-10-31",
+      "receivedDate": "2025-11-14",
+      "qty": 13000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2025-10-01",
+      "promisedDate": "2025-10-03",
+      "receivedDate": "2025-10-02",
+      "qty": 19600
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-10-02",
+      "promisedDate": "2025-10-23",
+      "receivedDate": "2025-10-24",
+      "qty": 90000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-10-02",
+      "promisedDate": "2025-10-23",
+      "receivedDate": "2025-10-23",
+      "qty": 1420000
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2025-10-03",
+      "promisedDate": "2025-10-10",
+      "receivedDate": "2025-10-10",
+      "qty": 16500
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2025-10-03",
+      "promisedDate": "2025-10-24",
+      "receivedDate": "2025-10-30",
+      "qty": 60000
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2025-10-03",
+      "promisedDate": "2025-10-17",
+      "receivedDate": "2025-10-18",
+      "qty": 2325
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-10-04",
+      "promisedDate": "2025-10-25",
+      "receivedDate": "2025-10-28",
+      "qty": 490000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2025-10-04",
+      "promisedDate": "2025-10-16",
+      "receivedDate": "2025-10-15",
+      "qty": 140000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2025-10-04",
+      "promisedDate": "2025-10-12",
+      "receivedDate": "2025-10-12",
+      "qty": 26500
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2025-10-04",
+      "promisedDate": "2025-10-09",
+      "receivedDate": "2025-10-08",
+      "qty": 2000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2025-10-05",
+      "promisedDate": "2025-10-12",
+      "receivedDate": "2025-10-14",
+      "qty": 57000
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2025-10-05",
+      "promisedDate": "2025-10-25",
+      "receivedDate": "2025-10-25",
+      "qty": 700
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2025-10-06",
+      "promisedDate": "2025-11-03",
+      "receivedDate": "2025-11-05",
+      "qty": 3020000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2025-10-07",
+      "promisedDate": "2025-10-19",
+      "receivedDate": "2025-10-20",
+      "qty": 320000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2025-10-08",
+      "promisedDate": "2025-11-05",
+      "receivedDate": "2025-11-09",
+      "qty": 2540000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2025-10-09",
+      "promisedDate": "2025-11-06",
+      "receivedDate": "2025-11-07",
+      "qty": 4300000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2025-10-12",
+      "promisedDate": "2025-10-24",
+      "receivedDate": "2025-10-23",
+      "qty": 315000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2025-10-13",
+      "promisedDate": "2025-10-20",
+      "receivedDate": "2025-10-20",
+      "qty": 36000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 2",
+      "orderDate": "2025-10-22",
+      "promisedDate": "2025-11-21",
+      "receivedDate": "2025-11-03",
+      "qty": 5000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2025-10-23",
+      "promisedDate": "2025-11-22",
+      "receivedDate": "2025-11-23",
+      "qty": 9000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2025-10-28",
+      "promisedDate": "2025-11-09",
+      "receivedDate": "2025-11-10",
+      "qty": 140000
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2025-10-29",
+      "promisedDate": "2025-11-05",
+      "receivedDate": "2025-11-06",
+      "qty": 15000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2025-10-29",
+      "promisedDate": "2025-11-06",
+      "receivedDate": "2025-11-07",
+      "qty": 26500
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2025-10-29",
+      "promisedDate": "2025-11-03",
+      "receivedDate": "2025-11-01",
+      "qty": 3000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-10-30",
+      "promisedDate": "2025-11-20",
+      "receivedDate": "2025-11-20",
+      "qty": 90000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-10-30",
+      "promisedDate": "2025-11-20",
+      "receivedDate": "2025-11-22",
+      "qty": 1340000
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2025-10-31",
+      "promisedDate": "2025-11-10",
+      "receivedDate": "2025-11-10",
+      "qty": 17000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2025-10-31",
+      "promisedDate": "2025-11-21",
+      "receivedDate": "2025-11-27",
+      "qty": 74000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-11-01",
+      "promisedDate": "2025-11-22",
+      "receivedDate": "2025-11-24",
+      "qty": 530000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2025-11-01",
+      "promisedDate": "2025-11-03",
+      "receivedDate": "2025-11-02",
+      "qty": 19400
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2025-11-01",
+      "promisedDate": "2025-11-15",
+      "receivedDate": "2025-11-15",
+      "qty": 1725
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2025-11-01",
+      "promisedDate": "2025-11-21",
+      "receivedDate": "2025-11-21",
+      "qty": 675
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2025-11-02",
+      "promisedDate": "2025-11-07",
+      "receivedDate": "2025-11-09",
+      "qty": 48000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2025-11-06",
+      "promisedDate": "2025-12-04",
+      "receivedDate": "2025-12-10",
+      "qty": 3060000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2025-11-06",
+      "promisedDate": "2025-12-04",
+      "receivedDate": "2025-12-14",
+      "qty": 2200000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2025-11-06",
+      "promisedDate": "2025-12-04",
+      "receivedDate": "2025-12-13",
+      "qty": 4200000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2025-11-09",
+      "promisedDate": "2025-11-16",
+      "receivedDate": "2025-11-15",
+      "qty": 76000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2025-11-17",
+      "promisedDate": "2025-12-17",
+      "receivedDate": "2025-12-23",
+      "qty": 10500
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2025-11-19",
+      "promisedDate": "2025-12-01",
+      "receivedDate": "2025-12-01",
+      "qty": 245000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2025-11-19",
+      "promisedDate": "2025-11-26",
+      "receivedDate": "2025-11-26",
+      "qty": 33000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2025-11-20",
+      "promisedDate": "2025-12-02",
+      "receivedDate": "2025-12-04",
+      "qty": 235000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2025-11-23",
+      "promisedDate": "2025-11-28",
+      "receivedDate": "2025-11-30",
+      "qty": 45000
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2025-11-24",
+      "promisedDate": "2025-12-14",
+      "receivedDate": "2025-12-16",
+      "qty": 475
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2025-11-25",
+      "promisedDate": "2025-12-05",
+      "receivedDate": "2025-12-05",
+      "qty": 19500
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2025-11-25",
+      "promisedDate": "2025-12-07",
+      "receivedDate": "2025-12-06",
+      "qty": 130000
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2025-11-26",
+      "promisedDate": "2025-12-03",
+      "receivedDate": "2025-12-04",
+      "qty": 18500
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2025-11-26",
+      "promisedDate": "2025-12-01",
+      "receivedDate": "2025-12-02",
+      "qty": 3000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-11-27",
+      "promisedDate": "2025-12-18",
+      "receivedDate": "2025-12-17",
+      "qty": 1460000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2025-11-27",
+      "promisedDate": "2025-12-05",
+      "receivedDate": "2025-12-06",
+      "qty": 18000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2025-11-27",
+      "promisedDate": "2025-12-18",
+      "receivedDate": "2025-12-25",
+      "qty": 73000
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2025-11-27",
+      "promisedDate": "2025-12-11",
+      "receivedDate": "2025-12-12",
+      "qty": 2250
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-11-28",
+      "promisedDate": "2025-12-19",
+      "receivedDate": "2025-12-21",
+      "qty": 60000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-11-28",
+      "promisedDate": "2025-12-19",
+      "receivedDate": "2025-12-19",
+      "qty": 470000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2025-11-28",
+      "promisedDate": "2025-11-30",
+      "receivedDate": "2025-11-30",
+      "qty": 22000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2025-12-08",
+      "promisedDate": "2026-01-05",
+      "receivedDate": "2026-01-05",
+      "qty": 4060000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2025-12-08",
+      "promisedDate": "2025-12-15",
+      "receivedDate": "2025-12-15",
+      "qty": 64000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2025-12-09",
+      "promisedDate": "2026-01-08",
+      "receivedDate": "2026-01-14",
+      "qty": 11500
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2025-12-09",
+      "promisedDate": "2026-01-06",
+      "receivedDate": "2026-01-11",
+      "qty": 2820000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2025-12-10",
+      "promisedDate": "2026-01-07",
+      "receivedDate": "2026-01-12",
+      "qty": 2420000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2025-12-19",
+      "promisedDate": "2025-12-27",
+      "receivedDate": "2025-12-26",
+      "qty": 26500
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2025-12-20",
+      "promisedDate": "2026-01-03",
+      "receivedDate": "2026-01-04",
+      "qty": 2225
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-12-21",
+      "promisedDate": "2026-01-11",
+      "receivedDate": "2026-01-11",
+      "qty": 400000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2025-12-21",
+      "promisedDate": "2026-01-02",
+      "receivedDate": "2026-01-03",
+      "qty": 130000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-12-22",
+      "promisedDate": "2026-01-12",
+      "receivedDate": "2026-01-12",
+      "qty": 80000
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2025-12-23",
+      "promisedDate": "2025-12-30",
+      "receivedDate": "2026-01-01",
+      "qty": 15500
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2025-12-23",
+      "promisedDate": "2026-01-12",
+      "receivedDate": "2026-01-11",
+      "qty": 600
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2025-12-24",
+      "promisedDate": "2026-01-14",
+      "receivedDate": "2026-01-14",
+      "qty": 1380000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2025-12-24",
+      "promisedDate": "2025-12-26",
+      "receivedDate": "2025-12-27",
+      "qty": 20600
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2025-12-24",
+      "promisedDate": "2026-01-14",
+      "receivedDate": "2026-01-18",
+      "qty": 67000
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2025-12-25",
+      "promisedDate": "2026-01-04",
+      "receivedDate": "2026-01-04",
+      "qty": 16000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2025-12-25",
+      "promisedDate": "2025-12-30",
+      "receivedDate": "2025-12-29",
+      "qty": 47000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 2",
+      "orderDate": "2025-12-25",
+      "promisedDate": "2026-01-24",
+      "receivedDate": "2026-01-06",
+      "qty": 6000
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2025-12-25",
+      "promisedDate": "2025-12-30",
+      "receivedDate": "2025-12-30",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2025-12-28",
+      "promisedDate": "2026-01-09",
+      "receivedDate": "2026-01-10",
+      "qty": 265000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2025-12-30",
+      "promisedDate": "2026-01-29",
+      "receivedDate": "2026-01-30",
+      "qty": 9000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2025-12-30",
+      "promisedDate": "2026-01-11",
+      "receivedDate": "2026-01-12",
+      "qty": 270000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2025-12-31",
+      "promisedDate": "2026-01-07",
+      "receivedDate": "2026-01-06",
+      "qty": 29000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-01-07",
+      "promisedDate": "2026-02-04",
+      "receivedDate": "2026-02-09",
+      "qty": 2980000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-01-08",
+      "promisedDate": "2026-02-05",
+      "receivedDate": "2026-02-16",
+      "qty": 3000000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-01-08",
+      "promisedDate": "2026-02-05",
+      "receivedDate": "2026-02-14",
+      "qty": 2040000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-01-08",
+      "promisedDate": "2026-01-15",
+      "receivedDate": "2026-01-16",
+      "qty": 65000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-01-16",
+      "promisedDate": "2026-01-28",
+      "receivedDate": "2026-01-29",
+      "qty": 180000
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-01-16",
+      "promisedDate": "2026-01-21",
+      "receivedDate": "2026-01-20",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-01-17",
+      "promisedDate": "2026-02-07",
+      "receivedDate": "2026-02-07",
+      "qty": 1230000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-01-17",
+      "promisedDate": "2026-02-07",
+      "receivedDate": "2026-02-09",
+      "qty": 520000
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-01-17",
+      "promisedDate": "2026-01-31",
+      "receivedDate": "2026-01-31",
+      "qty": 2150
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-01-17",
+      "promisedDate": "2026-02-06",
+      "receivedDate": "2026-02-05",
+      "qty": 700
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-01-18",
+      "promisedDate": "2026-01-25",
+      "receivedDate": "2026-01-26",
+      "qty": 19000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-01-18",
+      "promisedDate": "2026-01-23",
+      "receivedDate": "2026-01-22",
+      "qty": 55000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-01-18",
+      "promisedDate": "2026-01-26",
+      "receivedDate": "2026-01-27",
+      "qty": 18500
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-01-19",
+      "promisedDate": "2026-02-09",
+      "receivedDate": "2026-02-15",
+      "qty": 53000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-01-20",
+      "promisedDate": "2026-02-10",
+      "receivedDate": "2026-02-11",
+      "qty": 80000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-01-20",
+      "promisedDate": "2026-01-22",
+      "receivedDate": "2026-01-22",
+      "qty": 21400
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-01-21",
+      "promisedDate": "2026-01-31",
+      "receivedDate": "2026-01-29",
+      "qty": 22000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-01-24",
+      "promisedDate": "2026-02-23",
+      "receivedDate": "2026-03-07",
+      "qty": 10500
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2026-02-06",
+      "promisedDate": "2026-02-18",
+      "receivedDate": "2026-02-21",
+      "qty": 325000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2026-02-08",
+      "promisedDate": "2026-02-20",
+      "receivedDate": "2026-02-21",
+      "qty": 320000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2026-02-08",
+      "promisedDate": "2026-02-15",
+      "receivedDate": "2026-02-15",
+      "qty": 26000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-02-09",
+      "promisedDate": "2026-03-09",
+      "receivedDate": "2026-03-18",
+      "qty": 2340000
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-02-11",
+      "promisedDate": "2026-02-21",
+      "receivedDate": "2026-02-21",
+      "qty": 19000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-02-11",
+      "promisedDate": "2026-03-04",
+      "receivedDate": "2026-03-04",
+      "qty": 1280000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-02-11",
+      "promisedDate": "2026-03-11",
+      "receivedDate": "2026-03-14",
+      "qty": 3400000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-02-11",
+      "promisedDate": "2026-02-18",
+      "receivedDate": "2026-02-20",
+      "qty": 84000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-02-11",
+      "promisedDate": "2026-03-04",
+      "receivedDate": "2026-03-09",
+      "qty": 69000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-02-12",
+      "promisedDate": "2026-02-17",
+      "receivedDate": "2026-02-18",
+      "qty": 55000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-02-12",
+      "promisedDate": "2026-02-14",
+      "receivedDate": "2026-02-16",
+      "qty": 21200
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-02-12",
+      "promisedDate": "2026-02-17",
+      "receivedDate": "2026-02-16",
+      "qty": 3000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-02-14",
+      "promisedDate": "2026-02-26",
+      "receivedDate": "2026-02-28",
+      "qty": 145000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-02-14",
+      "promisedDate": "2026-03-14",
+      "receivedDate": "2026-03-23",
+      "qty": 3620000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-02-15",
+      "promisedDate": "2026-03-08",
+      "receivedDate": "2026-03-09",
+      "qty": 90000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-02-15",
+      "promisedDate": "2026-03-08",
+      "receivedDate": "2026-03-09",
+      "qty": 470000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-02-15",
+      "promisedDate": "2026-03-17",
+      "receivedDate": "2026-03-29",
+      "qty": 9500
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-02-15",
+      "promisedDate": "2026-03-01",
+      "receivedDate": "2026-03-02",
+      "qty": 1950
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-02-15",
+      "promisedDate": "2026-03-07",
+      "receivedDate": "2026-03-09",
+      "qty": 675
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-02-16",
+      "promisedDate": "2026-02-23",
+      "receivedDate": "2026-02-23",
+      "qty": 14500
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-02-16",
+      "promisedDate": "2026-02-24",
+      "receivedDate": "2026-02-25",
+      "qty": 26500
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 2",
+      "orderDate": "2026-02-25",
+      "promisedDate": "2026-03-27",
+      "receivedDate": "2026-03-11",
+      "qty": 5000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-03-09",
+      "promisedDate": "2026-03-11",
+      "receivedDate": "2026-03-12",
+      "qty": 23600
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-03-10",
+      "promisedDate": "2026-03-17",
+      "receivedDate": "2026-03-16",
+      "qty": 16500
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-03-10",
+      "promisedDate": "2026-03-20",
+      "receivedDate": "2026-03-21",
+      "qty": 19500
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-03-10",
+      "promisedDate": "2026-03-31",
+      "receivedDate": "2026-03-31",
+      "qty": 80000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-03-10",
+      "promisedDate": "2026-04-09",
+      "receivedDate": "2026-04-15",
+      "qty": 9000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-03-11",
+      "promisedDate": "2026-04-01",
+      "receivedDate": "2026-03-31",
+      "qty": 450000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-03-12",
+      "promisedDate": "2026-03-24",
+      "receivedDate": "2026-03-24",
+      "qty": 135000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-03-12",
+      "promisedDate": "2026-03-20",
+      "receivedDate": "2026-03-19",
+      "qty": 20500
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-03-12",
+      "promisedDate": "2026-04-02",
+      "receivedDate": "2026-04-10",
+      "qty": 63000
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-03-12",
+      "promisedDate": "2026-04-01",
+      "receivedDate": "2026-04-01",
+      "qty": 725
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-03-13",
+      "promisedDate": "2026-03-18",
+      "receivedDate": "2026-03-18",
+      "qty": 50000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-03-14",
+      "promisedDate": "2026-04-11",
+      "receivedDate": "2026-04-15",
+      "qty": 2240000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-03-15",
+      "promisedDate": "2026-04-05",
+      "receivedDate": "2026-04-06",
+      "qty": 1120000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-03-15",
+      "promisedDate": "2026-04-12",
+      "receivedDate": "2026-04-15",
+      "qty": 3560000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-03-15",
+      "promisedDate": "2026-03-22",
+      "receivedDate": "2026-03-23",
+      "qty": 70000
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-03-15",
+      "promisedDate": "2026-03-29",
+      "receivedDate": "2026-03-29",
+      "qty": 1800
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-03-15",
+      "promisedDate": "2026-03-20",
+      "receivedDate": "2026-03-20",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-03-16",
+      "promisedDate": "2026-04-13",
+      "receivedDate": "2026-04-13",
+      "qty": 3100000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2026-03-17",
+      "promisedDate": "2026-03-29",
+      "receivedDate": "2026-03-31",
+      "qty": 335000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2026-03-19",
+      "promisedDate": "2026-03-31",
+      "receivedDate": "2026-04-01",
+      "qty": 265000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2026-03-21",
+      "promisedDate": "2026-03-28",
+      "receivedDate": "2026-03-27",
+      "qty": 35000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-04-03",
+      "promisedDate": "2026-05-03",
+      "receivedDate": "2026-05-10",
+      "qty": 10500
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-04-07",
+      "promisedDate": "2026-04-14",
+      "receivedDate": "2026-04-15",
+      "qty": 14500
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-04-07",
+      "promisedDate": "2026-04-17",
+      "receivedDate": "2026-04-16",
+      "qty": 21500
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-04-07",
+      "promisedDate": "2026-04-28",
+      "receivedDate": "2026-04-29",
+      "qty": 70000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-04-07",
+      "promisedDate": "2026-04-19",
+      "receivedDate": "2026-04-19",
+      "qty": 145000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-04-08",
+      "promisedDate": "2026-04-13",
+      "receivedDate": "2026-04-15",
+      "qty": 46000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-04-08",
+      "promisedDate": "2026-04-10",
+      "receivedDate": "2026-04-10",
+      "qty": 20400
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-04-08",
+      "promisedDate": "2026-04-22",
+      "receivedDate": "2026-04-23",
+      "qty": 2375
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-04-10",
+      "promisedDate": "2026-05-01",
+      "receivedDate": "2026-05-02",
+      "qty": 1530000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-04-10",
+      "promisedDate": "2026-05-01",
+      "receivedDate": "2026-05-02",
+      "qty": 370000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-04-10",
+      "promisedDate": "2026-04-18",
+      "receivedDate": "2026-04-17",
+      "qty": 25500
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-04-10",
+      "promisedDate": "2026-04-15",
+      "receivedDate": "2026-04-15",
+      "qty": 3000
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-04-10",
+      "promisedDate": "2026-04-30",
+      "receivedDate": "2026-04-29",
+      "qty": 600
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-04-11",
+      "promisedDate": "2026-05-02",
+      "receivedDate": "2026-05-08",
+      "qty": 60000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-04-16",
+      "promisedDate": "2026-05-14",
+      "receivedDate": "2026-05-20",
+      "qty": 3740000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-04-16",
+      "promisedDate": "2026-05-14",
+      "receivedDate": "2026-05-19",
+      "qty": 2400000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-04-16",
+      "promisedDate": "2026-05-14",
+      "receivedDate": "2026-05-15",
+      "qty": 3620000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-04-17",
+      "promisedDate": "2026-04-24",
+      "receivedDate": "2026-04-24",
+      "qty": 76000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-04-25",
+      "promisedDate": "2026-05-25",
+      "receivedDate": "2026-06-02",
+      "qty": 13000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2026-04-25",
+      "promisedDate": "2026-05-07",
+      "receivedDate": "2026-05-07",
+      "qty": 245000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2026-04-25",
+      "promisedDate": "2026-05-02",
+      "receivedDate": "2026-05-03",
+      "qty": 33000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2026-04-28",
+      "promisedDate": "2026-05-10",
+      "receivedDate": "2026-05-09",
+      "qty": 290000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 2",
+      "orderDate": "2026-04-30",
+      "promisedDate": "2026-05-30",
+      "receivedDate": "2026-05-14",
+      "qty": 5500
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-05-02",
+      "promisedDate": "2026-05-09",
+      "receivedDate": "2026-05-09",
+      "qty": 18000
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-05-02",
+      "promisedDate": "2026-05-12",
+      "receivedDate": "2026-05-12",
+      "qty": 22000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-05-02",
+      "promisedDate": "2026-05-14",
+      "receivedDate": "2026-05-15",
+      "qty": 155000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-05-03",
+      "promisedDate": "2026-05-24",
+      "receivedDate": "2026-05-24",
+      "qty": 90000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-05-03",
+      "promisedDate": "2026-05-24",
+      "receivedDate": "2026-05-23",
+      "qty": 1360000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-05-03",
+      "promisedDate": "2026-05-24",
+      "receivedDate": "2026-05-24",
+      "qty": 450000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-05-03",
+      "promisedDate": "2026-05-24",
+      "receivedDate": "2026-05-29",
+      "qty": 54000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-05-04",
+      "promisedDate": "2026-05-12",
+      "receivedDate": "2026-05-12",
+      "qty": 20000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-05-06",
+      "promisedDate": "2026-05-11",
+      "receivedDate": "2026-05-12",
+      "qty": 60000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-05-06",
+      "promisedDate": "2026-05-08",
+      "receivedDate": "2026-05-10",
+      "qty": 27600
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-05-06",
+      "promisedDate": "2026-05-20",
+      "receivedDate": "2026-05-21",
+      "qty": 2400
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-05-06",
+      "promisedDate": "2026-05-26",
+      "receivedDate": "2026-05-25",
+      "qty": 525
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-05-08",
+      "promisedDate": "2026-05-13",
+      "receivedDate": "2026-05-14",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-05-15",
+      "promisedDate": "2026-06-12",
+      "receivedDate": "2026-06-13",
+      "qty": 2260000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-05-17",
+      "promisedDate": "2026-05-24",
+      "receivedDate": "2026-05-26",
+      "qty": 71000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-05-19",
+      "promisedDate": "2026-06-16",
+      "receivedDate": "2026-06-24",
+      "qty": 2860000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-05-20",
+      "promisedDate": "2026-06-19",
+      "receivedDate": "2026-06-27",
+      "qty": 12500
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-05-20",
+      "promisedDate": "2026-06-17",
+      "receivedDate": "2026-06-28",
+      "qty": 3880000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-05-28",
+      "promisedDate": "2026-06-18",
+      "receivedDate": "2026-06-24",
+      "qty": 70000
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-05-28",
+      "promisedDate": "2026-06-17",
+      "receivedDate": "2026-06-16",
+      "qty": 550
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-05-30",
+      "promisedDate": "2026-06-07",
+      "receivedDate": "2026-06-06",
+      "qty": 23500
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-05-31",
+      "promisedDate": "2026-06-21",
+      "receivedDate": "2026-06-20",
+      "qty": 1410000
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-05-31",
+      "promisedDate": "2026-06-05",
+      "receivedDate": "2026-06-05",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-06-01",
+      "promisedDate": "2026-06-22",
+      "receivedDate": "2026-06-24",
+      "qty": 70000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-06-01",
+      "promisedDate": "2026-06-22",
+      "receivedDate": "2026-06-23",
+      "qty": 420000
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-06-01",
+      "promisedDate": "2026-06-13",
+      "receivedDate": "2026-06-12",
+      "qty": 145000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-06-01",
+      "promisedDate": "2026-06-03",
+      "receivedDate": "2026-06-03",
+      "qty": 23200
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-06-02",
+      "promisedDate": "2026-06-09",
+      "receivedDate": "2026-06-08",
+      "qty": 18000
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-06-02",
+      "promisedDate": "2026-06-16",
+      "receivedDate": "2026-06-18",
+      "qty": 2275
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-06-03",
+      "promisedDate": "2026-06-13",
+      "receivedDate": "2026-06-13",
+      "qty": 21500
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-06-03",
+      "promisedDate": "2026-06-08",
+      "receivedDate": "2026-06-07",
+      "qty": 59000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2026-06-04",
+      "promisedDate": "2026-06-16",
+      "receivedDate": "2026-06-18",
+      "qty": 330000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2026-06-05",
+      "promisedDate": "2026-06-17",
+      "receivedDate": "2026-06-19",
+      "qty": 335000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-06-08",
+      "promisedDate": "2026-07-08",
+      "receivedDate": "2026-07-15",
+      "qty": 10500
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2026-06-09",
+      "promisedDate": "2026-06-16",
+      "receivedDate": "2026-06-15",
+      "qty": 31000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-06-16",
+      "promisedDate": "2026-07-14",
+      "receivedDate": "2026-07-20",
+      "qty": 2960000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-06-16",
+      "promisedDate": "2026-07-14",
+      "receivedDate": "2026-07-22",
+      "qty": 3080000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-06-20",
+      "promisedDate": "2026-07-18",
+      "receivedDate": "2026-07-24",
+      "qty": 1700000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-06-20",
+      "promisedDate": "2026-06-27",
+      "receivedDate": "2026-06-28",
+      "qty": 74000
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-06-24",
+      "promisedDate": "2026-06-29",
+      "receivedDate": "2026-06-29",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-06-25",
+      "promisedDate": "2026-07-07",
+      "receivedDate": "2026-07-06",
+      "qty": 155000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-06-25",
+      "promisedDate": "2026-07-16",
+      "receivedDate": "2026-07-18",
+      "qty": 52000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-06-27",
+      "promisedDate": "2026-07-05",
+      "receivedDate": "2026-07-05",
+      "qty": 21000
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-06-27",
+      "promisedDate": "2026-07-11",
+      "receivedDate": "2026-07-10",
+      "qty": 2125
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-06-27",
+      "promisedDate": "2026-07-17",
+      "receivedDate": "2026-07-16",
+      "qty": 525
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-06-28",
+      "promisedDate": "2026-07-03",
+      "receivedDate": "2026-07-04",
+      "qty": 47000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-06-29",
+      "promisedDate": "2026-07-20",
+      "receivedDate": "2026-07-20",
+      "qty": 90000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-06-29",
+      "promisedDate": "2026-07-20",
+      "receivedDate": "2026-07-19",
+      "qty": 1340000
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-06-29",
+      "promisedDate": "2026-07-20",
+      "receivedDate": "2026-07-19",
+      "qty": 540000
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-06-29",
+      "promisedDate": "2026-07-01",
+      "receivedDate": "2026-07-02",
+      "qty": 19800
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-06-30",
+      "promisedDate": "2026-07-07",
+      "receivedDate": "2026-07-08",
+      "qty": 16500
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-06-30",
+      "promisedDate": "2026-07-10",
+      "receivedDate": "2026-07-11",
+      "qty": 17500
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-07-03",
+      "promisedDate": "2026-08-02",
+      "receivedDate": "2026-08-14",
+      "qty": 13000
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 2",
+      "orderDate": "2026-07-04",
+      "promisedDate": "2026-08-03",
+      "receivedDate": "2026-07-16",
+      "qty": 5500
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones J",
+      "orderDate": "2026-07-15",
+      "promisedDate": "2026-07-27",
+      "receivedDate": "2026-07-27",
+      "qty": 235000
+    },
+    {
+      "materialId": "MT-CAJA-A",
+      "supplier": "Cartones I",
+      "orderDate": "2026-07-17",
+      "promisedDate": "2026-07-29",
+      "receivedDate": "2026-07-29",
+      "qty": 230000
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Sur",
+      "orderDate": "2026-07-18",
+      "promisedDate": "2026-07-25",
+      "receivedDate": "2026-07-26",
+      "qty": 31000
+    },
+    {
+      "materialId": "MT-FILM-P",
+      "supplier": "Empaques G",
+      "orderDate": "2026-07-19",
+      "promisedDate": "2026-08-16",
+      "receivedDate": "2026-08-25",
+      "qty": 3320000
+    },
+    {
+      "materialId": "MT-FILM-B",
+      "supplier": "Empaques G",
+      "orderDate": "2026-07-20",
+      "promisedDate": "2026-08-17",
+      "receivedDate": "2026-08-22",
+      "qty": 2560000
+    },
+    {
+      "materialId": "MT-AZUCAR",
+      "supplier": "Ingenio A",
+      "orderDate": "2026-07-21",
+      "promisedDate": "2026-07-26",
+      "receivedDate": "2026-07-27",
+      "qty": 50000
+    },
+    {
+      "materialId": "MT-BOLSA-C",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-07-22",
+      "promisedDate": "2026-08-12",
+      "receivedDate": "2026-08-11",
+      "qty": 70000
+    },
+    {
+      "materialId": "MT-FILM-M",
+      "supplier": "Empaques G",
+      "orderDate": "2026-07-22",
+      "promisedDate": "2026-08-19",
+      "receivedDate": "2026-08-24",
+      "qty": 1720000
+    },
+    {
+      "materialId": "MT-VAINILLA",
+      "supplier": "Sabores B",
+      "orderDate": "2026-07-22",
+      "promisedDate": "2026-08-11",
+      "receivedDate": "2026-08-12",
+      "qty": 600
+    },
+    {
+      "materialId": "MT-CACAO",
+      "supplier": "Cacao Import 1",
+      "orderDate": "2026-07-23",
+      "promisedDate": "2026-08-22",
+      "receivedDate": "2026-08-29",
+      "qty": 12500
+    },
+    {
+      "materialId": "MT-HARINA",
+      "supplier": "Molino Norte",
+      "orderDate": "2026-07-23",
+      "promisedDate": "2026-07-30",
+      "receivedDate": "2026-07-29",
+      "qty": 75000
+    },
+    {
+      "materialId": "MT-JARABE",
+      "supplier": "Jarabes D",
+      "orderDate": "2026-07-23",
+      "promisedDate": "2026-07-31",
+      "receivedDate": "2026-07-29",
+      "qty": 21500
+    },
+    {
+      "materialId": "MT-POLVO",
+      "supplier": "Química F",
+      "orderDate": "2026-07-23",
+      "promisedDate": "2026-08-06",
+      "receivedDate": "2026-08-08",
+      "qty": 1750
+    },
+    {
+      "materialId": "MT-HUEVO",
+      "supplier": "Avícola A",
+      "orderDate": "2026-07-24",
+      "promisedDate": "2026-07-26",
+      "receivedDate": "2026-07-25",
+      "qty": 28000
+    },
+    {
+      "materialId": "MT-MAIZ",
+      "supplier": "Maíz Import 1",
+      "orderDate": "2026-07-24",
+      "promisedDate": "2026-08-14",
+      "receivedDate": "2026-08-16",
+      "qty": 58000
+    },
+    {
+      "materialId": "MT-BOLSA-M",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-07-25",
+      "promisedDate": "2026-08-15",
+      "receivedDate": "2026-08-13",
+      "qty": 1220000
+    },
+    {
+      "materialId": "MT-ACEITE",
+      "supplier": "Aceites S.A.",
+      "orderDate": "2026-07-26",
+      "promisedDate": "2026-08-02",
+      "receivedDate": "2026-08-02",
+      "qty": 16000
+    },
+    {
+      "materialId": "MT-AVENA",
+      "supplier": "Cereales C",
+      "orderDate": "2026-07-26",
+      "promisedDate": "2026-08-05",
+      "receivedDate": "2026-08-06",
+      "qty": 22500
+    },
+    {
+      "materialId": "MT-CAJA-B",
+      "supplier": "Cartones I",
+      "orderDate": "2026-07-26",
+      "promisedDate": "2026-08-07",
+      "receivedDate": "2026-08-07",
+      "qty": 185000
+    },
+    {
+      "materialId": "MT-SAL",
+      "supplier": "Salinas E",
+      "orderDate": "2026-07-26",
+      "promisedDate": "2026-07-31",
+      "receivedDate": "2026-08-02",
+      "qty": 2500
+    },
+    {
+      "materialId": "MT-BOLSA-T",
+      "supplier": "Plásticos H",
+      "orderDate": "2026-07-27",
+      "promisedDate": "2026-08-17",
+      "receivedDate": "2026-08-18",
+      "qty": 420000
+    }
+  ],
+  "requisitions": [
+    {
+      "id": "SP-1001",
+      "materialId": "MT-CAJA-A",
+      "qty": 195000,
+      "neededDate": "2026-10-15",
+      "createdAt": "2026-10-02"
+    },
+    {
+      "id": "SP-1002",
+      "materialId": "MT-SAL",
+      "qty": 30000,
+      "neededDate": "2026-10-30",
+      "createdAt": "2026-10-03"
+    },
+    {
+      "id": "SP-1003",
+      "materialId": "MT-ACEITE",
+      "qty": 16500,
+      "neededDate": "2026-10-25",
+      "createdAt": "2026-10-04"
+    },
+    {
+      "id": "SP-1004",
+      "materialId": "MT-VAINILLA",
+      "qty": 600,
+      "neededDate": "2026-11-04",
+      "createdAt": "2026-10-04"
     }
   ]
 }

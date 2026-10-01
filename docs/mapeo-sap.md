@@ -15,7 +15,8 @@ Estado: **borrador**. Lo marcado como *por confirmar* sale de las reuniones del 
 | Órdenes provisionales (salida MPS final) | Hoy: archivo por planta cargado a mano con LSMW; el flujo automático por archivo plano se rompió con una migración de SAP | Fase 8 |
 | Red de distribución e inventario por nodo (DRP) | Descargas MD04 / MD5A que Diana usa en su Excel de DRP; maestro de nodos y plazos | Fase 5: red **sintética** (nodos, plazos, participaciones, capacidades); falta la fuente real |
 | Explosión de materiales, listas de materiales (incluye mezclas de la planta secreta), inventario de insumos y órdenes de compra abiertas | MD04 / MD5A; COISPI; tabla Z1 propia de Diana; maestro de materiales y registros info | Fase 6: tablero de riesgo con datos **sintéticos** (explosión propia de solo lectura); falta la fuente real y la decisión frente a la simulación nativa de SAP (ADR 0006) |
-| Cuota reguladora | Arreglo de cuotas SAP (ME01 / MEQ1 / ME11) | Fase 7 |
+| Cuota reguladora | Arreglo de cuotas SAP (ME01 / MEQ1 / ME11) | Fase 7: cuota negociada vs usada y excepciones por riesgo de plazo, con historial **sintético**; falta la cuota vigente real |
+| Historial de órdenes recibidas (plazo real por proveedor) y solicitudes de pedido abiertas | Pedidos de compra y entregas (por confirmar tablas/transacciones, p. ej. historial de pedidos y solicitudes de pedido) | Fase 7: **sintético**; falta el extracto real |
 
 ## Pendiente de confirmar
 - Nombre exacto de la tabla Z de liberación y del campo de perfil general.

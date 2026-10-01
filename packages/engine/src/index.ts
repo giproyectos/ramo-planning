@@ -8,3 +8,5 @@ export * from './cycle';
 export * from './drp';
 export * from './scarcity';
 export * from './supplyRisk';
+export * from './insights';
+export * from './recommendations';

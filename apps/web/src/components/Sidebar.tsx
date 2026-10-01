@@ -8,6 +8,7 @@ import {
   Cpu,
   Boxes,
   Database,
+  Sparkles,
 } from 'lucide-react';
 import { useTranslation } from '../i18n/i18n';
 
@@ -22,6 +23,7 @@ interface SidebarProps {
   crpStatus: string;
   mrpPendingCount: number;
   dataBadge: string;
+  aiBadge: string;
   alertCount: number;
   onOpenScenarioModal: () => void;
 }
@@ -36,6 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   crpStatus,
   mrpPendingCount,
   dataBadge,
+  aiBadge,
   onOpenScenarioModal,
 }) => {
   const { t } = useTranslation();
@@ -111,6 +114,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Database,
       badge: dataBadge,
       badgeBg: dataBadge === 'SAP' ? 'bg-[#7AFFA1]' : 'bg-[#FFF87C]',
+    },
+    {
+      id: 'ai',
+      stepNumber: 'IA',
+      code: 'RECS',
+      name: t('common.sidebar.nav.ai.name'),
+      icon: Sparkles,
+      badge: aiBadge,
+      badgeBg: aiBadge === '0' ? 'bg-[#7AFFA1]' : 'bg-[#DDCBF5]',
     },
   ];
 

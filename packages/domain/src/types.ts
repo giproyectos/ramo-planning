@@ -179,6 +179,26 @@ export interface PurchaseOrderLine {
   qty: number;
 }
 
+/** Orden de compra ya recibida: base del plazo real por proveedor y de la cuota efectivamente usada. */
+export interface OrderHistoryRow {
+  materialId: string;
+  supplier: string;
+  orderDate: string;
+  /** Fecha prometida de entrega (orderDate + el plazo planeado en SAP). */
+  promisedDate: string;
+  receivedDate: string;
+  qty: number;
+}
+
+/** Solicitud de pedido (sol.ped.) abierta, aún sin convertirse en orden de compra. */
+export interface PurchaseRequisition {
+  id: string;
+  materialId: string;
+  qty: number;
+  neededDate: string;
+  createdAt: string;
+}
+
 /** Venta histórica semanal por SKU y flujo (cajas). `priorForecast` es el pronóstico que el proceso vigente emitió para esa semana. */
 export interface DemandHistoryRow {
   skuId: string;
@@ -241,4 +261,7 @@ export interface RamoDataset {
   materials?: Material[];
   bom?: BomLine[];
   purchaseOrders?: PurchaseOrderLine[];
+  /** Historial de órdenes recibidas y solicitudes de pedido abiertas (capa de recomendaciones). */
+  orderHistory?: OrderHistoryRow[];
+  requisitions?: PurchaseRequisition[];
 }

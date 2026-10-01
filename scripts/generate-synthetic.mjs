@@ -177,7 +177,7 @@ const matRows = [
   ['MT-FILM-M', 'Película mini (sint.)', 'PACKAGING', 'u', 60, 28, 7, 20000, [['Empaques G', 1]]],
   ['MT-BOLSA-C', 'Bolsa crispetas (sint.)', 'PACKAGING', 'u', 10, 21, 7, 10000, [['Plásticos H', 1]]],
   ['MT-BOLSA-M', 'Bolsa maicitos (sint.)', 'PACKAGING', 'u', 40, 21, 7, 10000, [['Plásticos H', 1]]],
-  ['MT-BOLSA-T', 'Bolsa tostadas (sint.)', 'PACKAGING', 'u', 28, 21, 7, 10000, [['Plásticos H', 1]]],
+  ['MT-BOLSA-T', 'Bolsa tostadas (sint.)', 'PACKAGING', 'u', 26, 21, 7, 10000, [['Plásticos H', 1]]],
   ['MT-CAJA-A', 'Caja corrugada A (sint.)', 'PACKAGING', 'u', 15, 12, 5, 5000, [['Cartones I', 0.5], ['Cartones J', 0.5]]],
   ['MT-CAJA-B', 'Caja corrugada B (sint.)', 'PACKAGING', 'u', 30, 12, 5, 5000, [['Cartones I', 1]]],
   ['MX-PONQ', 'Premezcla ponqué · planta secreta (sint.)', 'MIX', 'kg', 0, 0, 0, 1, []],
@@ -216,7 +216,46 @@ const purchaseOrders = poRows.map(([materialId, supplier, offset, cover]) => {
   return { materialId, supplier, dueDate: addDays(weeks[0], offset), qty: roundTo(((weeklyUse[materialId] ?? 0) / 7) * cover, m.moq) };
 });
 
-const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders };
+// Historial de órdenes recibidas (12 meses) y solicitudes de pedido abiertas. Todo ficticio.
+// Perfiles de entrega: [días extra sobre el plazo planeado (media, desviación), factor de cantidad por orden, nº de órdenes].
+// Hay proveedores sistemáticamente tarde (cacao, maíz, películas), un proveedor rápido infrautilizado (Cacao Import 2) y una cuota rota (cacao 60/40 → ~85/15).
+const rndH = mulberry32(99);
+const gauss = () => (rndH() + rndH() + rndH() - 1.5) * 2;
+const profiles = {
+  'MT-CACAO|Cacao Import 1': [7, 3, 1, 14], 'MT-CACAO|Cacao Import 2': [-17, 2, 0.5, 5], // proveedor regional rápido (llega en ~13 días aunque SAP promete 30), infrautilizado
+  'MT-MAIZ|Maíz Import 1': [5, 2, 1, 12],
+  'MT-FILM-P|Empaques G': [6, 3, 1, 10], 'MT-FILM-B|Empaques G': [6, 3, 1, 10], 'MT-FILM-M|Empaques G': [6, 3, 1, 10],
+  'MT-HARINA|Molino Norte': [1, 1, 1, 10], 'MT-HARINA|Molino Sur': [0, 1, 0.45, 8],
+  'MT-CAJA-A|Cartones I': [0.5, 1, 1, 8], 'MT-CAJA-A|Cartones J': [1, 1, 1, 8],
+};
+const orderHistory = [];
+const CUT = weeks[0];
+for (const m of materials.filter((x) => x.type !== 'MIX')) {
+  const typical = roundTo(((weeklyUse[m.id] ?? 0) / 7) * 14, m.moq);
+  for (const s of m.suppliers) {
+    const [extraMean, extraSd, qf, n] = profiles[`${m.id}|${s.supplier}`] ?? [0.3, 1, s.share, Math.max(5, Math.round(12 * s.share))];
+    for (let i = 0; i < n; i++) {
+      const orderDate = addDays(CUT, -380 + Math.round(((i + 0.5) / n) * 320 + (rndH() - 0.5) * 6));
+      const extra = Math.round(extraMean + extraSd * gauss());
+      const actual = Math.max(Math.round(m.leadTimeDays * 0.4), m.leadTimeDays + extra);
+      orderHistory.push({
+        materialId: m.id, supplier: s.supplier, orderDate,
+        promisedDate: addDays(orderDate, m.leadTimeDays), receivedDate: addDays(orderDate, actual),
+        qty: Math.max(m.moq, roundTo(typical * qf * (0.8 + rndH() * 0.4), m.moq)),
+      });
+    }
+  }
+}
+orderHistory.sort((a, b) => a.orderDate.localeCompare(b.orderDate) || a.materialId.localeCompare(b.materialId));
+const typicalOf = (id) => roundTo(((weeklyUse[id] ?? 0) / 7) * 14, materials.find((x) => x.id === id).moq);
+const requisitions = [
+  { id: 'SP-1001', materialId: 'MT-CAJA-A', qty: 195000, neededDate: addDays(CUT, 10), createdAt: addDays(CUT, -3) }, // posible duplicado de la OC de 200.000 del 14 oct
+  { id: 'SP-1002', materialId: 'MT-SAL', qty: typicalOf('MT-SAL') * 12, neededDate: addDays(CUT, 25), createdAt: addDays(CUT, -2) }, // cantidad atípica
+  { id: 'SP-1003', materialId: 'MT-ACEITE', qty: typicalOf('MT-ACEITE'), neededDate: addDays(CUT, 20), createdAt: addDays(CUT, -1) }, // normal
+  { id: 'SP-1004', materialId: 'MT-VAINILLA', qty: typicalOf('MT-VAINILLA'), neededDate: addDays(CUT, 30), createdAt: addDays(CUT, -1) }, // normal
+];
+
+const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders, orderHistory, requisitions };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(dataset, null, 2) + '\n');
 console.log(`dataset.json: ${skus.length} SKUs, ${lines.length} líneas, ${demand.length} filas de demanda`);

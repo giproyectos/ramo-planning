@@ -32,7 +32,7 @@ Hasta entonces la explosión propia permite ver el riesgo sin esperar esa cadena
 - **Gráfico:** los faltantes muy profundos aplastaban la parte útil; el eje se recorta a la mitad del inventario máximo.
 
 ## Supuestos y límites
-- **Materiales, listas y órdenes son sintéticos**; los inventarios se dimensionaron en días de cobertura sobre la demanda base para que haya variedad de riesgos (5 críticos, 1 pedir ya, 9 vigilar, 4 sin riesgo cercano en el ejemplo).
+- **Materiales, listas y órdenes son sintéticos**; los inventarios se dimensionaron en días de cobertura sobre la demanda base para que haya variedad de riesgos (5 críticos, 2 pedir ya, 8 vigilar, 4 sin riesgo cercano en el ejemplo).
 - **Mezclas como ítems de paso:** no se modela su inventario, su capacidad ni el plazo de la planta secreta; se asume producción justo a tiempo.
 - **Consumo según la producción planeada**, no la limitada por capacidad (si el CRP muestra faltantes, el consumo real sería menor); es la lectura conservadora para el riesgo.
 - **Asignación diaria** por horas de línea; no considera la secuencia real de producción.

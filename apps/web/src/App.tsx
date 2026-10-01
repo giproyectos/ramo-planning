@@ -31,6 +31,7 @@ import { DrpView } from './components/ramo/DrpView';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
 import { DataView } from './components/ramo/DataView';
+import { AiView } from './components/ramo/AiView';
 import { RamoPlanProvider, useRamoPlan } from './ramo/store';
 import { MrpView } from './components/ramo/MrpView';
 import { ExportModal } from './components/common/ExportModal';
@@ -57,7 +58,7 @@ export default function App() {
 
 function AppContent() {
   const { t } = useTranslation();
-  const { baseline } = useRamoPlan();
+  const { baseline, pendingRecommendations } = useRamoPlan();
   const [currentStep, setCurrentStep] = useState<ProcessStep>('process_map');
   const [scenario, setScenario] = useState<PlanningScenario>('baseline');
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
@@ -322,6 +323,7 @@ function AppContent() {
         crpStatus={crpStatusText}
         mrpPendingCount={pendingActionCount}
         dataBadge={baseline?.usable ? 'SAP' : 'Mock'}
+        aiBadge={String(pendingRecommendations.length)}
         alertCount={pendingActionCount + (maxWcUtil > 100 ? 1 : 0)}
         onOpenScenarioModal={() => setIsScenarioModalOpen(true)}
       />
@@ -413,6 +415,8 @@ function AppContent() {
           {currentStep === 'crp' && <CrpView />}
 
           {currentStep === 'data' && <DataView />}
+
+          {currentStep === 'ai' && <AiView />}
 
           {currentStep === 'mrp' && <MrpView />}
         </main>

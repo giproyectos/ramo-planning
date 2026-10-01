@@ -8,11 +8,14 @@ import {
   FC_PBO_ID,
   DrpResult,
   ForecastRun,
+  InsightsResult,
+  Recommendation,
   SafetyPolicy,
   SupplyRiskResult,
   CycleStage,
   NetPlanRow,
   applyBuildingBlocks,
+  buildInsights,
   computeNetProduction,
   demandForHorizon,
   plantRequirementRecords,
@@ -21,10 +24,20 @@ import {
   runSupplyRisk,
   snapshotCycle,
   withForecastVersions,
+  withLeadTimes,
 } from '@ramo/engine';
 import { Baseline, IngestTexts, ParseResult, applyBaseline, ingestBaseline, parseDemandHistory } from '@ramo/ingest';
 import { SAMPLE_HISTORY_LIMPIO } from './samples';
 import raw from '../../../../data/synthetic/dataset.json';
+
+export interface RecDecision {
+  recId: string;
+  title: string;
+  status: 'APPROVED' | 'REJECTED';
+  by: string;
+  reason: string;
+  at: string;
+}
 
 export interface LogEntry {
   at: string;
@@ -52,6 +65,16 @@ interface RamoPlanState {
   /** Si es true, el MPS y el CRP usan el plan de demanda generado en vez de la demanda sintética fija. */
   useForecast: boolean;
   setUseForecast: (v: boolean) => void;
+  /** Recomendaciones de la capa de asistencia (pedidos, plazos dinámicos, cuota, anomalías, consolidación) y su estado. */
+  insights: InsightsResult | null;
+  pendingRecommendations: Recommendation[];
+  decisions_rec: Record<string, RecDecision>;
+  decideRecommendation: (rec: Recommendation, status: 'APPROVED' | 'REJECTED', by: string, reason: string) => void;
+  undoRecommendation: (recId: string) => void;
+  /** Plazos de entrega aprobados (días por material); sustituyen a los fijos de SAP en el tablero. */
+  leadTimeOverrides: Record<string, number>;
+  consolidationDays: number;
+  setConsolidationDays: (d: number) => void;
   /** Riesgo de abastecimiento de insumos y empaques a partir del plan de producción final (MPS con los ajustes de Daniel); null si no hay materiales. */
   supplyRisk: SupplyRiskResult | null;
   /** DRP de la red (agencias → CEDI → planta); null si el dataset no define red. */
@@ -199,10 +222,21 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   );
   const danielView = useMemo(() => snapshotCycle(dataset, baseNet, { decisions, adjustments }, { crewMode }), [dataset, baseNet, decisions, adjustments, crewMode]);
 
+  const [leadTimeOverrides, setLeadTimeOverrides] = useState<Record<string, number>>({});
+  const [recDecisions, setRecDecisions] = useState<Record<string, RecDecision>>({});
+  const [consolidationDays, setConsolidationDays] = useState(7);
+
+  // Con los plazos dinámicos aprobados, el tablero de abastecimiento ya los usa en lugar de los fijos de SAP.
+  const riskDataset = useMemo(() => withLeadTimes(dataset, leadTimeOverrides), [dataset, leadTimeOverrides]);
   const supplyRisk = useMemo(
-    () => (dataset.materials && dataset.materials.length > 0 ? runSupplyRisk(dataset, danielView.net) : null),
-    [dataset, danielView.net],
+    () => (riskDataset.materials && riskDataset.materials.length > 0 ? runSupplyRisk(riskDataset, danielView.net) : null),
+    [riskDataset, danielView.net],
   );
+  const insights = useMemo(
+    () => (supplyRisk ? buildInsights({ ds: riskDataset, net: danielView.net, risk: supplyRisk, sigmaBySku, demandHistory: history.rows, today: targetStart, consolidationDays }) : null),
+    [supplyRisk, riskDataset, danielView.net, sigmaBySku, history.rows, targetStart, consolidationDays],
+  );
+  const pendingRecommendations = useMemo(() => (insights?.recommendations ?? []).filter((r) => !recDecisions[r.id]), [insights, recDecisions]);
 
   const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
 
@@ -217,6 +251,27 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     (a) => {
       setAdjustments((prev) => [...prev, { ...a, id: nextId('adj'), createdAt: now() }]);
       addLog(a.author, `Ajuste ${a.deltaCommercialQty > 0 ? '+' : ''}${a.deltaCommercialQty} cajas de ${a.skuId} (sem. ${a.weekStart}): ${a.reason}`);
+    },
+    [addLog],
+  );
+
+  const decideRecommendation = useCallback<RamoPlanState['decideRecommendation']>(
+    (rec, status, by, reason) => {
+      setRecDecisions((prev) => ({ ...prev, [rec.id]: { recId: rec.id, title: rec.title, status, by, reason, at: now() } }));
+      const act = rec.action;
+      if (status === 'APPROVED' && act.type === 'SET_LEAD_TIME') setLeadTimeOverrides((prev) => ({ ...prev, [act.materialId]: act.days }));
+      addLog(by, `${status === 'APPROVED' ? 'Aprobó' : 'Rechazó'}: ${rec.title}${reason.trim() ? ` · motivo: ${reason.trim()}` : ''}${status === 'APPROVED' && act.type === 'SET_LEAD_TIME' ? ' · el tablero ya usa el plazo aprobado (el dato maestro de SAP no se modifica)' : ''}`);
+    },
+    [addLog],
+  );
+  const undoRecommendation = useCallback(
+    (recId: string) => {
+      setRecDecisions((prev) => {
+        const { [recId]: gone, ...rest } = prev;
+        if (gone) addLog('Sistema', `Se deshizo la decisión: ${gone.title}`);
+        return rest;
+      });
+      if (recId.startsWith('LEAD_TIME|')) setLeadTimeOverrides((prev) => { const { [recId.slice('LEAD_TIME|'.length)]: _x, ...rest } = prev; return rest; });
     },
     [addLog],
   );
@@ -266,6 +321,14 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     consensus,
     useForecast: usingForecast,
     setUseForecast,
+    insights,
+    pendingRecommendations,
+    decisions_rec: recDecisions,
+    decideRecommendation,
+    undoRecommendation,
+    leadTimeOverrides,
+    consolidationDays,
+    setConsolidationDays,
     supplyRisk,
     drp,
     useDrp: usingDrp,

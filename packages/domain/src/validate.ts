@@ -124,6 +124,7 @@ export function validateDataset(ds: RamoDataset): ValidationIssue[] {
 
   validateNodes(ds, add);
   validateMaterials(ds, add);
+  validateOrderHistory(ds, add);
 
   return issues;
 }
@@ -205,5 +206,33 @@ function validateMaterials(ds: RamoDataset, add: (code: string, path: string, me
     else if (m.type === 'MIX') add('PO_ON_MIX', p, 'las mezclas no se compran');
     if (!isIsoDate(o.dueDate)) add('INVALID_DATE', p, `fecha inválida: ${o.dueDate}`);
     if (!(o.qty > 0)) add('NEGATIVE_QTY', p, 'cantidad de la orden debe ser > 0');
+  });
+}
+
+function validateOrderHistory(ds: RamoDataset, add: (code: string, path: string, message: string) => void) {
+  const history = ds.orderHistory ?? [];
+  const reqs = ds.requisitions ?? [];
+  if (history.length === 0 && reqs.length === 0) return;
+  const mats = new Map((ds.materials ?? []).map((m) => [m.id, m]));
+
+  history.forEach((h, i) => {
+    const p = `orderHistory[${i}]`;
+    const m = mats.get(h.materialId);
+    if (!m) add('HISTORY_UNKNOWN_MATERIAL', p, `material inexistente: ${h.materialId}`);
+    else if (!m.suppliers.some((s) => s.supplier === h.supplier)) add('HISTORY_UNKNOWN_SUPPLIER', p, `${h.supplier} no es proveedor de ${h.materialId}`);
+    for (const f of [h.orderDate, h.promisedDate, h.receivedDate]) if (!isIsoDate(f)) add('INVALID_DATE', p, `fecha inválida: ${f}`);
+    if (isIsoDate(h.orderDate) && isIsoDate(h.receivedDate) && h.receivedDate < h.orderDate) add('HISTORY_DATE_ORDER', p, 'se recibió antes de pedirse');
+    if (isIsoDate(h.orderDate) && isIsoDate(h.promisedDate) && h.promisedDate < h.orderDate) add('HISTORY_DATE_ORDER', p, 'la fecha prometida es anterior al pedido');
+    if (!(h.qty > 0)) add('NEGATIVE_QTY', p, 'cantidad debe ser > 0');
+  });
+
+  for (const id of duplicates(reqs.map((r) => r.id))) add('DUPLICATE_ID', 'requisitions', `id repetido: ${id}`);
+  reqs.forEach((r, i) => {
+    const p = `requisitions[${i}]`;
+    const m = mats.get(r.materialId);
+    if (!m) add('REQ_UNKNOWN_MATERIAL', p, `material inexistente: ${r.materialId}`);
+    else if (m.type === 'MIX') add('REQ_ON_MIX', p, 'las mezclas no se piden');
+    if (!isIsoDate(r.neededDate) || !isIsoDate(r.createdAt)) add('INVALID_DATE', p, 'fecha inválida');
+    if (!(r.qty > 0)) add('NEGATIVE_QTY', p, 'cantidad debe ser > 0');
   });
 }
