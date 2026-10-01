@@ -6,3 +6,12 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Datos reales de Ramo: nunca al repo (solo data/synthetic)
+data/private/
+data/real/
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+!data/synthetic/**/*.csv

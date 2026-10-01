@@ -30,7 +30,7 @@ function readStoredLang(): Language {
   } catch {
     // localStorage unavailable (private mode, SSR, etc.) — fall back silently.
   }
-  return 'en';
+  return 'es';
 }
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

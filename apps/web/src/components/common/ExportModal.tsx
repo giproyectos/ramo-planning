@@ -48,7 +48,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
   const buildCsv = (): string => {
     const lines: string[] = [];
-    lines.push(toCsvRow(['Tessaris Demand & Operations Suite']));
+    lines.push(toCsvRow(['Ramo Planning']));
     lines.push(toCsvRow(['Scenario', scenario]));
     lines.push(toCsvRow(['Generated', new Date().toISOString()]));
     lines.push('');
@@ -130,7 +130,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `tessaris_demand_ops_report_${scenario}_${Date.now()}.${format}`);
+    link.setAttribute('download', `ramo_planning_report_${scenario}_${Date.now()}.${format}`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

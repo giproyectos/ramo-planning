@@ -116,12 +116,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               className="text-3xl font-black tracking-tighter text-slate-950 flex items-center leading-none hover:opacity-80 transition-opacity"
             >
-              <span>tx</span>
+              <span>rp</span>
               <span className="text-[#7AFFA1] font-extrabold text-4xl leading-none">.</span>
             </a>
             <div className="flex flex-col">
               <span className="text-xs font-black text-slate-900 tracking-tight leading-none">
-                Tessaris
+                Ramo Planning
               </span>
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">
                 {t('common.sidebar.operationsSuite')}
