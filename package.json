@@ -2,15 +2,20 @@
   "name": "ramo-planning",
   "private": true,
   "version": "0.0.0",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w @ramo/web",
     "build": "npm run build -w @ramo/web",
     "synthetic": "node scripts/generate-synthetic.mjs && node scripts/generate-synthetic-sap.mjs",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "dev:server": "npm run dev -w @ramo/server"
   },
   "devDependencies": {
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^3.2.4"
   }

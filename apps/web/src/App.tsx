@@ -32,6 +32,9 @@ import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
 import { DataView } from './components/ramo/DataView';
 import { AiView } from './components/ramo/AiView';
+import { ReleaseView } from './components/ramo/ReleaseView';
+import { LoginScreen } from './components/ramo/LoginScreen';
+import { AuthProvider, useAuth } from './ramo/auth';
 import { RamoPlanProvider, useRamoPlan } from './ramo/store';
 import { MrpView } from './components/ramo/MrpView';
 import { ExportModal } from './components/common/ExportModal';
@@ -49,16 +52,28 @@ import {
 export default function App() {
   return (
     <LanguageProvider>
-      <RamoPlanProvider>
-        <AppContent />
-      </RamoPlanProvider>
+      <AuthProvider>
+        <AuthGate />
+      </AuthProvider>
     </LanguageProvider>
+  );
+}
+
+/** En modo servidor, nadie ve el plan sin entrar; en modo local (sin servidor) pasa directo. */
+function AuthGate() {
+  const { mode } = useAuth();
+  if (mode === 'checking') return <div className="min-h-screen flex items-center justify-center text-xs text-slate-500">Conectando…</div>;
+  if (mode === 'anonymous') return <LoginScreen />;
+  return (
+    <RamoPlanProvider>
+      <AppContent />
+    </RamoPlanProvider>
   );
 }
 
 function AppContent() {
   const { t } = useTranslation();
-  const { baseline, pendingRecommendations } = useRamoPlan();
+  const { baseline, pendingRecommendations, serverMode } = useRamoPlan();
   const [currentStep, setCurrentStep] = useState<ProcessStep>('process_map');
   const [scenario, setScenario] = useState<PlanningScenario>('baseline');
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
@@ -324,6 +339,7 @@ function AppContent() {
         mrpPendingCount={pendingActionCount}
         dataBadge={baseline?.usable ? 'SAP' : 'Mock'}
         aiBadge={String(pendingRecommendations.length)}
+        releaseBadge={serverMode ? 'SAP' : 'Local'}
         alertCount={pendingActionCount + (maxWcUtil > 100 ? 1 : 0)}
         onOpenScenarioModal={() => setIsScenarioModalOpen(true)}
       />
@@ -417,6 +433,8 @@ function AppContent() {
           {currentStep === 'data' && <DataView />}
 
           {currentStep === 'ai' && <AiView />}
+
+          {currentStep === 'release' && <ReleaseView />}
 
           {currentStep === 'mrp' && <MrpView />}
         </main>

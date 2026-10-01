@@ -39,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
     mrp: t('common.stepTitles.mrp'),
     data: t('common.stepTitles.data'),
     ai: t('common.stepTitles.ai'),
+    release: t('common.stepTitles.release'),
   };
 
   return (

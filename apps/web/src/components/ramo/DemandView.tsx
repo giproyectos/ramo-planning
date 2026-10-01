@@ -23,6 +23,7 @@ export function DemandView() {
   const {
     dataset, history, historyLabel, loadHistory, forecast, forecastDs, consensus, targetStart,
     useForecast, setUseForecast, userBlocks, addBlock, removeBlock,
+    can,
   } = useRamoPlan();
 
   const [bu, setBu] = useState('');
@@ -278,7 +279,7 @@ export function DemandView() {
                 </select>
               </div>
               <p className="text-[10px] text-slate-500">Las cajas se suman a cada semana del alcance y se reparten entre los SKUs en proporción a su pronóstico. Nunca quedan cantidades negativas.</p>
-              <button onClick={submitBlock} disabled={!Number(delta) || !reason.trim()} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">
+              <button onClick={submitBlock} disabled={!can('demand.edit') || !Number(delta) || !reason.trim()} title={can('demand.edit') ? undefined : 'Tu rol no puede registrar building blocks'} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">
                 Registrar building block
               </button>
               <ul className="text-xs space-y-1.5 pt-1">

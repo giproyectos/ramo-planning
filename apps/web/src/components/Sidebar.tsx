@@ -9,7 +9,11 @@ import {
   Boxes,
   Database,
   Sparkles,
+  Send,
 } from 'lucide-react';
+import { ROLE_LABELS } from '@ramo/governance';
+import { useAuth } from '../ramo/auth';
+import { useRamoPlan } from '../ramo/store';
 import { useTranslation } from '../i18n/i18n';
 
 interface SidebarProps {
@@ -24,9 +28,14 @@ interface SidebarProps {
   mrpPendingCount: number;
   dataBadge: string;
   aiBadge: string;
+  releaseBadge: string;
   alertCount: number;
   onOpenScenarioModal: () => void;
 }
+
+const syncLabel: Record<string, string> = {
+  local: 'local', loading: 'cargando…', saving: 'guardando…', saved: 'guardado ✓', conflict: 'conflicto: recarga', denied: 'cambio no permitido', offline: 'sin conexión',
+};
 
 export const Sidebar: React.FC<SidebarProps> = ({
   currentStep,
@@ -39,9 +48,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   mrpPendingCount,
   dataBadge,
   aiBadge,
+  releaseBadge,
   onOpenScenarioModal,
 }) => {
   const { t } = useTranslation();
+  const { mode, user, logout } = useAuth();
+  const { sync } = useRamoPlan();
 
   const navItems: {
     id: ProcessStep;
@@ -123,6 +135,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Sparkles,
       badge: aiBadge,
       badgeBg: aiBadge === '0' ? 'bg-[#7AFFA1]' : 'bg-[#DDCBF5]',
+    },
+    {
+      id: 'release',
+      stepNumber: 'OUT',
+      code: 'SAP',
+      name: t('common.sidebar.nav.release.name'),
+      icon: Send,
+      badge: releaseBadge,
+      badgeBg: releaseBadge === 'Local' ? 'bg-[#FFF87C]' : 'bg-[#7AFFA1]',
     },
   ];
 
@@ -266,19 +287,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#FFA27D] to-[#FFF87C] p-0.5 shadow-2xs shrink-0">
               <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-black text-[11px] text-slate-900">
-                RS
+                {user ? user.name.slice(0, 2).toUpperCase() : 'RS'}
               </div>
             </div>
             <div className="min-w-0">
               <div className="text-xs font-black text-slate-900 leading-tight truncate">
-                {t('common.sidebar.userName')}
+                {user ? user.name : t('common.sidebar.userName')}
               </div>
-              <div className="text-[9px] text-slate-500 font-medium truncate">
-                {t('common.sidebar.userRole')}
+              <div className="text-[9px] text-slate-500 font-medium truncate" title={sync.message}>
+                {user ? `${ROLE_LABELS[user.role]} · ${syncLabel[sync.state]}` : mode === 'local' ? 'Modo local (sin servidor): todo permitido, nada se guarda' : t('common.sidebar.userRole')}
               </div>
             </div>
           </div>
-          <div className="w-2 h-2 rounded-full bg-[#7AFFA1] shrink-0" title={t('common.sidebar.erpConnected')}></div>
+          {user ? (
+            <button onClick={logout} className="text-[10px] font-bold text-slate-500 hover:text-black underline cursor-pointer shrink-0">Salir</button>
+          ) : (
+            <div className="w-2 h-2 rounded-full bg-[#FFF87C] shrink-0" title={t('common.sidebar.erpConnected')}></div>
+          )}
         </div>
       </div>
     </aside>

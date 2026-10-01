@@ -7,7 +7,7 @@ import { CycleStepper } from './CycleStepper';
 
 /** Vista de Daniel: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
 export function MpsView() {
-  const { dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance } = useRamoPlan();
+  const { dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance } = useRamoPlan();
   const [measure, setMeasure] = useState<MeasureView>('commercial_units');
   const [skuId, setSkuId] = useState(dataset.skus[0].id);
   const [week, setWeek] = useState(weeks[1] ?? weeks[0]);
@@ -17,7 +17,7 @@ export function MpsView() {
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const received = stageIdx >= CYCLE_ORDER.indexOf('SENT_TO_MPS');
-  const editable = stage === 'SENT_TO_MPS';
+  const editable = stage === 'SENT_TO_MPS' && can('mps.edit');
   const crewName = (id: string) => dataset.crews.find((c) => c.id === id)?.name ?? id;
   const fmtCell = (n: number) => (measure === 'tons' ? fmtDec(n, 1) : fmtInt(n));
 
@@ -178,7 +178,7 @@ export function MpsView() {
           </p>
           <button
             onClick={() => advance('MPS_FINAL', 'Daniel', `MPS final cerrado con ${adjustments.length} ajuste(s); ${danielView.alerts.length} rojo(s) pendiente(s)`)}
-            disabled={!editable}
+            disabled={!editable || !canAdvance('MPS_FINAL')}
             className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer"
           >
             Cerrar MPS final y devolver a Miguel →

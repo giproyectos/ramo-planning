@@ -88,3 +88,38 @@ export function buildMd61(ds: RamoDataset, records: DemandRecord[], options: Md6
   const csv = [HEADER.join(';'), ...rows.map((r) => [r.material, r.centro, r.tipoReq, r.version, r.periodo, r.fecha, r.cantidad, r.unidad].join(';'))].join('\n') + '\n';
   return { header: HEADER, rows, csv, issues, totalCommercial: rows.reduce((a, r) => a + r.cantidad, 0) };
 }
+
+/** DD.MM.YYYY real (Date.parse acepta "31.02" y lo corre a marzo, así que se compara el ida y vuelta). */
+function isRealDdmmyyyy(text: string): boolean {
+  const m = text.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (!m) return false;
+  const [d, mo, y] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const date = new Date(Date.UTC(y, mo - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === mo - 1 && date.getUTCDate() === d;
+}
+
+/** Valida un archivo MD61 ya generado (lo usa el servidor antes de aceptarlo en una propuesta). */
+export function validateMd61File(content: string): { rows: number; errors: string[] } {
+  const lines = content.replace(/^\uFEFF/, '').split(/\r?\n/).filter((l) => l.trim() !== '');
+  const errors: string[] = [];
+  if (lines.length === 0) return { rows: 0, errors: ['El archivo está vacío.'] };
+  if (lines[0] !== HEADER.join(';')) errors.push(`Encabezado inesperado: se esperaba «${HEADER.join(';')}».`);
+  const seen = new Set<string>();
+  lines.slice(1).forEach((line, i) => {
+    const n = i + 2;
+    const c = line.split(';');
+    if (c.length !== HEADER.length) { errors.push(`Fila ${n}: ${c.length} columnas en vez de ${HEADER.length}.`); return; }
+    const [material, centro, , , periodo, fecha, cantidad] = c;
+    if (!/^\d{18}$/.test(material)) errors.push(`Fila ${n}: material «${material}» debe tener 18 dígitos.`);
+    if (!/^\d{4}$/.test(centro)) errors.push(`Fila ${n}: centro «${centro}» no válido.`);
+    if (periodo !== 'W') errors.push(`Fila ${n}: periodo «${periodo}» no válido (se espera W).`);
+    if (!isRealDdmmyyyy(fecha)) errors.push(`Fila ${n}: fecha «${fecha}» no válida.`);
+    const q = Number(cantidad);
+    if (!Number.isInteger(q) || q <= 0) errors.push(`Fila ${n}: cantidad «${cantidad}» debe ser un entero > 0.`);
+    const key = `${material}|${centro}|${fecha}`;
+    if (seen.has(key)) errors.push(`Fila ${n}: material, centro y fecha repetidos.`);
+    seen.add(key);
+  });
+  if (lines.length === 1) errors.push('El archivo no tiene filas.');
+  return { rows: Math.max(0, lines.length - 1), errors };
+}

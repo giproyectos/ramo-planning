@@ -1,4 +1,5 @@
-import React, { ReactNode, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import type { Permission } from '@ramo/governance';
 import { BuildingBlock, CapacityDecision, DemandHistoryRow, DemandRecord, MpsAdjustment, RamoDataset, validateDataset } from '@ramo/domain';
 import {
   CYCLE_ORDER,
@@ -28,6 +29,8 @@ import {
 } from '@ramo/engine';
 import { Baseline, IngestTexts, ParseResult, applyBaseline, ingestBaseline, parseDemandHistory } from '@ramo/ingest';
 import { SAMPLE_HISTORY_LIMPIO } from './samples';
+import { ApiError, api } from './api';
+import { useAuth } from './auth';
 import raw from '../../../../data/synthetic/dataset.json';
 
 export interface RecDecision {
@@ -39,6 +42,8 @@ export interface RecDecision {
   at: string;
 }
 
+export type SyncState = { state: 'local' | 'loading' | 'saving' | 'saved' | 'conflict' | 'denied' | 'offline'; message?: string };
+
 export interface LogEntry {
   at: string;
   actor: string;
@@ -46,6 +51,13 @@ export interface LogEntry {
 }
 
 interface RamoPlanState {
+  /** ¿Puede la persona actual hacer esto? (en modo local, todo; en modo servidor, según su rol). El servidor es la barrera real. */
+  can: (permission: Permission) => boolean;
+  /** ¿Puede llevar el ciclo a esa etapa? */
+  canAdvance: (to: CycleStage) => boolean;
+  serverMode: boolean;
+  sync: SyncState;
+  reloadWorkspace: () => Promise<void>;
   /** Dataset activo: el sintético, o el mismo con el inventario de la línea base SAP si hay una cargada. */
   dataset: RamoDataset;
   baseline: Baseline | null;
@@ -140,6 +152,8 @@ let seq = 0;
 const nextId = (p: string) => `${p}-${Date.now().toString(36)}-${seq++}`;
 
 export function RamoPlanProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  const serverMode = auth.mode === 'authenticated';
   const [stage, setStage] = useState<CycleStage>('DRAFT');
   const [crewMode, setCrewMode] = useState<CrewMode>('POOLED');
   const [decisions, setDecisions] = useState<CapacityDecision[]>([]);
@@ -308,7 +322,82 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     return b;
   }, [addLog]);
 
+  // ----- Espacio de trabajo compartido (modo servidor): se carga al entrar y se guarda solo, sección por sección autorizada.
+  const [sync, setSync] = useState<SyncState>({ state: 'local' });
+  const [hydrated, setHydrated] = useState(false);
+  const revisionRef = useRef(0);
+  const lastSavedRef = useRef('');
+
+  const shape = (d: Record<string, unknown>) => ({
+    blocks: (d.blocks as BuildingBlock[]) ?? [],
+    decisions: (d.decisions as CapacityDecision[]) ?? [],
+    adjustments: (d.adjustments as MpsAdjustment[]) ?? [],
+    stage: (d.stage as CycleStage) ?? 'DRAFT',
+    recDecisions: (d.recDecisions as Record<string, RecDecision>) ?? {},
+    leadTimeOverrides: (d.leadTimeOverrides as Record<string, number>) ?? {},
+    log: (d.log as LogEntry[]) ?? [],
+  });
+  const snapshot = useMemo(
+    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, log }),
+    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, log],
+  );
+
+  const reloadWorkspace = useCallback(async () => {
+    const ws = await api.workspace();
+    const s = shape(ws.data);
+    revisionRef.current = ws.revision;
+    lastSavedRef.current = JSON.stringify(s);
+    setUserBlocks(s.blocks);
+    setDecisions(s.decisions);
+    setAdjustments(s.adjustments);
+    setStage(s.stage);
+    setRecDecisions(s.recDecisions);
+    setLeadTimeOverrides(s.leadTimeOverrides);
+    setLog(s.log);
+  }, []);
+
+  useEffect(() => {
+    if (!serverMode) { setHydrated(false); setSync({ state: 'local' }); return; }
+    let cancelled = false;
+    setSync({ state: 'loading' });
+    reloadWorkspace()
+      .then(() => { if (!cancelled) { setHydrated(true); setSync({ state: 'saved' }); } })
+      .catch((e) => { if (!cancelled) setSync({ state: 'offline', message: e instanceof ApiError ? e.message : 'No se pudo cargar el espacio de trabajo.' }); });
+    return () => { cancelled = true; };
+  }, [serverMode, auth.user?.id, reloadWorkspace]);
+
+  useEffect(() => {
+    if (!serverMode || !hydrated) return;
+    const json = JSON.stringify(snapshot);
+    if (json === lastSavedRef.current) return;
+    const timer = setTimeout(async () => {
+      setSync({ state: 'saving' });
+      try {
+        const ws = await api.saveWorkspace(revisionRef.current, snapshot);
+        revisionRef.current = ws.revision;
+        lastSavedRef.current = json;
+        setSync({ state: 'saved' });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 409) setSync({ state: 'conflict', message: e.message });
+        else if (e instanceof ApiError && e.status === 403) {
+          // El servidor no autoriza ese cambio: se descarta lo local y se vuelve a lo guardado.
+          setSync({ state: 'denied', message: e.message });
+          reloadWorkspace().catch(() => undefined);
+        } else setSync({ state: 'offline', message: e instanceof ApiError ? e.message : 'No se pudo guardar.' });
+      }
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [snapshot, serverMode, hydrated, reloadWorkspace]);
+
+  const guarded = <A extends unknown[]>(permission: Permission, fn: (...args: A) => void) => (...args: A) => { if (auth.can(permission)) fn(...args); };
+  const canAdvance = (to: CycleStage) => (to === 'MPS_FINAL' ? auth.can('mps.edit') : to === 'DRAFT' ? auth.can('capacity.edit') || auth.can('mps.edit') : auth.can('capacity.edit'));
+
   const value: RamoPlanState = {
+    can: auth.can,
+    canAdvance,
+    serverMode,
+    sync,
+    reloadWorkspace,
     dataset,
     baseline,
     baselineCutAt,
@@ -324,8 +413,8 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     insights,
     pendingRecommendations,
     decisions_rec: recDecisions,
-    decideRecommendation,
-    undoRecommendation,
+    decideRecommendation: guarded('procurement.decide', decideRecommendation),
+    undoRecommendation: guarded('procurement.decide', undoRecommendation),
     leadTimeOverrides,
     consolidationDays,
     setConsolidationDays,
@@ -341,8 +430,8 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     setDrpPipeline,
     logEvent: addLog,
     userBlocks,
-    addBlock,
-    removeBlock: (id) => setUserBlocks((p) => p.filter((b) => b.id !== id)),
+    addBlock: guarded('demand.edit', addBlock),
+    removeBlock: guarded('demand.edit', (id: string) => setUserBlocks((p) => p.filter((b) => b.id !== id))),
     loadBaseline,
     clearBaseline: () => {
       setBaseline(null);
@@ -358,19 +447,22 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     miguelView,
     danielView,
     setCrewMode,
-    addDecision,
-    removeDecision: (id) => setDecisions((p) => p.filter((d) => d.id !== id)),
-    addAdjustment,
-    removeAdjustment: (id) => setAdjustments((p) => p.filter((a) => a.id !== id)),
+    addDecision: guarded('capacity.edit', addDecision),
+    removeDecision: guarded('capacity.edit', (id: string) => setDecisions((p) => p.filter((d) => d.id !== id))),
+    addAdjustment: guarded('mps.edit', addAdjustment),
+    removeAdjustment: guarded('mps.edit', (id: string) => setAdjustments((p) => p.filter((a) => a.id !== id))),
     advance: (to, actor, text) => {
+      if (!canAdvance(to)) return;
       setStage(to);
       addLog(actor, text);
     },
+    // El registro es de solo añadir: reiniciar el ciclo no lo borra, deja constancia.
     reset: () => {
+      if (!canAdvance('DRAFT')) return;
       setStage('DRAFT');
       setDecisions([]);
       setAdjustments([]);
-      setLog([]);
+      addLog('Sistema', 'Ciclo reiniciado');
     },
   };
 

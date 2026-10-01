@@ -14,7 +14,7 @@ const pct = (n: number, d = 0) => `${fmtDec(n * 100, d)}%`;
 
 /** Capa de recomendaciones: cada una explica su porqué y solo se aplica cuando el planeador la aprueba, con motivo y autor. */
 export function AiView() {
-  const { dataset, supplyRisk, insights, pendingRecommendations, decisions_rec, decideRecommendation, undoRecommendation, consolidationDays, setConsolidationDays } = useRamoPlan();
+  const { dataset, supplyRisk, insights, pendingRecommendations, decisions_rec, decideRecommendation, undoRecommendation, consolidationDays, setConsolidationDays, can } = useRamoPlan();
   const [tab, setTab] = useState<Tab>('recs');
   const [kindFilter, setKindFilter] = useState<RecKind | ''>('');
   const [open, setOpen] = useState<string>('');
@@ -114,7 +114,7 @@ export function AiView() {
                   <button onClick={() => setOpen('')} className="text-[11px] text-slate-500 underline cursor-pointer">Cancelar</button>
                 </div>
               ) : (
-                <button onClick={() => setOpen(r.id)} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer">Revisar y decidir</button>
+                <button onClick={() => setOpen(r.id)} disabled={!can('procurement.decide')} title={can('procurement.decide') ? undefined : 'Tu rol no puede decidir sobre recomendaciones de compras'} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer disabled:opacity-40">Revisar y decidir</button>
               )}
             </div>
           ))}

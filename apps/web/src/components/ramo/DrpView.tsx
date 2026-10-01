@@ -10,6 +10,7 @@ const REASON_LABEL: Record<AllocationReason, string> = { FULL: 'Completo', OVERR
 export function DrpView() {
   const {
     dataset, drp, useDrp, setUseDrp, drpPolicy, setDrpPolicy, staticDays, setStaticDays, drpPipeline, setDrpPipeline, danielView, logEvent,
+    can,
   } = useRamoPlan();
   const nodes = dataset.nodes ?? [];
   const skuIds = useMemo(() => [...new Set((drp?.rows ?? []).map((r) => r.skuId))], [drp]);
@@ -321,7 +322,7 @@ export function DrpView() {
             <div className="flex flex-wrap items-end gap-3">
               <input value={author} onChange={(e) => setAuthor(e.target.value)} aria-label="Autor del reparto" className="rounded-xl border border-black/10 bg-white/80 px-2.5 py-2 text-xs" />
               <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={overridesActive ? 'Motivo del ajuste manual (obligatorio)' : 'Motivo (opcional)'} aria-label="Motivo del reparto" className="flex-1 min-w-48 rounded-xl border border-black/10 bg-white/80 px-2.5 py-2 text-xs" />
-              <button onClick={approve} disabled={!result.scarce || (overridesActive && !reason.trim())} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">Aprobar reparto</button>
+              <button onClick={approve} disabled={!can('mps.edit') || !result.scarce || (overridesActive && !reason.trim())} title={can('mps.edit') ? undefined : 'Tu rol no puede aprobar el reparto de escasez'} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">Aprobar reparto</button>
             </div>
             <p className="text-[10px] text-slate-500">
               El reparto aprobado queda en el registro del ciclo (quién, qué, por qué). Es una propuesta de asignación: no modifica el MPS ni escribe en SAP. La aproximación asume que el faltante de producción se reparte en la misma proporción en todo el SKU-semana.

@@ -10,4 +10,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, '.'),
     },
   },
+  server: {
+    // El servidor de gobernanza corre aparte (npm run dev:server); desde el navegador se llama como mismo origen.
+    proxy: { '/api': 'http://127.0.0.1:8787' },
+  },
 });

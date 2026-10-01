@@ -68,3 +68,25 @@ describe('archivo de demanda para MD61', () => {
     expect(res.rows[0]).toMatchObject({ version: '01', tipoReq: 'VSF', unidad: 'UN' });
   });
 });
+
+import { validateMd61File } from './index';
+
+describe('validación del archivo MD61', () => {
+  const out = buildMd61(ds, records);
+  it('el archivo generado valida', () => {
+    expect(validateMd61File(out.csv)).toEqual({ rows: out.rows.length, errors: [] });
+  });
+  it('detecta encabezado, columnas, material, fecha imposible, cantidad y filas repetidas', () => {
+    const lines = out.csv.trim().split('\n');
+    const row = lines[1];
+    const bad = (c: string) => validateMd61File(c).errors.join(' | ');
+    expect(bad(`Otra\n${row}\n`)).toContain('Encabezado inesperado');
+    expect(bad(`${lines[0]}\nA;B\n`)).toContain('columnas');
+    expect(bad(`${lines[0]}\n${row.replace(/^\d+/, '123')}\n`)).toContain('18 dígitos');
+    expect(bad(`${lines[0]}\n${row.replace(/\d{2}\.\d{2}\.\d{4}/, '31.02.2026')}\n`)).toContain('fecha');
+    expect(bad(`${lines[0]}\n${row.replace(/;\d+;CJ$/, ';0;CJ')}\n`)).toContain('entero > 0');
+    expect(bad(`${lines[0]}\n${row}\n${row}\n`)).toContain('repetidos');
+    expect(bad('')).toContain('vacío');
+    expect(bad(`${lines[0]}\n`)).toContain('no tiene filas');
+  });
+});

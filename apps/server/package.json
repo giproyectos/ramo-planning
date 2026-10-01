@@ -1,0 +1,20 @@
+{
+  "name": "@ramo/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@ramo/governance": "*",
+    "@ramo/sap-out": "*"
+  },
+  "scripts": {
+    "dev": "tsx src/main.ts",
+    "lint": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@ramo/domain": "*",
+    "@ramo/engine": "*"
+  }
+}

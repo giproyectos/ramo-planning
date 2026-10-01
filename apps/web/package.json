@@ -12,6 +12,7 @@
   "dependencies": {
     "@ramo/domain": "*",
     "@ramo/engine": "*",
+    "@ramo/governance": "*",
     "@ramo/ingest": "*",
     "@ramo/sap-out": "*",
     "@tailwindcss/vite": "^4.3.3",

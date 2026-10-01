@@ -10,14 +10,14 @@ const cellColor = (status: LoadStatus, pct: number) =>
 
 /** Vista de Miguel: capacidad por línea y tripulación, con decisiones de horas extra. */
 export function CrpView() {
-  const { dataset, weeks, stage, crewMode, setCrewMode, miguelView, decisions, addDecision, removeDecision, advance } = useRamoPlan();
+  const { dataset, weeks, stage, crewMode, setCrewMode, miguelView, decisions, addDecision, removeDecision, advance, can, canAdvance } = useRamoPlan();
   const [sel, setSel] = useState<{ week: string; crewId: string }>({ week: weeks[1] ?? weeks[0], crewId: 'C-BARMINI' });
   const [extra, setExtra] = useState('2');
   const [reason, setReason] = useState('');
   const [author, setAuthor] = useState('Miguel (demo)');
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
-  const editable = stage === 'DRAFT' || stage === 'FINAL_ALERTS';
+  const editable = (stage === 'DRAFT' || stage === 'FINAL_ALERTS') && can('capacity.edit');
   const lineName = (id: string) => dataset.lines.find((l) => l.id === id)?.name ?? id;
   const crewName = (id: string) => dataset.crews.find((c) => c.id === id)?.name ?? id;
 
@@ -255,16 +255,20 @@ export function CrpView() {
       <div className="flex flex-wrap gap-3">
         {stage === 'DRAFT' && (
           <button
+            disabled={!canAdvance('SENT_TO_MPS')}
+            title={canAdvance('SENT_TO_MPS') ? undefined : 'Tu rol no puede enviar el plan de capacidades'}
             onClick={() => advance('SENT_TO_MPS', 'Miguel', `Plan de capacidades enviado a Daniel (${decisions.length} decisión(es), ${miguelView.alerts.length} alerta(s) abiertas)`)}
-            className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer"
+            className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer disabled:opacity-40"
           >
             Enviar plan de capacidades al MPS →
           </button>
         )}
         {stage === 'MPS_FINAL' && (
           <button
+            disabled={!canAdvance('FINAL_ALERTS')}
+            title={canAdvance('FINAL_ALERTS') ? undefined : 'Tu rol no puede emitir las alertas finales'}
             onClick={() => advance('FINAL_ALERTS', 'Miguel', 'Recarga el MPS final, recalcula la explosión y emite las alertas de producción finales')}
-            className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer"
+            className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer disabled:opacity-40"
           >
             Recargar MPS final y emitir alertas →
           </button>
