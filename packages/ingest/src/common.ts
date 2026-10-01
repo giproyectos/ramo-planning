@@ -2,7 +2,7 @@ import { RamoDataset, Sku } from '@ramo/domain';
 import { CsvTable, DecimalSeparator, parseCsv } from './csv';
 
 export type Severity = 'error' | 'warning' | 'info';
-export type BaseName = 'stock' | 'movimientos' | 'abastecimiento' | 'despachos';
+export type BaseName = 'stock' | 'movimientos' | 'abastecimiento' | 'despachos' | 'historico';
 
 export interface IngestIssue {
   severity: Severity;

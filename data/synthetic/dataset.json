@@ -3,11 +3,13 @@
   "plants": [
     {
       "id": "P1",
-      "name": "Planta 1 (sint.)"
+      "name": "Planta 1 (sint.)",
+      "sapCenter": "1000"
     },
     {
       "id": "P2",
-      "name": "Planta 2 (sint.)"
+      "name": "Planta 2 (sint.)",
+      "sapCenter": "2000"
     }
   ],
   "crews": [

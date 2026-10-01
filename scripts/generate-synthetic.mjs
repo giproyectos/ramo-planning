@@ -19,8 +19,8 @@ function mulberry32(a) {
 const rnd = mulberry32(2026);
 
 const plants = [
-  { id: 'P1', name: 'Planta 1 (sint.)' },
-  { id: 'P2', name: 'Planta 2 (sint.)' },
+  { id: 'P1', name: 'Planta 1 (sint.)', sapCenter: '1000' },
+  { id: 'P2', name: 'Planta 2 (sint.)', sapCenter: '2000' },
 ];
 
 const lines = [

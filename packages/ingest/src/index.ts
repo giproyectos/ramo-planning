@@ -4,5 +4,6 @@ export { normalizeMaterial, toCommercial } from './common';
 export * from './inventory';
 export * from './supply';
 export * from './dispatch';
+export * from './history';
 export { ingestBaseline, applyBaseline, summarizeIssues } from './baseline';
 export type { Baseline, SkuBaseline, BaseStatus, IngestTexts } from './baseline';

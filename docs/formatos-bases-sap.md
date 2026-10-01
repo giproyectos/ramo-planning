@@ -15,6 +15,13 @@ Cada envío puede aparecer en varios tramos (producción → recibo logística 0
 ## 3. Trazabilidad de despachos (consulta Z, solo lectura)
 Obligatorias: `Pedido`, `Material`, `Cantidad pedida`, `Cantidad entregada`, `UM`, `Fecha entrega`; opcionales: `Posición`, `Cliente`, `Hora entrega`.
 
+## 4. Histórico de demanda (Fase 4)
+Obligatorias: `Material`, `Semana` (lunes), `Cantidad`, `UM`; opcionales: `Flujo` (`CEDI`, `HARD_DISCOUNT`/`HD`, `EXPORT`; vacío = CEDI) y `Pronóstico vigente` (el pronóstico que emitió el proceso actual para esa semana, para medir la exactitud). Se espera una fila por SKU, semana y flujo, con 2 años de historia (mínimo 60 semanas para los modelos estacionales).
+Validaciones propias: `WEEK_NOT_MONDAY`, `BAD_FLOW`, `DUPLICATE_HISTORY_ROW`, `NEGATIVE_QTY`, `BAD_FORECAST` (se ignora el pronóstico ilegible), `MISSING_WEEKS` y `SHORT_HISTORY` (avisos).
+
+## 5. Archivo de salida de demanda (MD61 / LSMW)
+Una fila por SKU y semana, solo flujo CEDI (consenso: N+1 + building blocks): `Material;Centro;Tipo_req;Version;Periodo;Fecha;Cantidad;UM`, con `Periodo = W`, fecha `DD.MM.YYYY` (lunes), `Tipo_req = LSF`, `Version = 00`, `UM = CJ`. **Todo supuesto**: el centro sale del código SAP de la planta de la línea del SKU; la plantilla real de LSMW se ajusta con el equipo SAP de Ramo. El archivo se genera para revisión: la app no escribe en SAP.
+
 ## Validaciones
 | Código | Severidad | Qué detecta | Qué pasa con la fila |
 |---|---|---|---|
@@ -39,9 +46,11 @@ Obligatorias: `Pedido`, `Material`, `Cantidad pedida`, `Cantidad entregada`, `UM
 - **Disponible** = máx(0, stock + en tránsito − pendiente de despacho). Es lo que usa el neto del MPS como inventario.
 - **Cobertura (días)** = stock ÷ (salidas netas del mes ÷ 31).
 
-## Supuestos a confirmar con Miguel
+## Supuestos a confirmar con Miguel y Diana
 1. Nombres y orden reales de columnas, separador y formato de decimales de los exportes.
 2. Si el movimiento "contado dos veces" de la triangulación es el mismo envío en dos tramos con igual cantidad y referencia (como se modeló), o se identifica de otra forma.
 3. Qué significa exactamente "lo que falta por despachar después de las 2 pm" y si debe restarse del inventario disponible.
 4. Si el stock en tránsito de la triangulación debe sumarse al disponible.
 5. Qué centros y almacenes cuentan como inventario de producto terminado (hoy cuentan todos; la opción `plantCenters` permite filtrar).
+6. (Diana) Estructura real del histórico de ventas y de los pronósticos anteriores: de dónde sale, a qué nivel (SKU, canal, agencia) y desde cuándo hay datos limpios.
+7. (Diana / equipo SAP) Plantilla exacta de la carga a Gestión de Demanda (tipo de requerimiento, versión, unidad, periodicidad semanal o mensual).

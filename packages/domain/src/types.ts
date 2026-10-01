@@ -13,6 +13,8 @@ export type RateUnit = 'u/h' | 'kg/h';
 export interface Plant {
   id: string;
   name: string;
+  /** Código de centro en SAP (para generar archivos de salida). */
+  sapCenter?: string;
 }
 
 /** Línea de producción completa. SAP solo conoce puestos de trabajo; la línea es un dato nuevo (ver docs/mapeo-sap.md). */
@@ -105,6 +107,15 @@ export interface BuildingBlock {
   author: string;
   role: Role;
   createdAt: string;
+}
+
+/** Venta histórica semanal por SKU y flujo (cajas). `priorForecast` es el pronóstico que el proceso vigente emitió para esa semana. */
+export interface DemandHistoryRow {
+  skuId: string;
+  weekStart: string;
+  flow: DemandFlow;
+  commercialQty: number;
+  priorForecast: number | null;
 }
 
 /** Inventario disponible al corte (en unidades comerciales). */

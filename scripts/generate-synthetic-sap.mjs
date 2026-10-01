@@ -96,6 +96,31 @@ for (let i = 0; i < 24; i++) {
   disp.push([String(ped + i), '10', pad(s.sapMaterial), `CLI-${100 + (i % 7)}`, num(toUnit(s, ordered), dec(s)), num(toUnit(s, ordered * frac), dec(s)), unitOf(s), ddmmyyyy(CUT_DATE), `${String(hour).padStart(2, '0')}:${i % 2 ? '30' : '00'}`]);
 }
 
+// ---------- Histórico de demanda semanal (2 años) con el pronóstico del proceso vigente ----------
+// Nivel = demanda base de la primera semana del horizonte; tendencia suave, estacionalidad mensual (diciembre alto), ruido y alguna promoción.
+const SEASON = [0.92, 0.95, 0.98, 0.97, 1.0, 0.96, 0.95, 1.0, 1.0, 1.0, 1.03, 1.12]; // ene..dic
+const HIST_WEEKS = 104;
+const histStart = addDays(CUT_DATE, -7 * HIST_WEEKS);
+const histHeader = line(['Material', 'Semana', 'Flujo', 'Cantidad', 'UM', 'Pronóstico vigente']);
+const hist = [];
+ds.skus.forEach((s) => {
+  let prevActual = null;
+  for (let i = 0; i < HIST_WEEKS; i++) {
+    const w = addDays(histStart, i * 7);
+    const month = Number(w.slice(5, 7)) - 1;
+    const trend = 0.94 + 0.06 * (i / (HIST_WEEKS - 1));
+    const noise = 1 + (rnd() + rnd() + rnd() - 1.5) * 0.12; // ≈ N(1, 0.07)
+    const promo = rnd() < 0.03 ? 1.25 : 1;
+    const actual = weekDemand(s) * trend * SEASON[month] * noise * promo;
+    // El proceso vigente (Excel) pronostica con la venta de la semana anterior y un sesgo/ruido propios.
+    const prior = prevActual === null ? '' : num(toUnit(s, prevActual * (1.04 + (rnd() - 0.5) * 0.2)), dec(s));
+    hist.push([pad(s.sapMaterial), ddmmyyyy(w), 'CEDI', num(toUnit(s, actual), dec(s)), unitOf(s), prior]);
+    if (['SK-001', 'SK-007'].includes(s.id) && i % 2 === 1) hist.push([pad(s.sapMaterial), ddmmyyyy(w), 'HARD_DISCOUNT', num(toUnit(s, actual * 0.06), dec(s)), unitOf(s), '']);
+    if (['SK-002', 'SK-006'].includes(s.id) && i % 4 === 2) hist.push([pad(s.sapMaterial), ddmmyyyy(w), 'EXPORT', num(toUnit(s, actual * 0.05), dec(s)), unitOf(s), '']);
+    prevActual = actual;
+  }
+});
+
 const write = (dir, name, header, rows, bom = false) => {
   mkdirSync(resolve(root, 'data/synthetic/sap', dir), { recursive: true });
   writeFileSync(resolve(root, 'data/synthetic/sap', dir, name), (bom ? '﻿' : '') + [header, ...rows.map(line)].join('\n') + '\n');
@@ -105,6 +130,7 @@ write('limpio', 'inventarios_stock.csv', stockHeader, stock, true);
 write('limpio', 'inventarios_movimientos.csv', movHeader, movs);
 write('limpio', 'abastecimiento.csv', supHeader, sup);
 write('limpio', 'despachos.csv', dispHeader, disp);
+write('limpio', 'historico_demanda.csv', histHeader, hist);
 
 // ---------- Versión "sucia": mismos archivos con defectos inyectados ----------
 const sk1 = ds.skus[0];
@@ -140,6 +166,19 @@ const badDisp = [
 write('sucio', 'inventarios_stock.csv', stockHeader, badStock);
 write('sucio', 'inventarios_movimientos.csv', movHeader, badMovs);
 write('sucio', 'abastecimiento.csv', supHeader, badSup);
+const k1 = ds.skus[0];
+const badHist = hist.filter((_, i) => !(i >= 40 && i < 43)); // 3 semanas menos en la primera serie → huecos
+badHist.push(
+  [pad('9999999'), ddmmyyyy('2026-09-21'), 'CEDI', '100', 'CJ', ''], // material fuera del catálogo
+  [pad(k1.sapMaterial), ddmmyyyy('2026-09-23'), 'CEDI', '100', 'CJ', ''], // no es lunes
+  [pad(k1.sapMaterial), ddmmyyyy('2022-01-03'), 'CEDI', '100', 'CJ', ''], // anterior al recorte de 2 años
+  [pad(k1.sapMaterial), ddmmyyyy('2026-09-21'), 'CEDI', 'abc', 'CJ', ''], // cantidad no numérica
+  [pad(k1.sapMaterial), ddmmyyyy('2026-09-21'), 'XYZ', '100', 'CJ', ''], // flujo desconocido
+  [pad(k1.sapMaterial), ddmmyyyy('2026-09-14'), 'CEDI', '-5', 'CJ', ''], // negativa
+  hist[10], // semana repetida
+  [pad(k1.sapMaterial), ddmmyyyy('2026-10-12'), 'CEDI', '100', 'CJ', ''], // semana posterior al corte
+);
 write('sucio', 'despachos.csv', dispHeader, badDisp);
+write('sucio', 'historico_demanda.csv', histHeader, badHist);
 
-console.log(`sap limpio: ${stock.length} stock, ${movs.length} movimientos, ${sup.length} abastecimiento, ${disp.length} despachos`);
+console.log(`sap limpio: ${stock.length} stock, ${movs.length} movimientos, ${sup.length} abastecimiento, ${disp.length} despachos, ${hist.length} histórico`);

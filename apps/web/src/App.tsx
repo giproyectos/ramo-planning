@@ -26,7 +26,7 @@ import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { GlassAtmosphere } from './components/common/GlassAtmosphere';
 import { ProcessMapModule } from './components/pipeline/ProcessMapModule';
-import { SOPModule } from './components/sop/SOPModule';
+import { DemandView } from './components/ramo/DemandView';
 import { DRPModule } from './components/drp/DRPModule';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
@@ -404,17 +404,7 @@ function AppContent() {
             </div>
           )}
 
-          {currentStep === 'sop' && (
-            <SOPModule
-              families={families}
-              plans={sopPlans}
-              onUpdatePlan={(famId, updated) => {
-                setSopPlans((prev) => ({ ...prev, [famId]: updated }));
-                showToast(t('common.toasts.sopUpdated'), 'info');
-              }}
-              onPromoteToDRP={handlePromoteSOPtoDRP}
-            />
-          )}
+          {currentStep === 'sop' && <DemandView />}
 
           {currentStep === 'drp' && (
             <DRPModule
