@@ -4,7 +4,7 @@ Piloto de planeación para Ramo (GI Proyectos): Demanda → DRP → MPS/CRP → 
 
 - Plan completo: [docs/plan-adaptacion.md](docs/plan-adaptacion.md)
 - Origen: copia sin historial de `giproyectos/demad-app@66adddf` (ese repo no se modifica).
-- Estado: **Fase 0**. La UI y los datos de `apps/web` son aún los de la demo genérica (placeholder); el dominio de Ramo se construye en la Fase 1.
+- Estado: **Fase 1** (modelo de dominio y datos sintéticos). La UI de `apps/web` sigue con los datos de la demo genérica (placeholder) hasta la Fase 2; ver [ADR 0001](docs/adr/0001-modelo-de-dominio.md) y [mapeo SAP](docs/mapeo-sap.md).
 
 ## Estructura
 - `apps/web` — interfaz (React + Vite)
@@ -20,5 +20,6 @@ npm install
 npm run dev     # http://localhost:3000
 npm run lint
 npm test
+npm run synthetic   # regenera data/synthetic/dataset.json
 npm run build
 ```

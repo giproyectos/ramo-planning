@@ -1,0 +1,1928 @@
+{
+  "synthetic": true,
+  "plants": [
+    {
+      "id": "P1",
+      "name": "Planta 1 (sint.)"
+    },
+    {
+      "id": "P2",
+      "name": "Planta 2 (sint.)"
+    }
+  ],
+  "crews": [
+    {
+      "id": "C-PONQ",
+      "name": "Tripulación Ponqués",
+      "lineIds": [
+        "L-PONQ"
+      ]
+    },
+    {
+      "id": "C-BARMINI",
+      "name": "Tripulación Barras/Mini",
+      "lineIds": [
+        "L-BARR",
+        "L-MINI"
+      ]
+    },
+    {
+      "id": "C-CRISP",
+      "name": "Tripulación Crispetas",
+      "lineIds": [
+        "L-CRISP"
+      ]
+    },
+    {
+      "id": "C-MAIZTOST",
+      "name": "Tripulación Maicitos/Tostadas",
+      "lineIds": [
+        "L-MAIZ",
+        "L-TOST"
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "id": "L-PONQ",
+      "name": "Línea Ponqués",
+      "plantId": "P1",
+      "crewId": "C-PONQ",
+      "rate": {
+        "value": 29000,
+        "unit": "u/h"
+      }
+    },
+    {
+      "id": "L-BARR",
+      "name": "Línea Barras",
+      "plantId": "P1",
+      "crewId": "C-BARMINI",
+      "rate": {
+        "value": 18000,
+        "unit": "u/h"
+      }
+    },
+    {
+      "id": "L-MINI",
+      "name": "Línea Mini",
+      "plantId": "P1",
+      "crewId": "C-BARMINI",
+      "rate": {
+        "value": 24000,
+        "unit": "u/h"
+      }
+    },
+    {
+      "id": "L-CRISP",
+      "name": "Línea Crispetas",
+      "plantId": "P2",
+      "crewId": "C-CRISP",
+      "rate": {
+        "value": 70,
+        "unit": "kg/h"
+      }
+    },
+    {
+      "id": "L-MAIZ",
+      "name": "Línea Maicitos",
+      "plantId": "P2",
+      "crewId": "C-MAIZTOST",
+      "rate": {
+        "value": 620,
+        "unit": "kg/h"
+      }
+    },
+    {
+      "id": "L-TOST",
+      "name": "Línea Tostadas",
+      "plantId": "P2",
+      "crewId": "C-MAIZTOST",
+      "rate": {
+        "value": 500,
+        "unit": "kg/h"
+      }
+    }
+  ],
+  "calendars": [
+    {
+      "lineId": "L-PONQ",
+      "workingWeekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseHoursPerDay": 16,
+      "exceptions": [
+        {
+          "date": "2026-10-12",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-02",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-16",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-08",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-25",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        }
+      ]
+    },
+    {
+      "lineId": "L-BARR",
+      "workingWeekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseHoursPerDay": 16,
+      "exceptions": [
+        {
+          "date": "2026-10-12",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-10-20",
+          "hours": 8,
+          "reason": "MAINTENANCE",
+          "note": "Mantenimiento preventivo (sint.)"
+        },
+        {
+          "date": "2026-11-02",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-16",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-08",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-25",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        }
+      ]
+    },
+    {
+      "lineId": "L-MINI",
+      "workingWeekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseHoursPerDay": 16,
+      "exceptions": [
+        {
+          "date": "2026-10-12",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-02",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-16",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-08",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-25",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        }
+      ]
+    },
+    {
+      "lineId": "L-CRISP",
+      "workingWeekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseHoursPerDay": 16,
+      "exceptions": [
+        {
+          "date": "2026-10-12",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-02",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-10",
+          "hours": 0,
+          "reason": "MAINTENANCE",
+          "note": "Parada de mantenimiento (sint.)"
+        },
+        {
+          "date": "2026-11-16",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-24",
+          "hours": 6,
+          "reason": "PLANT_STOP",
+          "note": "Parada de planta avisada con pocos días (sint.)"
+        },
+        {
+          "date": "2026-12-08",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-25",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        }
+      ]
+    },
+    {
+      "lineId": "L-MAIZ",
+      "workingWeekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseHoursPerDay": 16,
+      "exceptions": [
+        {
+          "date": "2026-10-12",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-02",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-16",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-24",
+          "hours": 6,
+          "reason": "PLANT_STOP",
+          "note": "Parada de planta avisada con pocos días (sint.)"
+        },
+        {
+          "date": "2026-12-08",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-25",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        }
+      ]
+    },
+    {
+      "lineId": "L-TOST",
+      "workingWeekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseHoursPerDay": 16,
+      "exceptions": [
+        {
+          "date": "2026-10-12",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-02",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-16",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-11-24",
+          "hours": 6,
+          "reason": "PLANT_STOP",
+          "note": "Parada de planta avisada con pocos días (sint.)"
+        },
+        {
+          "date": "2026-12-08",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        },
+        {
+          "date": "2026-12-25",
+          "hours": 0,
+          "reason": "HOLIDAY"
+        }
+      ]
+    }
+  ],
+  "skus": [
+    {
+      "id": "SK-001",
+      "sapMaterial": "9000001",
+      "name": "Ponqué Chocolate 40g (sint.)",
+      "family": "Ponqués",
+      "businessUnit": "Panadería",
+      "brand": "Marca A",
+      "lineId": "L-PONQ",
+      "commercialUnit": "caja",
+      "productiveUnit": "u",
+      "productiveUnitsPerCommercial": 24,
+      "kgPerCommercial": 0.96,
+      "costPerCommercial": 18000
+    },
+    {
+      "id": "SK-002",
+      "sapMaterial": "9000002",
+      "name": "Ponqué Vainilla 40g (sint.)",
+      "family": "Ponqués",
+      "businessUnit": "Panadería",
+      "brand": "Marca A",
+      "lineId": "L-PONQ",
+      "commercialUnit": "caja",
+      "productiveUnit": "u",
+      "productiveUnitsPerCommercial": 24,
+      "kgPerCommercial": 0.96,
+      "costPerCommercial": 17500
+    },
+    {
+      "id": "SK-003",
+      "sapMaterial": "9000003",
+      "name": "Barra Cereal 25g (sint.)",
+      "family": "Barras",
+      "businessUnit": "Snacks",
+      "brand": "Marca B",
+      "lineId": "L-BARR",
+      "commercialUnit": "caja",
+      "productiveUnit": "u",
+      "productiveUnitsPerCommercial": 24,
+      "kgPerCommercial": 0.6,
+      "costPerCommercial": 21000
+    },
+    {
+      "id": "SK-004",
+      "sapMaterial": "9000004",
+      "name": "Barra Avena 25g (sint.)",
+      "family": "Barras",
+      "businessUnit": "Snacks",
+      "brand": "Marca B",
+      "lineId": "L-BARR",
+      "commercialUnit": "caja",
+      "productiveUnit": "u",
+      "productiveUnitsPerCommercial": 24,
+      "kgPerCommercial": 0.6,
+      "costPerCommercial": 21500
+    },
+    {
+      "id": "SK-005",
+      "sapMaterial": "9000005",
+      "name": "Mini Chocolate 20g (sint.)",
+      "family": "Mini",
+      "businessUnit": "Panadería",
+      "brand": "Marca A",
+      "lineId": "L-MINI",
+      "commercialUnit": "caja",
+      "productiveUnit": "u",
+      "productiveUnitsPerCommercial": 30,
+      "kgPerCommercial": 0.6,
+      "costPerCommercial": 16000
+    },
+    {
+      "id": "SK-006",
+      "sapMaterial": "9000006",
+      "name": "Crispetas Mantequilla 100g (sint.)",
+      "family": "Crispetas",
+      "businessUnit": "Snacks",
+      "brand": "Marca C",
+      "lineId": "L-CRISP",
+      "commercialUnit": "caja",
+      "productiveUnit": "kg",
+      "productiveUnitsPerCommercial": 1.2,
+      "kgPerCommercial": 1.2,
+      "costPerCommercial": 30000
+    },
+    {
+      "id": "SK-007",
+      "sapMaterial": "9000007",
+      "name": "Maicitos Sal 45g (sint.)",
+      "family": "Maicitos",
+      "businessUnit": "Snacks",
+      "brand": "Marca C",
+      "lineId": "L-MAIZ",
+      "commercialUnit": "caja",
+      "productiveUnit": "kg",
+      "productiveUnitsPerCommercial": 1.08,
+      "kgPerCommercial": 1.08,
+      "costPerCommercial": 19000
+    },
+    {
+      "id": "SK-008",
+      "sapMaterial": "9000008",
+      "name": "Tostadas 80g (sint.)",
+      "family": "Tostadas",
+      "businessUnit": "Snacks",
+      "brand": "Marca D",
+      "lineId": "L-TOST",
+      "commercialUnit": "caja",
+      "productiveUnit": "kg",
+      "productiveUnitsPerCommercial": 1.6,
+      "kgPerCommercial": 1.6,
+      "costPerCommercial": 24000
+    }
+  ],
+  "versions": [
+    {
+      "id": "V-PBO-2026-10",
+      "kind": "PBO_MONTHLY",
+      "label": "PBO octubre 2026 (sint.)",
+      "createdAt": "2026-09-28T14:00:00Z",
+      "createdByRole": "demand"
+    },
+    {
+      "id": "V-N1-2026-W40",
+      "kind": "WEEKLY_N1",
+      "label": "Recálculo semanal N+1 sem. 40 (sint.)",
+      "createdAt": "2026-09-30T14:00:00Z",
+      "createdByRole": "demand",
+      "basedOn": "V-PBO-2026-10"
+    }
+  ],
+  "demand": [
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 44917
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 43854
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-12",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2714
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-12",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2802
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 46098
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 42723
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-26",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2714
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-10-26",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2563
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 46564
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 47422
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-09",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2714
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-09",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2602
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 41930
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 45240
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 42103
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-23",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2714
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-23",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 2779
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 50669
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 50669
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-12-07",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 3040
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 50669
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 50669
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-12-21",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 3040
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-001",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 50669
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 29623
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 28300
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 28613
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-19",
+      "flow": "EXPORT",
+      "commercialQty": 1508
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-19",
+      "flow": "EXPORT",
+      "commercialQty": 1508
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 29345
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 29710
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 32191
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 30474
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-16",
+      "flow": "EXPORT",
+      "commercialQty": 1508
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-16",
+      "flow": "EXPORT",
+      "commercialQty": 1508
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 30160
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 27756
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 33779
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 33779
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 33779
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-12-14",
+      "flow": "EXPORT",
+      "commercialQty": 1689
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 33779
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-002",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 33779
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 34580
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 35000
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 37915
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 38933
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 38868
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 37840
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 35013
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 36300
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 34988
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 40656
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 40656
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 40656
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 40656
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-003",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 40656
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 29291
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 28686
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 30478
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 31327
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 28755
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 31689
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 27706
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 29700
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 27518
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 33264
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 33264
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 33264
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 33264
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-004",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 33264
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 34273
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 36740
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 36563
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 34608
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 37832
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 36194
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 35928
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 35200
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 34440
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 39424
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 39424
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 39424
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 39424
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-005",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 39424
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 3022
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 3524
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 3101
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-19",
+      "flow": "EXPORT",
+      "commercialQty": 163
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-19",
+      "flow": "EXPORT",
+      "commercialQty": 163
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 3511
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 3440
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 3149
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 3263
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-16",
+      "flow": "EXPORT",
+      "commercialQty": 163
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-16",
+      "flow": "EXPORT",
+      "commercialQty": 163
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 3267
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 3098
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 3659
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 3659
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 3659
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-12-14",
+      "flow": "EXPORT",
+      "commercialQty": 183
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 3659
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-006",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 3659
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 30644
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 28931
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-12",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1708
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-12",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1835
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 29694
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 28926
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-26",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1708
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-10-26",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1695
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 28483
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 29792
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-09",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1708
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-09",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1800
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 28821
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 28474
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 29263
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-23",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1708
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-23",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1868
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 31891
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 31891
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-12-07",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1913
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 31891
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 31891
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-12-21",
+      "flow": "HARD_DISCOUNT",
+      "commercialQty": 1913
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-007",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 31891
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-05",
+      "flow": "CEDI",
+      "commercialQty": 11022
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-12",
+      "flow": "CEDI",
+      "commercialQty": 10374
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-19",
+      "flow": "CEDI",
+      "commercialQty": 10672
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-10-26",
+      "flow": "CEDI",
+      "commercialQty": 10494
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-02",
+      "flow": "CEDI",
+      "commercialQty": 12063
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-09",
+      "flow": "CEDI",
+      "commercialQty": 12018
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-16",
+      "flow": "CEDI",
+      "commercialQty": 10663
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 11250
+    },
+    {
+      "versionId": "V-N1-2026-W40",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-23",
+      "flow": "CEDI",
+      "commercialQty": 10657
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-11-30",
+      "flow": "CEDI",
+      "commercialQty": 12600
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-12-07",
+      "flow": "CEDI",
+      "commercialQty": 12600
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-12-14",
+      "flow": "CEDI",
+      "commercialQty": 12600
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-12-21",
+      "flow": "CEDI",
+      "commercialQty": 12600
+    },
+    {
+      "versionId": "V-PBO-2026-10",
+      "skuId": "SK-008",
+      "weekStart": "2026-12-28",
+      "flow": "CEDI",
+      "commercialQty": 12600
+    }
+  ],
+  "buildingBlocks": [
+    {
+      "id": "BB-001",
+      "versionId": "V-N1-2026-W40",
+      "scope": {
+        "skuId": "SK-001",
+        "weekStart": "2026-10-19",
+        "flow": "CEDI"
+      },
+      "deltaCommercialQty": 3000,
+      "reason": "Promoción de temporada en canal tradicional (sint.)",
+      "author": "Planeador Demanda (sint.)",
+      "role": "demand",
+      "createdAt": "2026-09-30T15:10:00Z"
+    },
+    {
+      "id": "BB-002",
+      "versionId": "V-N1-2026-W40",
+      "scope": {
+        "family": "Barras",
+        "weekStart": "2026-10-26"
+      },
+      "deltaCommercialQty": -1500,
+      "reason": "Cliente pospone pedido al siguiente mes (sint.)",
+      "author": "Planeador Distribución (sint.)",
+      "role": "distribution",
+      "createdAt": "2026-09-30T16:00:00Z"
+    },
+    {
+      "id": "BB-003",
+      "versionId": "V-N1-2026-W40",
+      "scope": {
+        "skuId": "SK-008",
+        "weekStart": "2026-11-02"
+      },
+      "deltaCommercialQty": 800,
+      "reason": "Reposición por quiebre de inventario en agencias (sint.)",
+      "author": "Planeador Demanda (sint.)",
+      "role": "demand",
+      "createdAt": "2026-10-01T09:00:00Z"
+    }
+  ]
+}
