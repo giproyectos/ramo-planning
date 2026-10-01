@@ -4,7 +4,7 @@ Piloto de planeación para Ramo (GI Proyectos): Demanda → DRP → MPS/CRP → 
 
 - Plan completo: [docs/plan-adaptacion.md](docs/plan-adaptacion.md)
 - Origen: copia sin historial de `giproyectos/demad-app@66adddf` (ese repo no se modifica).
-- Estado: **Fase 1** (modelo de dominio y datos sintéticos). La UI de `apps/web` sigue con los datos de la demo genérica (placeholder) hasta la Fase 2; ver [ADR 0001](docs/adr/0001-modelo-de-dominio.md) y [mapeo SAP](docs/mapeo-sap.md).
+- Estado: **Fase 2** (MPS + CRP como ciclo Miguel ↔ Daniel, con datos sintéticos). Las vistas CRP y MPS final de `apps/web` ya usan el motor; S&OP, DRP y MRP siguen siendo la demo genérica (placeholder). Ver [ADR 0001](docs/adr/0001-modelo-de-dominio.md), [ADR 0002](docs/adr/0002-mps-crp-fase-2.md) y [mapeo SAP](docs/mapeo-sap.md).
 
 ## Estructura
 - `apps/web` — interfaz (React + Vite)

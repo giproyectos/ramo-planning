@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { CapacityDecision, DemandRecord, MpsAdjustment, RamoDataset, validateDataset } from '@ramo/domain';
 import {
   applyBuildingBlocks,
+  demandForHorizon,
   applyMpsAdjustments,
   computeCrp,
   computeNetProduction,
@@ -106,6 +107,16 @@ describe('building blocks', () => {
       { id: 'BB', versionId: 'V', scope: { skuId: 'B', weekStart: W }, deltaCommercialQty: 25, reason: 'x', author: 'y', role: 'demand', createdAt: '' },
     ];
     expect(applyBuildingBlocks(ds, 'V').find((r) => r.skuId === 'B')!.commercialQty).toBe(25);
+  });
+});
+
+describe('horizonte', () => {
+  it('el N+1 manda donde existe y el PBO completa las semanas siguientes', () => {
+    const ds = mini();
+    ds.versions.push({ id: 'PBO', kind: 'PBO_MONTHLY', label: 'p', createdAt: '', createdByRole: 'demand' });
+    ds.demand = [row('A', 10, 'CEDI', W), { ...row('A', 99, 'CEDI', W), versionId: 'PBO' }, { ...row('A', 77, 'CEDI', '2026-10-12'), versionId: 'PBO' }];
+    const out = demandForHorizon(ds, 'V', 'PBO');
+    expect(out.map((r) => [r.weekStart, r.commercialQty])).toEqual([[W, 10], ['2026-10-12', 77]]);
   });
 });
 

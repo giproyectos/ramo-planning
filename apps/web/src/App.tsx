@@ -28,8 +28,9 @@ import { GlassAtmosphere } from './components/common/GlassAtmosphere';
 import { ProcessMapModule } from './components/pipeline/ProcessMapModule';
 import { SOPModule } from './components/sop/SOPModule';
 import { DRPModule } from './components/drp/DRPModule';
-import { MPSModule } from './components/mps/MPSModule';
-import { CRPModule } from './components/crp/CRPModule';
+import { MpsView } from './components/ramo/MpsView';
+import { CrpView } from './components/ramo/CrpView';
+import { RamoPlanProvider } from './ramo/store';
 import { MRPModule } from './components/mrp/MRPModule';
 import { ExportModal } from './components/common/ExportModal';
 import { CommandPalette } from './components/common/CommandPalette';
@@ -46,7 +47,9 @@ import {
 export default function App() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <RamoPlanProvider>
+        <AppContent />
+      </RamoPlanProvider>
     </LanguageProvider>
   );
 }
@@ -422,29 +425,9 @@ function AppContent() {
             />
           )}
 
-          {currentStep === 'mps' && (
-            <MPSModule
-              skuRows={mpsSkus}
-              onUpdateSku={(skuId, updated) => {
-                setMpsSkus((prev) =>
-                  prev.map((s) => (s.skuId === skuId ? updated : s))
-                );
-                showToast(t('common.toasts.mpsRecomputed'), 'info');
-              }}
-              onPromoteToCRP={handlePromoteMPStoCRP}
-            />
-          )}
+          {currentStep === 'mps' && <MpsView />}
 
-          {currentStep === 'crp' && (
-            <CRPModule
-              workCenters={workCenters}
-              onUpdateWorkCenters={(updated) => {
-                setWorkCenters(updated);
-                showToast(t('common.toasts.crpUpdated'), 'info');
-              }}
-              onPromoteToMRP={handlePromoteCRPtoMRP}
-            />
-          )}
+          {currentStep === 'crp' && <CrpView />}
 
           {currentStep === 'mrp' && (
             <MRPModule

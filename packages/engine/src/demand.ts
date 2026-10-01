@@ -44,3 +44,14 @@ export function applyBuildingBlocks(ds: RamoDataset, versionId: string): DemandR
     (a, b) => a.weekStart.localeCompare(b.weekStart) || a.skuId.localeCompare(b.skuId) || a.flow.localeCompare(b.flow),
   );
 }
+
+/**
+ * Demanda del horizonte completo: el recálculo semanal (N+1, con sus building blocks) manda en las semanas
+ * que cubre y el PBO mensual completa las semanas posteriores.
+ */
+export function demandForHorizon(ds: RamoDataset, primaryVersionId: string, fallbackVersionId: string): DemandRecord[] {
+  const primary = applyBuildingBlocks(ds, primaryVersionId);
+  const covered = new Set(primary.map((r) => r.weekStart));
+  const fallback = applyBuildingBlocks(ds, fallbackVersionId).filter((r) => !covered.has(r.weekStart));
+  return [...primary, ...fallback].sort((a, b) => a.weekStart.localeCompare(b.weekStart) || a.skuId.localeCompare(b.skuId));
+}

@@ -27,8 +27,8 @@ export const common = {
         process_map: { name: 'Flow & Dashboard', badge: 'Global' },
         sop: { name: 'Demand' },
         drp: { name: 'Distribution', badge: 'Balanced' },
-        mps: { name: 'Master Build', badge: 'Locked' },
-        crp: { name: 'Capacity Load' },
+        mps: { name: 'Final MPS (Daniel)', badge: 'Locked' },
+        crp: { name: 'CRP (Miguel)' },
         mrp: { name: 'BOM Ledger', badge: '{count} Orders' },
       },
       badges: {
@@ -109,8 +109,8 @@ export const common = {
         process_map: { name: 'Flujo y Panel', badge: 'Global' },
         sop: { name: 'Demanda' },
         drp: { name: 'Distribución', badge: 'Balanceado' },
-        mps: { name: 'Programa Maestro', badge: 'Bloqueado' },
-        crp: { name: 'Carga de Capacidad' },
+        mps: { name: 'MPS final (Daniel)', badge: 'Bloqueado' },
+        crp: { name: 'CRP (Miguel)' },
         mrp: { name: 'Libro Mayor BOM', badge: '{count} Órdenes' },
       },
       badges: {
