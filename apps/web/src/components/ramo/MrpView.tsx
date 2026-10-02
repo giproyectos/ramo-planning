@@ -4,6 +4,7 @@ import { RiskReason, RiskStatus, consumptionBySku } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { StockChart } from './StockChart';
+import { Disclosure } from './ui';
 
 const STATUS: Record<RiskStatus, { label: string; chip: string }> = {
   CRITICAL: { label: 'Ruptura dentro del plazo', chip: 'bg-[#FFA27D]' },
@@ -84,6 +85,51 @@ export function MrpView() {
             </select>
           </label>
         </div>
+        <ul className="space-y-1.5">
+          {risks.map((r) => {
+            const mm = mat(r.materialId);
+            const horizon = supplyRisk.dates.length || 90;
+            const rupture = r.daysToRupture ?? horizon;
+            const pc = (v: number) => `${Math.min(100, (v / horizon) * 100)}%`;
+            const bar = { CRITICAL: '#FFA27D', ORDER: '#FFF87C', WATCH: '#DDCBF5', OK: '#7AFFA1' }[r.status];
+            const late = r.orderByDate?.startsWith('antes');
+            return (
+              <li key={r.materialId}>
+                <button onClick={() => setSelected(r.materialId)} className={`w-full text-left rounded-2xl px-3 py-2.5 grid grid-cols-1 lg:grid-cols-[1.3fr_2fr_1fr] items-center gap-2 lg:gap-5 cursor-pointer hover:bg-white/60 ${current?.materialId === r.materialId ? 'bg-white/70 ring-1 ring-black/10' : ''}`}>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[9px] font-black rounded-full px-2 py-0.5 text-black shrink-0 ${STATUS[r.status].chip}`}>{STATUS[r.status].label}</span>
+                    </div>
+                    <div className="text-xs font-black mt-1 truncate">{mm.name.replace(' (sint.)', '')} <span className="font-medium text-slate-400">· {TYPE_LABEL[mm.type]}</span></div>
+                    <div className="text-[10px] text-slate-500">Inventario {fmtInt(mm.stock)} {mm.unit}{r.coverageDays !== null ? ` · alcanza ${fmtDec(r.coverageDays, 0)} días` : ''}</div>
+                  </div>
+                  <div>
+                    <div className="relative h-3 rounded-full bg-black/[0.06]">
+                      <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: pc(rupture), background: bar }}></div>
+                      <div className="absolute -top-1 -bottom-1 w-0.5 bg-slate-900 rounded" style={{ left: pc(r.leadTimeDays) }} title={`Plazo de entrega: ${r.leadTimeDays} días`}></div>
+                    </div>
+                    <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                      <span>{r.ruptureDate ? `Se acaba el ${weekLabel(r.ruptureDate)} (${r.daysToRupture} d)` : 'No se acaba en el horizonte'}</span>
+                      <span>plazo {r.leadTimeDays} d</span>
+                    </div>
+                  </div>
+                  <div className="text-[11px] lg:text-right">
+                    {r.suggestion ? (
+                      <>
+                        <div className="font-mono font-black text-xs">{fmtInt(r.suggestion.qty)} {mm.unit}</div>
+                        <div className="text-slate-500">{late ? <span className="text-[#c2410c] font-bold">pedir ya (la fecha límite pasó)</span> : r.orderByDate ? `pedir antes del ${weekLabel(r.orderByDate)}` : 'pedido sugerido'}</div>
+                      </>
+                    ) : (
+                      <span className="text-slate-400">Sin pedido sugerido</span>
+                    )}
+                  </div>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <p className="text-[10px] text-slate-500">La barra llega hasta el día en que se acaba el material; la marca negra es el plazo de entrega. Si la barra termina antes de la marca, un pedido de hoy ya no llega a tiempo.</p>
+        <Disclosure title="Ver la tabla completa">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
@@ -110,6 +156,7 @@ export function MrpView() {
             </tbody>
           </table>
         </div>
+        </Disclosure>
         <p className="text-[10px] text-slate-500">Cobertura = inventario ÷ consumo diario de las 2 primeras semanas. "Sin riesgo cercano" incluye materiales que se rompen más adelante pero cuya fecha límite para pedir queda a más de 28 días.</p>
       </div>
 

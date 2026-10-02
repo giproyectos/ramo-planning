@@ -56,16 +56,16 @@ export function ReleaseView() {
     if (user?.role === 'admin') api.users().then((r) => setUsers(r.users)).catch(() => undefined);
   }, [serverMode, tab, user?.role]);
 
+  const relId = nextId || 'REL-0001';
   const build = useMemo(() => {
-    if (!nextId) return null;
-    const orders = buildProvisionalOrders(dataset, danielView.net, { releaseId: nextId, priorOrders: prior.orders.map((o) => ({ ...o })) });
+    const orders = buildProvisionalOrders(dataset, danielView.net, { releaseId: relId, priorOrders: prior.orders.map((o) => ({ ...o })) });
     const md61 = buildMd61(dataset, consensus);
     const artifacts = [
       ...orders.files.map((f) => ({ name: f.name, kind: f.kind, plantId: f.plantId, content: f.csv, rows: f.rows.length })),
-      ...(md61.rows.length > 0 ? [{ name: `demanda_md61_${nextId}.csv`, kind: 'DEMAND_MD61' as const, plantId: undefined, content: md61.csv, rows: md61.rows.length }] : []),
+      ...(md61.rows.length > 0 ? [{ name: `demanda_md61_${relId}.csv`, kind: 'DEMAND_MD61' as const, plantId: undefined, content: md61.csv, rows: md61.rows.length }] : []),
     ];
     return { orders, md61, artifacts };
-  }, [nextId, dataset, danielView.net, consensus, prior]);
+  }, [relId, dataset, danielView.net, consensus, prior]);
 
   const checks = useMemo<Check[]>(() => {
     if (!build) return [];
@@ -88,7 +88,7 @@ export function ReleaseView() {
   const errors = checks.filter((c) => c.level === 'error');
   const missingJustification = checks.filter((c) => c.requiresJustification && (justifications[c.code] ?? '').trim().length < 10);
   const noArtifacts = !build || build.artifacts.length === 0;
-  const blocker = !can('release.propose') ? 'Tu rol no puede proponer una salida.' : open ? `Ya hay una propuesta abierta (${open.id}).` : noArtifacts ? 'No hay nada que proponer: el plan no tiene producción.' : errors.length ? 'Hay errores que impiden generar los archivos.' : missingJustification.length ? 'Falta justificar (mínimo 10 caracteres) los avisos marcados.' : '';
+  const blocker = !serverMode ? 'Sin servidor no hay usuarios ni doble control: aquí solo puedes revisar lo que se publicaría. Activa el servidor para proponer.' : !can('release.propose') ? 'Tu rol no puede proponer una salida.' : open ? `Ya hay una propuesta abierta (${open.id}).` : noArtifacts ? 'No hay nada que proponer: el plan no tiene producción.' : errors.length ? 'Hay errores que impiden generar los archivos.' : missingJustification.length ? 'Falta justificar (mínimo 10 caracteres) los avisos marcados.' : '';
 
   const act = async (fn: () => Promise<unknown>, okText: string) => {
     setBusy(true);
@@ -110,7 +110,7 @@ export function ReleaseView() {
       if (!build) return;
       const s = build.orders.summary;
       await api.propose({
-        releaseId: nextId,
+        releaseId: relId,
         summary: { firstWeek: s.firstWeek, lastWeek: s.lastWeek, plants: s.perPlant, plannedCommercial: Math.round(s.plannedCommercial), writtenCommercial: s.writtenCommercial, deletedRows: s.deletedRows, demandRows: build.md61.rows.length, stage, dataSource: baseline?.usable ? 'SAP' : 'sintético', demandFromForecast: useForecast },
         artifacts: build.artifacts.map(({ name, kind, plantId, content }) => ({ name, kind, plantId, content })),
         warnings: checks.filter((c) => c.level !== 'error').map((c) => ({ code: c.code, message: c.message, requiresJustification: c.requiresJustification, justification: justifications[c.code]?.trim() || undefined })),
@@ -127,18 +127,6 @@ export function ReleaseView() {
       setMessage({ ok: false, text: errText(e) });
     }
   };
-
-  if (!serverMode) {
-    return (
-      <div className="glass-panel rounded-3xl p-5 space-y-2">
-        <h1 className="text-xl font-black">Salida a SAP</h1>
-        <p className="text-xs text-slate-600 max-w-3xl">
-          Esta etapa necesita el servidor de gobernanza: usuarios por rol, doble control, auditoría y archivos inmutables. Está en modo local (sin servidor), donde todo está permitido y nada se guarda.
-          Para activarlo: <span className="font-mono">npm run dev:server</span> y recarga la página.
-        </p>
-      </div>
-    );
-  }
 
   const approveAs = (r: ReleasePackage): 'capacity' | 'mps' | null => {
     if (r.status !== 'PROPOSED' || r.proposedBy.id === user?.id) return null;
@@ -162,10 +150,16 @@ export function ReleaseView() {
         </p>
       </div>
 
+      {!serverMode && (
+        <div className="rounded-3xl px-5 py-3 text-xs font-bold bg-[#FFF87C]/50 border border-[#FFF87C]">
+          Estás en modo local: puedes revisar los archivos que saldrían, pero proponer, aprobar y publicar requiere el servidor (usuarios por rol, doble control y auditoría).
+        </div>
+      )}
+
       {message && <div role="status" className={`rounded-3xl px-5 py-3 text-xs font-bold border ${message.ok ? 'bg-[#7AFFA1]/40 border-[#7AFFA1]' : 'bg-[#FFA27D]/30 border-[#FFA27D]'}`}>{message.text}</div>}
 
       <div className="flex flex-wrap gap-2">
-        {([['prepare', 'Preparar y proponer'], ['releases', `Propuestas (${releases.length})`], ['audit', 'Auditoría y usuarios']] as [Tab, string][]).map(([t, l]) => (
+        {([['prepare', serverMode ? 'Preparar y proponer' : 'Qué se publicaría'], ...(serverMode ? [['releases', `Propuestas (${releases.length})`], ['audit', 'Auditoría y usuarios']] : [])] as [Tab, string][]).map(([t, l]) => (
           <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-full text-xs font-bold cursor-pointer ${tab === t ? 'bg-slate-950 text-white' : 'bg-white/70 text-slate-600'}`}>{l}</button>
         ))}
       </div>
@@ -173,7 +167,7 @@ export function ReleaseView() {
       {tab === 'prepare' && build && (
         <div className="space-y-5">
           <div className="glass-panel rounded-3xl p-5 space-y-3">
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Lo que se publicaría como {nextId}</div>
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Lo que se publicaría como {relId}</div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               {[
                 ['Órdenes a crear', fmtInt(build.orders.summary.createdRows)],
@@ -182,12 +176,21 @@ export function ReleaseView() {
                 ['Filas de demanda (MD61)', fmtInt(build.md61.rows.length)],
               ].map(([k, v]) => <div key={k} className="rounded-xl bg-white/60 border border-white/80 px-3 py-2"><div className="text-[10px] uppercase font-bold text-slate-500">{k}</div><div className="font-mono font-black text-lg">{v}</div></div>)}
             </div>
-            <table className="w-full text-xs">
-              <thead><tr className="text-[10px] uppercase text-slate-500 text-left"><th className="py-1">Archivo</th><th>Tipo</th><th className="text-right">Filas</th></tr></thead>
-              <tbody>
-                {build.artifacts.map((a) => <tr key={a.name} className="border-t border-black/5"><td className="py-1.5 font-mono">{a.name}</td><td>{a.kind === 'PROVISIONAL_ORDERS' ? 'Órdenes provisionales' : a.kind === 'ORDER_DELETIONS' ? 'Borrado de la publicación anterior' : 'Demanda (MD61)'}</td><td className="text-right font-mono">{fmtInt(a.rows)}</td></tr>)}
-              </tbody>
-            </table>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {build.artifacts.map((a) => (
+                <div key={a.name} className="rounded-2xl bg-white/60 border border-white/80 p-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm ${a.kind === 'PROVISIONAL_ORDERS' ? 'bg-[#7AFFA1]' : a.kind === 'ORDER_DELETIONS' ? 'bg-[#FFA27D]' : 'bg-[#DDCBF5]'}`}>{a.kind === 'PROVISIONAL_ORDERS' ? '＋' : a.kind === 'ORDER_DELETIONS' ? '－' : '≈'}</span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-black leading-tight">{a.kind === 'PROVISIONAL_ORDERS' ? 'Órdenes provisionales' : a.kind === 'ORDER_DELETIONS' ? 'Borrado de la publicación anterior' : 'Demanda (MD61)'}</div>
+                      <div className="text-[10px] text-slate-500">{a.plantId ? `Planta ${dataset.plants.find((x) => x.id === a.plantId)?.name ?? a.plantId}` : 'Todas las plantas'}</div>
+                    </div>
+                  </div>
+                  <div className="mt-2 font-mono text-lg font-black">{fmtInt(a.rows)} <span className="text-[11px] font-bold text-slate-500">filas</span></div>
+                  <div className="font-mono text-[10px] text-slate-400 truncate" title={a.name}>{a.name}</div>
+                </div>
+              ))}
+            </div>
             {build.orders.summary.firstWeek && <p className="text-[11px] text-slate-500">Semanas {weekLabel(build.orders.summary.firstWeek)} a {weekLabel(build.orders.summary.lastWeek ?? build.orders.summary.firstWeek)}. Cada orden se fecha el último día con horas de su línea; la diferencia con el plan ({fmtInt(build.orders.summary.plannedCommercial)} cajas) es solo redondeo.</p>}
           </div>
 
@@ -204,7 +207,7 @@ export function ReleaseView() {
                 )}
               </div>
             ))}
-            <button onClick={propose} disabled={busy || !!blocker} className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">Proponer salida {nextId}</button>
+            <button onClick={propose} disabled={busy || !!blocker} className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">Proponer salida {relId}</button>
             {blocker && <p className="text-[11px] text-slate-500">{blocker}</p>}
           </div>
         </div>
@@ -224,12 +227,19 @@ export function ReleaseView() {
                   <span className={`text-[9px] font-black rounded-full px-2 py-0.5 text-black ${STATUS[r.status].chip}`}>{STATUS[r.status].label}</span>
                   <span className="text-[11px] text-slate-500">propuso {r.proposedBy.name} ({ROLE_LABELS[r.proposedBy.role]}) · {when(r.proposedAt)}{r.supersedes ? ` · reemplaza a ${r.supersedes}` : ''}</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  {(['capacity', 'mps'] as const).map((k) => {
-                    const a = r.approvals[k];
-                    return <div key={k} className={`rounded-xl border px-3 py-2 ${a ? 'bg-[#7AFFA1]/30 border-[#7AFFA1]' : 'bg-white/60 border-white/80'}`}><span className="font-bold">{k === 'capacity' ? 'Capacidad (Producción)' : 'MPS final (Distribución)'}:</span> {a ? `✓ ${a.by.name} · ${when(a.at)}${a.comment ? ` — ${a.comment}` : ''}` : 'pendiente'}</div>;
-                  })}
-                </div>
+                <ol className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  {[
+                    { label: 'Propuesta', done: true, who: `${r.proposedBy.name} · ${when(r.proposedAt)}` },
+                    { label: 'Capacidad (Producción)', done: !!r.approvals.capacity, who: r.approvals.capacity ? `${r.approvals.capacity.by.name} · ${when(r.approvals.capacity.at)}${r.approvals.capacity.comment ? ` — ${r.approvals.capacity.comment}` : ''}` : 'pendiente' },
+                    { label: 'MPS final (Distribución)', done: !!r.approvals.mps, who: r.approvals.mps ? `${r.approvals.mps.by.name} · ${when(r.approvals.mps.at)}${r.approvals.mps.comment ? ` — ${r.approvals.mps.comment}` : ''}` : 'pendiente' },
+                    { label: 'Publicada', done: r.status === 'RELEASED' || r.status === 'SUPERSEDED', who: r.status === 'RELEASED' || r.status === 'SUPERSEDED' ? 'archivos fijos' : 'pendiente' },
+                  ].map((st, i) => (
+                    <li key={st.label} className={`rounded-2xl border px-3 py-2 ${st.done ? 'bg-[#7AFFA1]/30 border-[#7AFFA1]' : 'bg-white/60 border-white/80'}`}>
+                      <div className="flex items-center gap-1.5 font-black"><span className={`w-4 h-4 rounded-full text-[9px] flex items-center justify-center ${st.done ? 'bg-slate-950 text-white' : 'bg-black/10 text-slate-500'}`}>{st.done ? '✓' : i + 1}</span>{st.label}</div>
+                      <div className="text-[10px] text-slate-600 mt-0.5 break-words">{st.who}</div>
+                    </li>
+                  ))}
+                </ol>
                 {r.rejection && <p className="text-xs"><span className="font-bold">Rechazada por {r.rejection.by.name}:</span> {r.rejection.reason}</p>}
                 {r.warnings.length > 0 && (
                   <ul className="text-xs list-disc pl-4 space-y-0.5">{r.warnings.map((w) => <li key={w.code}>{w.message}{w.justification ? <span className="text-slate-500"> — «{w.justification}»</span> : null}</li>)}</ul>
@@ -273,19 +283,20 @@ export function ReleaseView() {
               <button onClick={() => api.verifyAudit().then(setChain).catch((e) => setMessage({ ok: false, text: errText(e) }))} className="px-3.5 py-1.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer">Verificar cadena</button>
               {chain && <span className={`text-xs font-bold rounded-full px-2.5 py-1 ${chain.ok ? 'bg-[#7AFFA1]' : 'bg-[#FFA27D]'}`}>{chain.ok ? `Íntegra (${chain.entries} entradas)` : `Rota en la entrada ${chain.brokenAt}: ${chain.reason}`}</span>}
             </div>
-            <div className="overflow-x-auto max-h-96">
-              <table className="w-full text-[11px]">
-                <thead><tr className="text-[10px] uppercase text-slate-500 text-left"><th className="py-1">#</th><th>Cuándo</th><th>Quién</th><th>Qué</th><th>Detalle</th></tr></thead>
-                <tbody>
-                  {(audit?.entries ?? []).map((e) => (
-                    <tr key={e.seq} className="border-t border-black/5 align-top">
-                      <td className="py-1 font-mono">{e.seq}</td><td className="font-mono whitespace-nowrap">{when(e.at)}</td><td>{e.actor ? `${e.actor.id} (${e.actor.role})` : 'sistema'}</td><td className="font-mono">{e.type}</td>
-                      <td className="text-slate-500 break-all">{JSON.stringify(e.data).slice(0, 140)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ol className="max-h-96 overflow-auto space-y-2 pr-1">
+              {(audit?.entries ?? []).map((e) => {
+                const bad = /DENIED|FAILED|LOCK|REJECT/i.test(e.type);
+                return (
+                  <li key={e.seq} className="flex gap-3 text-[11px]">
+                    <span className={`mt-1 w-2.5 h-2.5 rounded-full shrink-0 ${bad ? 'bg-[#FFA27D]' : /RELEASE|PUBLISH|APPROV/i.test(e.type) ? 'bg-[#7AFFA1]' : 'bg-[#DDCBF5]'}`}></span>
+                    <div className="min-w-0">
+                      <div><span className="font-mono font-bold">{e.type}</span> <span className="text-slate-500">· {e.actor ? `${e.actor.id} (${e.actor.role})` : 'sistema'} · {when(e.at)} · #{e.seq}</span></div>
+                      <div className="text-slate-400 break-all">{JSON.stringify(e.data).slice(0, 140)}</div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
             <p className="text-[10px] text-slate-500">Cada entrada incluye el hash de la anterior: modificar, borrar o reordenar una rompe la cadena. Es evidencia de integridad, no firma digital de cada persona.</p>
           </div>
 

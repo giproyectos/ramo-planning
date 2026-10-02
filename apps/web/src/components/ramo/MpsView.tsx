@@ -5,6 +5,8 @@ import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
+import { SERIES_COLORS } from './charts';
+import { Card, Disclosure, StackedBars } from './ui';
 
 /** Vista de Daniel: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
 export function MpsView() {
@@ -13,6 +15,7 @@ export function MpsView() {
   const [skuId, setSkuId] = useState(dataset.skus[0].id);
   const [week, setWeek] = useState(weeks[1] ?? weeks[0]);
   const [delta, setDelta] = useState('-1000');
+  const [chartSku, setChartSku] = useState('');
   const [reason, setReason] = useState('');
   const { user: authUser } = useAuth();
   const [author, setAuthor] = useState(authUser?.name ?? 'Daniel');
@@ -75,7 +78,46 @@ export function MpsView() {
         </div>
       )}
 
-      <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
+      <Card
+        title="Producción neta por semana"
+        hint={chartSku ? 'Cajas a producir de este producto; las semanas ajustadas por Daniel se ven más intensas.' : 'Lo que hay que producir cada semana, apilado por planta. Pasa el cursor sobre una barra para ver el detalle.'}
+        action={
+          <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
+            Ver
+            <select value={chartSku} onChange={(e) => setChartSku(e.target.value)} className="rounded-xl border border-black/10 bg-white/80 px-2.5 py-1.5 text-xs font-bold">
+              <option value="">Todos los productos</option>
+              {dataset.skus.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </label>
+        }
+      >
+        <StackedBars
+          labels={weeks.map(weekLabel)}
+          unit={MEASURE_LABELS[measure].toLowerCase()}
+          highlight={chartSku ? (i) => adjusted(chartSku, weeks[i]) : undefined}
+          stacks={
+            chartSku
+              ? [{ name: dataset.skus.find((s) => s.id === chartSku)?.name ?? chartSku, color: SERIES_COLORS[0], values: weeks.map((w) => convertCommercialQty(dataset.skus.find((s) => s.id === chartSku)!, netBy.get(`${chartSku}|${w}`) ?? 0, measure)) }]
+              : dataset.plants.map((pl, k) => ({
+                  name: pl.name,
+                  color: SERIES_COLORS[k % SERIES_COLORS.length],
+                  values: weeks.map((w) => dataset.skus.filter((s) => dataset.lines.find((l) => l.id === s.lineId)?.plantId === pl.id).reduce((acc, s) => acc + convertCommercialQty(s, netBy.get(`${s.id}|${w}`) ?? 0, measure), 0)),
+                }))
+          }
+        />
+        <div className="mt-2 grid gap-1 relative" style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))`, paddingLeft: '7.2%', paddingRight: '1.7%' }}>
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500 leading-tight">Capacidad</div>
+          {weeks.map((w) => {
+            const reds = redWeek(w);
+            return reds.length > 0 ? (
+              <span key={w} className="text-center rounded-full bg-[#FFA27D] text-black font-black text-[9px] py-0.5" title={reds.map((a) => `${crewName(a.crewId)}: faltan ${fmtDec(a.excessHours)} h`).join('\n')}>{reds.length} rojo{reds.length > 1 ? 's' : ''}</span>
+            ) : (
+              <span key={w} className="text-center rounded-full bg-[#7AFFA1]/60 text-black font-black text-[9px] py-0.5">✓</span>
+            );
+          })}
+        </div>
+        <p className="text-[10px] text-slate-500 mt-2">{decisions.length > 0 ? `Incluye ${decisions.length} decisión(es) de horas extra de Miguel. ` : ''}La fila "Capacidad" muestra, semana a semana, si las líneas alcanzan (✓) o cuántas tripulaciones quedan en rojo.</p>
+        <Disclosure title="Ver la tabla producto por semana (también sirve para escoger la celda a ajustar)">
         <table className="w-full text-xs border-separate border-spacing-y-0.5">
           <thead>
             <tr className="text-[10px] uppercase tracking-wider text-slate-500">
@@ -133,7 +175,8 @@ export function MpsView() {
           </tbody>
         </table>
         <p className="text-[10px] text-slate-500 mt-2">Morado = semana ajustada. Pasa el cursor sobre una cifra para ver la demanda bruta. {decisions.length > 0 && `Incluye ${decisions.length} decisión(es) de horas extra de Miguel.`}</p>
-      </div>
+        </Disclosure>
+      </Card>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr] gap-5 items-start">
         <div className="glass-panel rounded-3xl p-5 space-y-3">

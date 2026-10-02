@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RecKind, Recommendation, SUGGESTED_QUESTIONS, Urgency, answerQuestion } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
+import { Disclosure, ProgressBar } from './ui';
 import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 
@@ -142,6 +143,17 @@ export function AiView() {
         <div className="space-y-5">
           <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
             <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Puntualidad de entrega por proveedor</div>
+            <p className="text-[11px] text-slate-500 mb-3">Qué porcentaje de las órdenes llegó en la fecha prometida. Los proveedores más lentos aparecen primero.</p>
+            <ul className="space-y-2 mb-3">
+              {[...insights.performance].sort((x, y) => x.onTimeRate - y.onTimeRate).map((p) => (
+                <li key={p.supplier} className="grid grid-cols-[150px_1fr_auto] items-center gap-3 text-xs">
+                  <span className="font-bold truncate">{p.supplier}</span>
+                  <ProgressBar value={p.onTimeRate} max={1} color={p.onTimeRate < 0.5 ? '#FFA27D' : p.onTimeRate < 0.8 ? '#FFF87C' : '#7AFFA1'} height={10} />
+                  <span className="font-mono text-[11px] w-44 text-right"><span className="font-extrabold">{pct(p.onTimeRate)}</span> a tiempo · {p.n} órdenes · {p.meanDelayDays > 0 ? `+${fmtDec(p.meanDelayDays, 1)}` : fmtDec(p.meanDelayDays, 1)} d</span>
+                </li>
+              ))}
+            </ul>
+            <Disclosure title="Ver la tabla">
             <table className="w-full text-xs">
               <thead><tr className="text-[10px] uppercase text-slate-500 text-right"><th className="text-left py-1">Proveedor</th><th>Órdenes</th><th>A tiempo</th><th>Retraso medio (días)</th><th>Materiales</th></tr></thead>
               <tbody>
@@ -153,10 +165,31 @@ export function AiView() {
                 ))}
               </tbody>
             </table>
+            </Disclosure>
           </div>
 
           <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
             <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Plazo real frente al fijo de SAP</div>
+            <p className="text-[11px] text-slate-500 mb-3">La marca negra es el plazo que tiene SAP. La barra clara llega al plazo típico (P50) y la oscura al que se cumple 8 de cada 10 veces (P80).</p>
+            <ul className="space-y-3 mb-3">
+              {insights.leadTimes.flatMap((l) => l.bySupplier.map((sp) => {
+                const mx = Math.max(sp.p80, sp.plannedDays, 1) * 1.1;
+                return (
+                  <li key={`${l.materialId}${sp.supplier}`}>
+                    <div className="flex justify-between text-xs">
+                      <span className="font-bold">{name(l.materialId)} <span className="font-medium text-slate-400">· {sp.supplier}</span></span>
+                      <span className="font-mono text-[11px] text-slate-600">SAP {sp.plannedDays} d · P50 {sp.p50} d · <span className="font-extrabold">P80 {sp.p80} d</span></span>
+                    </div>
+                    <div className="relative h-3 rounded-full bg-black/[0.06] mt-1">
+                      <div className="absolute inset-y-0 left-0 rounded-full bg-[#7c3aed]/80" style={{ width: `${(sp.p80 / mx) * 100}%` }}></div>
+                      <div className="absolute inset-y-0 left-0 rounded-full bg-[#DDCBF5]" style={{ width: `${(sp.p50 / mx) * 100}%` }}></div>
+                      <div className="absolute -top-1 -bottom-1 w-0.5 bg-slate-900 rounded" style={{ left: `${(sp.plannedDays / mx) * 100}%` }} title={`Plazo en SAP: ${sp.plannedDays} días`}></div>
+                    </div>
+                  </li>
+                );
+              }))}
+            </ul>
+            <Disclosure title="Ver la tabla">
             <table className="w-full text-xs">
               <thead><tr className="text-[10px] uppercase text-slate-500 text-right"><th className="text-left py-1">Material</th><th className="text-left">Proveedor</th><th>Órdenes</th><th>Plazo SAP</th><th>P50 real</th><th>P80 real</th><th>A tiempo</th></tr></thead>
               <tbody>
@@ -168,6 +201,7 @@ export function AiView() {
                 )))}
               </tbody>
             </table>
+            </Disclosure>
             <p className="text-[10px] text-slate-500 mt-2">Solo materiales con ≥ 8 órdenes y un P80 que supera al plazo fijo en ≥ 2 días y ≥ 10 %.</p>
           </div>
 

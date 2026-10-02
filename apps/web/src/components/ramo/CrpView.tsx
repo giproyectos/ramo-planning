@@ -5,6 +5,8 @@ import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { EXCEPTION_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
+import { LineChart, SERIES_COLORS } from './charts';
+import { Disclosure, ProgressBar } from './ui';
 
 const cellColor = (status: LoadStatus, pct: number) =>
   status === 'CRITICAL' ? 'bg-[#FFA27D] text-black' : status === 'OVER' ? 'bg-[#FFF87C] text-black' : pct === 0 ? 'bg-white/40 text-slate-400' : 'bg-[#7AFFA1]/60 text-black';
@@ -167,6 +169,45 @@ export function CrpView() {
               </div>
             </div>
 
+            <div>
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Horas de {crewName(sel.crewId)} en todo el horizonte</div>
+              <LineChart
+                labels={weeks.map(weekLabel)}
+                height={200}
+                unit="h"
+                series={[
+                  { name: 'Horas que pide el plan', color: SERIES_COLORS[1], values: miguelView.capacity.map((w) => w.crews.find((x) => x.crewId === sel.crewId)?.requiredHours ?? 0) },
+                  { name: 'Horas disponibles (con extras)', color: SERIES_COLORS[0], values: miguelView.capacity.map((w) => { const c = w.crews.find((x) => x.crewId === sel.crewId); return c ? c.availableHours + c.extraHours : 0; }), dashed: true },
+                ]}
+              />
+              <p className="text-[10px] text-slate-500 mt-1">Donde la línea naranja pasa por encima de la azul punteada, faltan horas esa semana.</p>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Qué productos consumen las horas de la semana del {weekLabel(sel.week)}</div>
+              <ul className="space-y-2">
+                {skuRows.map(({ sku, r, hours }) => (
+                  <li key={sku.id}>
+                    <div className="flex justify-between text-xs">
+                      <span className="font-bold truncate pr-2">{sku.name.replace(' (sint.)', '')}</span>
+                      <span className="font-mono text-[11px] text-slate-600">{fmtDec(hours)} h · {fmtInt(r.netProduction)} cajas{r.grossMto > 0 ? ` (${fmtInt(r.grossMto)} bajo pedido)` : ''}</span>
+                    </div>
+                    <ProgressBar value={hours} max={Math.max(crewLoad.requiredHours, crewLoad.availableHours + crewLoad.extraHours, 1)} mark={crewLoad.availableHours + crewLoad.extraHours} color={SERIES_COLORS[1]} height={8} />
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[10px] text-slate-500 mt-1">La marca negra es el total de horas disponibles de la tripulación; las barras suman lo que pide el plan.</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {crew.lineIds.flatMap((lid) => {
+                  const cal = dataset.calendars.find((c) => c.lineId === lid)!;
+                  return weekExceptions(cal, sel.week).map((e) => (
+                    <span key={lid + e.date} className="text-[10px] font-bold rounded-full px-2.5 py-1 bg-[#DDCBF5] text-black">{lineName(lid)}: {EXCEPTION_LABELS[e.reason]} {e.date.slice(5)} ({e.hours} h)</span>
+                  ));
+                })}
+              </div>
+            </div>
+
+            <Disclosure title="Ver las cifras en tabla (por línea y por producto)">
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-[10px] uppercase text-slate-500 text-left">
@@ -219,6 +260,7 @@ export function CrpView() {
                 ))}
               </tbody>
             </table>
+            </Disclosure>
             <p className="text-[10px] text-slate-500">
               Hard Discount y Exportaciones ({[...MAKE_TO_ORDER_FLOWS].join(', ')}) entran completos: no se netean contra inventario ni pasan por el DRP.
             </p>

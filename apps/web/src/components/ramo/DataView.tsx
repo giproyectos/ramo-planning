@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BaseName, IngestTexts, summarizeIssues } from '@ramo/ingest';
 import { DEFAULT_CUT_AT, useRamoPlan } from '../../ramo/store';
+import { Disclosure, ProgressBar } from './ui';
 import { SAMPLE_LIMPIO, SAMPLE_SUCIO } from '../../ramo/samples';
 import { fmtDec, fmtInt } from '../../ramo/format';
 
@@ -145,6 +146,30 @@ export function DataView() {
 
           <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
             <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Estado base por SKU (cajas)</div>
+            <p className="text-[11px] text-slate-500 mb-3">Cuántos días alcanza el inventario de cada producto al ritmo de despacho del último mes. Menos de 3 días = naranja, menos de 7 = amarillo.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mb-3">
+              {baseline.skus.map((s) => {
+                const cd = s.coverageDays;
+                const tone = cd === null ? '#DDCBF5' : cd < 3 ? '#FFA27D' : cd < 7 ? '#FFF87C' : '#7AFFA1';
+                return (
+                  <div key={s.skuId} className="rounded-2xl bg-white/60 border border-white/80 p-3">
+                    <div className="text-xs font-black leading-tight truncate">{skuName(s.skuId).replace(' (sint.)', '')}</div>
+                    <div className="mt-1 flex items-baseline gap-1">
+                      <span className="text-2xl font-black font-mono">{cd === null ? '—' : fmtDec(cd, 1)}</span>
+                      <span className="text-[11px] text-slate-500">días de cobertura</span>
+                    </div>
+                    <div className="mt-1.5"><ProgressBar value={cd ?? 0} max={14} color={tone} height={7} /></div>
+                    <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-slate-600">
+                      <dt>Stock</dt><dd className="text-right font-mono">{fmtInt(s.stockCommercial)}</dd>
+                      <dt>En tránsito</dt><dd className="text-right font-mono">{fmtInt(s.inTransitCommercial)}</dd>
+                      <dt>Por despachar</dt><dd className="text-right font-mono">{fmtInt(s.pendingDispatchCommercial)}</dd>
+                      <dt className="font-bold">Disponible</dt><dd className="text-right font-mono font-extrabold">{fmtInt(s.availableCommercial)}</dd>
+                    </dl>
+                  </div>
+                );
+              })}
+            </div>
+            <Disclosure title="Ver todas las cifras (tabla)">
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-[10px] uppercase text-slate-500 text-right">
@@ -166,6 +191,7 @@ export function DataView() {
                 ))}
               </tbody>
             </table>
+            </Disclosure>
             <p className="text-[10px] text-slate-500 mt-2">
               Disponible = stock + en tránsito − pendiente de despacho en la ventana (mínimo 0). Esta fórmula es un supuesto pendiente de confirmar con Miguel.
             </p>

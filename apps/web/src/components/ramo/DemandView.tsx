@@ -8,6 +8,8 @@ import { useAuth } from '../../ramo/auth';
 import { SAMPLE_HISTORY_LIMPIO, SAMPLE_HISTORY_SUCIO } from '../../ramo/samples';
 import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { DemandChart } from './DemandChart';
+import { Disclosure, ProgressBar } from './ui';
+import { SERIES_COLORS } from './charts';
 
 const pct = (n: number, d = 1) => `${fmtDec(n * 100, d)}%`;
 const signed = (n: number, d = 1) => `${n > 0 ? '+' : ''}${fmtDec(n * 100, d)}%`;
@@ -189,6 +191,29 @@ export function DemandView() {
           {selected.length > 0 && (
             <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
               <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">PBO vs N+1 vs consenso ({unitLabel})</div>
+              {(() => {
+                const tot = (a: number[]) => a.reduce((x, v) => x + v, 0);
+                const pbo = tot(series.pbo), n1 = tot(series.n1), cons = tot(series.cons);
+                const tiles = [
+                  { t: 'PBO (plan mensual)', v: pbo, note: 'Pronóstico de hace 4 semanas', color: '#94a3b8' },
+                  { t: 'N+1 (recálculo semanal)', v: n1, note: pbo ? `${signed(n1 / pbo - 1)} frente al PBO` : '', color: SERIES_COLORS[0] },
+                  { t: 'Consenso', v: cons, note: n1 ? `${signed(cons / n1 - 1)} frente al N+1 (ajustes humanos)` : '', color: SERIES_COLORS[1] },
+                ];
+                const mx = Math.max(pbo, n1, cons, 1);
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    {tiles.map((x) => (
+                      <div key={x.t} className="rounded-2xl bg-white/60 border border-white/80 p-3">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{x.t}</div>
+                        <div className="text-2xl font-black font-mono mt-0.5">{fmt(x.v)}</div>
+                        <div className="mt-1.5"><ProgressBar value={x.v} max={mx} color={x.color} height={6} /></div>
+                        <div className="text-[11px] text-slate-500 mt-1">{x.note}</div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+              <Disclosure title="Ver semana a semana (tabla)">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="text-[10px] uppercase text-slate-500 text-right">
@@ -218,12 +243,36 @@ export function DemandView() {
                   </tr>
                 </tbody>
               </table>
+              </Disclosure>
               <p className="text-[10px] text-slate-500 mt-2">El PBO se corrió 4 semanas antes (menos historia, más distancia); el N+1 usa todo el histórico hasta la semana anterior.</p>
             </div>
           )}
 
           <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Exactitud del modelo (backtest) vs proceso vigente</div>
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">¿Qué tan bien habría acertado? Modelo vs proceso vigente</div>
+            <p className="text-[11px] text-slate-500 mb-3">Error en las últimas 12 semanas pronosticando la semana siguiente. Barra corta = acierta más. El "proceso vigente" de este ejemplo es simulado, no el Excel real de Ramo.</p>
+            <ul className="space-y-3 mb-3">
+              {forecast.n1.skus.filter((s) => ids.has(s.skuId)).map((s) => {
+                const rec = s.recent?.wape1;
+                const cur = s.current?.wape;
+                const verdict = rec === undefined || cur === undefined ? '—' : rec < cur * 0.95 ? 'Mejor' : rec > cur * 1.05 ? 'Peor' : 'Similar';
+                const mx = Math.max(rec ?? 0, cur ?? 0, 0.01);
+                return (
+                  <li key={s.skuId} className="grid grid-cols-1 md:grid-cols-[1.2fr_2fr_auto] items-center gap-2 md:gap-4">
+                    <div>
+                      <div className="text-xs font-black">{dataset.skus.find((k) => k.id === s.skuId)?.name.replace(' (sint.)', '')}</div>
+                      <div className="text-[10px] text-slate-500">{MODEL_LABELS[s.model]}{s.recent ? ` · ${s.recent.bias < -0.005 ? 'tiende a quedarse corto' : s.recent.bias > 0.005 ? 'tiende a pasarse' : 'sin sesgo'}` : ''}</div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2"><span className="w-20 text-[10px] text-slate-500">Modelo</span><div className="flex-1"><ProgressBar value={rec ?? 0} max={mx} color={SERIES_COLORS[0]} height={7} /></div><span className="w-12 text-right font-mono text-[11px]">{rec === undefined ? '—' : pct(rec)}</span></div>
+                      <div className="flex items-center gap-2"><span className="w-20 text-[10px] text-slate-500">Proceso vigente</span><div className="flex-1"><ProgressBar value={cur ?? 0} max={mx} color="#94a3b8" height={7} /></div><span className="w-12 text-right font-mono text-[11px]">{cur === undefined ? '—' : pct(cur)}</span></div>
+                    </div>
+                    <span className={`text-[10px] font-black rounded-full px-2.5 py-1 text-black justify-self-start ${verdict === 'Mejor' ? 'bg-[#7AFFA1]' : verdict === 'Peor' ? 'bg-[#FFA27D]' : 'bg-[#DDCBF5]'}`}>{verdict}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            <Disclosure title="Ver todas las cifras del backtest (tabla)">
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-[10px] uppercase text-slate-500 text-right">
@@ -249,6 +298,7 @@ export function DemandView() {
                 })}
               </tbody>
             </table>
+            </Disclosure>
             <p className="text-[10px] text-slate-500 mt-2">
               Error = WAPE (Σ|error| ÷ Σ venta). El modelo se elige evaluando a las mismas 13 semanas que usa el plan, con orígenes repartidos en el año (incluye diciembre);
               se prefiere un modelo estacional si no es peor que el mejor en más de 10 % (supuesto de negocio a calibrar con datos reales).

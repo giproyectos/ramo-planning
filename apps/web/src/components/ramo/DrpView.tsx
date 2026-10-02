@@ -3,6 +3,8 @@ import { AllocationReason, DrpCell, allocateScarcity, scarcityRequests, supplyGa
 import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
+import { LineChart, SERIES_COLORS } from './charts';
+import { Card, Disclosure, ProgressBar, StackedBars } from './ui';
 
 const PRIORITY_LABEL = { HIGH: 'Alta', NORMAL: 'Normal', LOW: 'Baja' } as const;
 const REASON_LABEL: Record<AllocationReason, string> = { FULL: 'Completo', OVERRIDE: 'Ajuste manual', MINIMUM: 'Mínimo de cobertura', PRO_RATA: 'Prorrata' };
@@ -20,6 +22,7 @@ export function DrpView() {
 
   const [skuId, setSkuId] = useState('');
   const sku = skuId || skuIds[0] || '';
+  const [nodeSel, setNodeSel] = useState('');
 
   const gaps = useMemo(() => supplyGaps(dataset, danielView.net, danielView.capacity), [dataset, danielView]);
 
@@ -41,6 +44,26 @@ export function DrpView() {
       </div>
     );
   }
+
+  const cediNode = nodes.find((n) => n.type === 'CEDI');
+  const agencyNodes = nodes.filter((n) => n.type !== 'CEDI');
+  const selNode = nodes.find((n) => n.id === nodeSel) ?? cediNode;
+  const selRow = selNode ? drp.rows.find((r) => r.nodeId === selNode.id && r.skuId === sku) : undefined;
+  const plantOfSku = (id: string) => dataset.lines.find((l) => l.id === dataset.skus.find((x) => x.id === id)?.lineId)?.plantId;
+  const nodeStats = (n: (typeof nodes)[number]): NodeStats => {
+    const rows = drp.rows.filter((r) => r.nodeId === n.id);
+    const initial = rows.reduce((a, r) => a + r.initialOnHand, 0);
+    const weekly = rows.reduce((a, r) => a + (r.cells.length ? r.cells.reduce((x, c) => x + c.gross, 0) / r.cells.length : 0), 0);
+    const al = drp.alerts.filter((a) => a.nodeId === n.id);
+    return {
+      initial,
+      coverDays: weekly > 0 ? initial / (weekly / 7) : null,
+      occupancy: n.storageCapacity > 0 ? initial / n.storageCapacity : 0,
+      stockouts: al.filter((a) => a.code === 'STOCKOUT').length,
+      below: al.filter((a) => a.code === 'BELOW_SAFETY').length,
+      space: al.filter((a) => a.code === 'SPACE').length,
+    };
+  };
 
   const weeks = drp.weeks;
   const firstGap = gaps[0];
@@ -140,8 +163,139 @@ export function DrpView() {
         ))}
       </div>
 
-      <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
-        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Red de distribución</div>
+      <Card title="Mapa de la red" hint="Así fluye el producto: la planta abastece al CEDI y el CEDI a las agencias. Haz clic en un punto para ver su inventario semana a semana.">
+        <div className="flex flex-col items-center">
+          <div className="rounded-2xl bg-[#DDCBF5]/70 px-5 py-2 text-xs font-black text-center">
+            Planta · produce lo que pida el MPS
+            <div className="font-mono font-bold text-[11px]">{fmtInt(total)} cajas en {weeks.length} semanas</div>
+          </div>
+          <div className="h-5 w-px bg-slate-300"></div>
+          {cediNode && <NodeCard n={cediNode} stats={nodeStats(cediNode)} selected={selNode?.id === cediNode.id} onSelect={() => setNodeSel(cediNode.id)} wide />}
+          <div className="h-5 w-px bg-slate-300"></div>
+          <div className="relative w-full">
+            <div className="absolute left-[12.5%] right-[12.5%] top-0 h-px bg-slate-300 hidden lg:block"></div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-0 lg:pt-3">
+              {agencyNodes.map((n) => <NodeCard key={n.id} n={n} stats={nodeStats(n)} selected={selNode?.id === n.id} onSelect={() => setNodeSel(n.id)} />)}
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {selNode && selRow && (
+        <Card
+          title={`${selNode.name}: inventario y órdenes`}
+          hint="El inventario proyectado debe quedarse por encima del stock de seguridad. Dentro del plazo de entrega no se puede recibir nada nuevo, por eso ahí puede aparecer un faltante."
+          action={
+            <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
+              Producto
+              <select value={sku} onChange={(e) => setSkuId(e.target.value)} className="rounded-xl border border-black/10 bg-white/80 px-2.5 py-1.5 text-xs font-bold">
+                {skuIds.map((id) => <option key={id} value={id}>{skuName(id)}</option>)}
+              </select>
+            </label>
+          }
+        >
+          <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-6">
+            <LineChart
+              labels={weeks.map(weekLabel)}
+              height={230}
+              series={[
+                { name: 'Inventario proyectado', color: SERIES_COLORS[0], values: selRow.cells.map((c) => c.projectedOnHand) },
+                { name: 'Stock de seguridad', color: SERIES_COLORS[2], values: selRow.cells.map((c) => c.safetyStock), dashed: true },
+                { name: 'Demanda', color: SERIES_COLORS[1], values: selRow.cells.map((c) => c.gross) },
+              ]}
+            />
+            <StackedBars
+              labels={weeks.map(weekLabel)}
+              height={230}
+              stacks={[{ name: 'Orden a liberar', color: SERIES_COLORS[0], values: selRow.cells.map((c) => c.plannedRelease) }]}
+            />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+            {drp.alerts.filter((a) => a.nodeId === selNode.id && a.skuId === sku).slice(0, 8).map((a, i) => (
+              <span key={i} className={`rounded-full px-2.5 py-1 font-bold text-black ${a.code === 'STOCKOUT' ? 'bg-[#FFA27D]' : 'bg-[#FFF87C]'}`}>
+                {a.code === 'STOCKOUT' ? 'Quiebre' : a.code === 'SPACE' ? 'Espacio' : 'Bajo seguridad'} · {weekLabel(a.weekStart)} · {fmtInt(a.value)} cajas
+              </span>
+            ))}
+            {drp.alerts.filter((a) => a.nodeId === selNode.id && a.skuId === sku).length === 0 && <span className="text-emerald-800 font-bold">Sin alertas para este producto en este punto.</span>}
+          </div>
+          <Disclosure title="Ver el detalle semana a semana (tabla)">
+            <table className="w-full text-[11px]">
+              <thead>
+                <tr className="text-[10px] uppercase text-slate-500 text-right">
+                  <th className="text-left py-1">Concepto</th>
+                  {weeks.map((w) => <th key={w} className="font-mono px-1.5">{weekLabel(w)}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {cellRows.map((cr) => (
+                  <tr key={cr.label} className="text-right font-mono">
+                    <td className={`text-left font-sans ${cr.bold ? 'font-bold' : 'text-slate-500'}`}>{cr.label}</td>
+                    {selRow.cells.map((c) => {
+                      const v = cr.get(c);
+                      const low = cr.label === 'Stock proyectado' && v < c.safetyStock - 0.5;
+                      return <td key={c.weekStart} className={`px-1.5 ${cr.bold ? 'font-extrabold' : ''} ${low ? (v < 0 ? 'bg-[#FFA27D] rounded' : 'bg-[#FFF87C] rounded') : ''} ${v === 0 ? 'text-slate-300' : ''}`}>{fmtInt(v)}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Disclosure>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] gap-5 items-start">
+        <Card title="Lo que se le pide a la planta" hint="Órdenes que el CEDI libera a la planta cada semana, por planta. Es la entrada del MPS.">
+          <StackedBars
+            labels={weeks.map(weekLabel)}
+            stacks={dataset.plants.map((pl, i) => ({
+              name: pl.name,
+              color: SERIES_COLORS[i % SERIES_COLORS.length],
+              values: weeks.map((w) => drp.plantRequirements.filter((p) => p.weekStart === w && plantOfSku(p.skuId) === pl.id).reduce((a, p) => a + p.qty, 0)),
+            }))}
+          />
+          <Disclosure title="Ver por producto (tabla)">
+            <table className="w-full text-[11px]">
+              <thead><tr className="text-[10px] uppercase text-slate-500 text-right"><th className="text-left py-1">Producto</th>{weeks.map((w) => <th key={w} className="font-mono px-1.5">{weekLabel(w)}</th>)}</tr></thead>
+              <tbody>
+                {skuIds.map((id) => (
+                  <tr key={id} className="border-t border-black/5 text-right font-mono">
+                    <td className="text-left font-sans font-bold py-1">{skuName(id)}</td>
+                    {weeks.map((w) => {
+                      const p = drp.plantRequirements.find((x) => x.skuId === id && x.weekStart === w);
+                      return <td key={w} className={`px-1.5 ${p ? '' : 'text-slate-300'}`}>{p ? fmtInt(p.qty) : '0'}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Disclosure>
+        </Card>
+
+        <Card title="Colchón de seguridad por producto" hint={`Azul: ${drpPolicy === 'DYNAMIC' ? 'dinámico' : 'estático'}. Gris: ${staticDays} días fijos (como se hace hoy).`}>
+          <ul className="space-y-2.5">
+            {skuIds.map((id) => {
+              const rows = drp.safety.filter((s) => s.skuId === id);
+              const a = rows.reduce((x, s) => x + s.activeUnits, 0);
+              const b = rows.reduce((x, s) => x + s.staticUnits, 0);
+              const mx = Math.max(a, b, 1);
+              return (
+                <li key={id}>
+                  <div className="flex items-baseline justify-between text-xs">
+                    <span className="font-bold truncate pr-2">{skuName(id).replace(' (sint.)', '')}</span>
+                    <span className={`font-mono text-[11px] ${a > b ? 'text-[#c2410c]' : 'text-emerald-800'}`}>{b > 0 ? `${a > b ? '+' : ''}${fmtDec((a / b - 1) * 100, 0)} %` : '—'}</span>
+                  </div>
+                  <div className="space-y-1 mt-1">
+                    <ProgressBar value={a} max={mx} color={SERIES_COLORS[0]} height={7} />
+                    <ProgressBar value={b} max={mx} color="#cbd5e1" height={7} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      </div>
+
+      <Disclosure title="Parámetros de la red (prioridad, plazos, capacidad)">
         <table className="w-full text-xs">
           <thead>
             <tr className="text-[10px] uppercase text-slate-500 text-right">
@@ -159,73 +313,9 @@ export function DrpView() {
             ))}
           </tbody>
         </table>
-      </div>
+      </Disclosure>
 
-      <div className="glass-panel rounded-3xl p-5 space-y-3">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Plan por nodo (cajas)</div>
-          <label className="text-[11px] font-bold text-slate-600">
-            SKU
-            <select value={sku} onChange={(e) => setSkuId(e.target.value)} className="block mt-1 rounded-xl border border-black/10 bg-white/80 px-2.5 py-1.5 text-xs font-bold">
-              {skuIds.map((id) => <option key={id} value={id}>{skuName(id)}</option>)}
-            </select>
-          </label>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-[11px]">
-            <thead>
-              <tr className="text-[10px] uppercase text-slate-500 text-right">
-                <th className="text-left py-1">Nodo / concepto</th>
-                {weeks.map((w) => <th key={w} className="font-mono px-1.5">{weekLabel(w)}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {nodes.map((n) => {
-                const row = drp.rows.find((r) => r.nodeId === n.id && r.skuId === sku);
-                if (!row) return null;
-                return (
-                  <React.Fragment key={n.id}>
-                    <tr><td colSpan={weeks.length + 1} className="pt-2 font-black text-slate-900">{n.name} <span className="font-normal text-slate-400">· stock inicial {fmtInt(row.initialOnHand)}</span></td></tr>
-                    {cellRows.map((cr) => (
-                      <tr key={cr.label} className="text-right font-mono">
-                        <td className={`text-left font-sans pl-3 ${cr.bold ? 'font-bold' : 'text-slate-500'}`}>{cr.label}</td>
-                        {row.cells.map((c) => {
-                          const v = cr.get(c);
-                          const low = cr.label === 'Stock proyectado' && v < c.safetyStock - 0.5;
-                          return <td key={c.weekStart} className={`px-1.5 ${cr.bold ? 'font-extrabold' : ''} ${low ? (v < 0 ? 'bg-[#FFA27D] rounded' : 'bg-[#FFF87C] rounded') : ''} ${v === 0 ? 'text-slate-300' : ''}`} title={low ? (v < 0 ? 'Quiebre: demanda sin cubrir dentro del plazo' : 'Bajo el stock de seguridad dentro del plazo') : undefined}>{fmtInt(v)}</td>;
-                        })}
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
-        <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Stock de seguridad por SKU (suma de nodos)</div>
-          <table className="w-full text-xs">
-            <thead><tr className="text-[10px] uppercase text-slate-500 text-right"><th className="text-left py-1">SKU</th><th>{drpPolicy === 'DYNAMIC' ? 'Dinámico' : 'Estático'}</th><th>{staticDays} días fijos</th><th>Diferencia</th></tr></thead>
-            <tbody>
-              {skuIds.map((id) => {
-                const rows = drp.safety.filter((s) => s.skuId === id);
-                const a = rows.reduce((x, s) => x + s.activeUnits, 0);
-                const b = rows.reduce((x, s) => x + s.staticUnits, 0);
-                return (
-                  <tr key={id} className="border-t border-black/5 text-right font-mono">
-                    <td className="text-left font-sans font-bold py-1.5">{skuName(id)}</td>
-                    <td>{fmtInt(a)}</td><td>{fmtInt(b)}</td>
-                    <td className={a > b ? 'text-[#c2410c]' : 'text-emerald-800'}>{b > 0 ? `${a > b ? '+' : ''}${fmtDec((a / b - 1) * 100, 0)}%` : '—'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
+      <div className="grid grid-cols-1 gap-5 items-start">
         <div className="glass-panel rounded-3xl p-5 space-y-3">
           <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Alertas de la red</div>
           {drp.alerts.length === 0 ? <p className="text-xs text-emerald-800 font-bold">Sin alertas.</p> : (
@@ -246,29 +336,6 @@ export function DrpView() {
           )}
           <p className="text-[10px] text-slate-500">Canasta (que estén todos los SKUs de la canasta), rotación y frecuencias de despacho de Daniel todavía no se modelan.</p>
         </div>
-      </div>
-
-      <div className="glass-panel rounded-3xl p-5 overflow-x-auto">
-        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Necesidad hacia planta (entrada del MPS, cajas)</div>
-        <table className="w-full text-[11px]">
-          <thead><tr className="text-[10px] uppercase text-slate-500 text-right"><th className="text-left py-1">SKU</th>{weeks.map((w) => <th key={w} className="font-mono px-1.5">{weekLabel(w)}</th>)}</tr></thead>
-          <tbody>
-            {skuIds.map((id) => (
-              <tr key={id} className="border-t border-black/5 text-right font-mono">
-                <td className="text-left font-sans font-bold py-1">{skuName(id)}</td>
-                {weeks.map((w) => {
-                  const p = drp.plantRequirements.find((x) => x.skuId === id && x.weekStart === w);
-                  return <td key={w} className={`px-1.5 ${p ? '' : 'text-slate-300'}`}>{p ? fmtInt(p.qty) : '0'}</td>;
-                })}
-              </tr>
-            ))}
-            <tr className="border-t text-right font-mono font-black">
-              <td className="text-left font-sans py-1.5">Total</td>
-              {weeks.map((w) => <td key={w} className="px-1.5">{fmtInt(drp.plantRequirements.filter((p) => p.weekStart === w).reduce((a, p) => a + p.qty, 0))}</td>)}
-            </tr>
-          </tbody>
-        </table>
-        <p className="text-[10px] text-slate-500 mt-2">Cada cifra es la orden que hay que liberar a planta esa semana (la recepción de {'`plazo`'} semanas después). Dentro del plazo no se puede recibir nada nuevo: el stock de seguridad se recupera en la primera recepción factible.</p>
       </div>
 
       <div className="glass-panel rounded-3xl p-5 space-y-3">
@@ -298,29 +365,34 @@ export function DrpView() {
         {requests.length === 0 ? <p className="text-xs text-slate-500">Sin pedidos de nodos para esta combinación.</p> : (
           <>
             <p className="text-xs">Pedidos: <span className="font-mono font-bold">{fmtInt(requestedTotal)}</span> cajas · disponibles para repartir: <span className="font-mono font-bold">{fmtInt(supply)}</span> ({result.scarce ? 'hay escasez' : 'alcanza para todos'})</p>
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-[10px] uppercase text-slate-500 text-right">
-                  <th className="text-left py-1">Nodo</th><th>Prioridad</th><th>Pedido</th><th>Mínimo</th><th>Asignado</th><th>Faltante</th><th>Cumplimiento</th><th className="text-left pl-3">Regla</th><th>Ajuste manual</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.allocations.map((a) => {
-                  const node = nodes.find((n) => n.id === a.nodeId)!;
-                  return (
-                    <tr key={a.nodeId} className="border-t border-black/5 text-right font-mono">
-                      <td className="text-left font-sans font-bold py-1.5">{node.name}</td>
-                      <td className="font-sans">{PRIORITY_LABEL[node.priority]}</td>
-                      <td>{fmtInt(a.requested)}</td><td>{fmtInt(a.minimum)}</td><td className="font-extrabold">{fmtInt(a.allocated)}</td>
-                      <td className={a.shortfall > 0.5 ? 'text-[#c2410c]' : 'text-slate-300'}>{fmtInt(a.shortfall)}</td>
-                      <td>{fmtDec(a.fillRate * 100, 0)}%</td>
-                      <td className="text-left font-sans pl-3">{REASON_LABEL[a.reason]}</td>
-                      <td><input type="number" min="0" placeholder="—" value={overrides[a.nodeId] ?? ''} onChange={(e) => { setOverrides((o) => ({ ...o, [a.nodeId]: e.target.value })); setApproved(false); }} aria-label={`Ajuste manual ${node.name}`} className="w-24 rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-right" /></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <ul className="space-y-3">
+              {result.allocations.map((a) => {
+                const node = nodes.find((n) => n.id === a.nodeId)!;
+                const ok = a.shortfall <= 0.5;
+                return (
+                  <li key={a.nodeId} className="rounded-2xl bg-white/60 border border-white/80 p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xs font-black truncate">{node.name}</span>
+                        <span className="text-[10px] font-bold rounded-full px-2 py-0.5 bg-[#DDCBF5] text-black">{PRIORITY_LABEL[node.priority]}</span>
+                        <span className="text-[10px] font-bold rounded-full px-2 py-0.5 bg-white text-slate-600 border border-black/5">{REASON_LABEL[a.reason]}</span>
+                      </div>
+                      <div className="text-xs font-mono">
+                        <span className="font-extrabold">{fmtInt(a.allocated)}</span> de {fmtInt(a.requested)} cajas · <span className={ok ? 'text-emerald-800 font-bold' : 'text-[#c2410c] font-bold'}>{fmtDec(a.fillRate * 100, 0)} %</span>
+                      </div>
+                    </div>
+                    <div className="mt-2 grid grid-cols-[1fr_auto] items-center gap-3">
+                      <ProgressBar value={a.allocated} max={a.requested} mark={a.minimum} color={ok ? '#7AFFA1' : '#FFA27D'} height={12} />
+                      <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1.5">
+                        Fijar a mano
+                        <input type="number" min="0" placeholder="—" value={overrides[a.nodeId] ?? ''} onChange={(e) => { setOverrides((o) => ({ ...o, [a.nodeId]: e.target.value })); setApproved(false); }} aria-label={`Ajuste manual ${node.name}`} className="w-24 rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-right font-mono text-xs" />
+                      </label>
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-1">La marca negra es el mínimo que se protege ({fmtInt(a.minimum)} cajas){a.shortfall > 0.5 ? ` · faltan ${fmtInt(a.shortfall)} cajas` : ''}</div>
+                  </li>
+                );
+              })}
+            </ul>
             <div className="flex flex-wrap items-end gap-3">
               <input value={author} onChange={(e) => setAuthor(e.target.value)} aria-label="Autor del reparto" className="rounded-xl border border-black/10 bg-white/80 px-2.5 py-2 text-xs" />
               <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={overridesActive ? 'Motivo del ajuste manual (obligatorio)' : 'Motivo (opcional)'} aria-label="Motivo del reparto" className="flex-1 min-w-48 rounded-xl border border-black/10 bg-white/80 px-2.5 py-2 text-xs" />
@@ -334,5 +406,37 @@ export function DrpView() {
         )}
       </div>
     </div>
+  );
+}
+
+interface NodeStats { initial: number; coverDays: number | null; occupancy: number; stockouts: number; below: number; space: number }
+
+function NodeCard({ n, stats, selected, onSelect, wide = false }: { n: { name: string; type: string; priority: 'HIGH' | 'NORMAL' | 'LOW'; leadTimeWeeks: number; demandShare: number }; stats: NodeStats; selected: boolean; onSelect: () => void; wide?: boolean }) {
+  const tone = stats.stockouts > 0 ? 'bg-[#FFA27D]' : stats.below > 0 || stats.space > 0 ? 'bg-[#FFF87C]' : 'bg-[#7AFFA1]';
+  return (
+    <button onClick={onSelect} className={`glass-card glass-card-hover rounded-2xl p-3 text-left cursor-pointer ${wide ? 'w-full max-w-md' : ''} ${selected ? 'ring-2 ring-slate-900' : ''}`}>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-black leading-tight">{n.name.replace(' (sint.)', '')}</span>
+        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${tone}`} title={stats.stockouts > 0 ? `${stats.stockouts} quiebre(s)` : stats.below > 0 ? `${stats.below} semana(s) bajo seguridad` : 'Sin alertas'}></span>
+      </div>
+      <div className="text-[10px] text-slate-500 mt-0.5">{PRIORITY_LABEL[n.priority]} · {n.type === 'CEDI' ? 'desde planta' : 'desde CEDI'}: {n.leadTimeWeeks} sem.</div>
+      <div className="mt-2 space-y-1.5">
+        <div>
+          <div className="flex justify-between text-[10px] text-slate-500"><span>Parte de la demanda</span><span className="font-mono font-bold">{fmtDec(n.demandShare * 100, 0)} %</span></div>
+          <ProgressBar value={n.demandShare} max={1} color={SERIES_COLORS[0]} height={6} />
+        </div>
+        <div>
+          <div className="flex justify-between text-[10px] text-slate-500"><span>Bodega ocupada hoy</span><span className="font-mono font-bold">{fmtDec(stats.occupancy * 100, 0)} %</span></div>
+          <ProgressBar value={stats.occupancy} max={1} color={stats.occupancy > 0.9 ? '#FFA27D' : '#9CF5B8'} height={6} />
+        </div>
+      </div>
+      <div className="text-[10px] text-slate-600 mt-1.5">Inventario: <span className="font-mono font-bold">{fmtInt(stats.initial)}</span>{stats.coverDays !== null ? ` cajas · ≈ ${fmtDec(stats.coverDays, 1)} días` : ' cajas'}</div>
+      {(stats.stockouts > 0 || stats.below > 0) && (
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {stats.stockouts > 0 && <span className="text-[9px] font-black rounded-full px-1.5 py-0.5 bg-[#FFA27D]">{stats.stockouts} quiebre(s)</span>}
+          {stats.below > 0 && <span className="text-[9px] font-black rounded-full px-1.5 py-0.5 bg-[#FFF87C]">{stats.below} bajo seguridad</span>}
+        </div>
+      )}
+    </button>
   );
 }
