@@ -3,10 +3,10 @@ import { CYCLE_ORDER, CycleStage } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 
 const STEPS: Record<CycleStage, { title: string; owner: string }> = {
-  DRAFT: { title: 'Capacidad en borrador', owner: 'Miguel' },
-  SENT_TO_MPS: { title: 'Enviado al MPS', owner: 'Daniel' },
-  MPS_FINAL: { title: 'MPS final cerrado', owner: 'Daniel' },
-  FINAL_ALERTS: { title: 'Alertas finales', owner: 'Miguel' },
+  DRAFT: { title: 'Capacidad en borrador', owner: 'Producción' },
+  SENT_TO_MPS: { title: 'Enviado al MPS', owner: 'Distribución' },
+  MPS_FINAL: { title: 'MPS final cerrado', owner: 'Distribución' },
+  FINAL_ALERTS: { title: 'Alertas finales', owner: 'Producción' },
 };
 
 /** Cinta con las 4 etapas del ciclo semanal y el registro de quién hizo qué y por qué. */

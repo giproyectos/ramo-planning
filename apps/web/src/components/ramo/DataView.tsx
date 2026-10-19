@@ -55,7 +55,7 @@ export function DataView() {
         </div>
         <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950">Estado base desde las 3 bases de SAP</h1>
         <p className="text-xs text-slate-500 mt-0.5 font-medium max-w-3xl">
-          Carga los archivos CSV que Miguel descarga cada lunes. Se leen en tu navegador (no se envían a ningún servidor), se validan y el inventario disponible
+          Carga los archivos CSV que se descargan de SAP cada lunes. Se leen en tu navegador (no se envían a ningún servidor), se validan y el inventario disponible
           (stock + en tránsito − pendiente de despacho) pasa a alimentar el neto del MPS. El formato de las columnas es un supuesto: ver docs/formatos-bases-sap.md.
         </p>
       </div>
@@ -193,7 +193,7 @@ export function DataView() {
             </table>
             </Disclosure>
             <p className="text-[10px] text-slate-500 mt-2">
-              Disponible = stock + en tránsito − pendiente de despacho en la ventana (mínimo 0). Esta fórmula es un supuesto pendiente de confirmar con Miguel.
+              Disponible = stock + en tránsito − pendiente de despacho en la ventana (mínimo 0). Esta fórmula es un supuesto pendiente de confirmar con Producción.
             </p>
           </div>
         </>

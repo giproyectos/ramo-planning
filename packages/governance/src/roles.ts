@@ -73,7 +73,7 @@ export function changedSections(prev: Workspace, next: Workspace): string[] {
 }
 
 export type StageName = 'DRAFT' | 'SENT_TO_MPS' | 'MPS_FINAL' | 'FINAL_ALERTS';
-/** Quién puede llevar el ciclo de una etapa a la siguiente: Miguel envía y emite alertas, Daniel cierra el MPS final. */
+/** Quién puede llevar el ciclo de una etapa a la siguiente: Producción envía y emite alertas, Distribución cierra el MPS final. */
 const STAGE_PERMISSION: Record<string, Permission> = {
   'DRAFT>SENT_TO_MPS': 'capacity.edit',
   'SENT_TO_MPS>MPS_FINAL': 'mps.edit',

@@ -36,9 +36,9 @@ const KINDS: ArtifactKind[] = ['PROVISIONAL_ORDERS', 'ORDER_DELETIONS', 'DEMAND_
 
 const SEED_USERS: { id: string; name: string; role: GovRole }[] = [
   { id: 'admin', name: 'Administración', role: 'admin' },
-  { id: 'diana', name: 'Diana (Demanda)', role: 'demand' },
-  { id: 'miguel', name: 'Miguel (Capacidad)', role: 'production' },
-  { id: 'daniel', name: 'Daniel (MPS final)', role: 'distribution' },
+  { id: 'demanda', name: 'Demanda', role: 'demand' },
+  { id: 'produccion', name: 'Producción', role: 'production' },
+  { id: 'distribucion', name: 'Distribución', role: 'distribution' },
   { id: 'compras', name: 'Compras', role: 'purchasing' },
   { id: 'consulta', name: 'Consulta', role: 'viewer' },
 ];

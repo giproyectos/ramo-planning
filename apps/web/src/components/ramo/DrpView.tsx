@@ -338,7 +338,7 @@ export function DrpView() {
               {belowSafety.length > 10 && <li className="text-slate-500">… y {belowSafety.length - 10} más</li>}
             </ul>
           )}
-          <p className="text-[10px] text-slate-500">Canasta (que estén todos los SKUs de la canasta), rotación y frecuencias de despacho de Daniel todavía no se modelan.</p>
+          <p className="text-[10px] text-slate-500">Canasta (que estén todos los SKUs de la canasta), rotación y frecuencias de despacho todavía no se modelan.</p>
         </div>
       </div>
 
@@ -346,7 +346,7 @@ export function DrpView() {
         <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Regla de escasez: reparto cuando producción no alcanza</div>
         <p className="text-xs text-slate-600 max-w-4xl">
           Orden: ajustes manuales → mínimos de cobertura por canal prioritario (alta → normal → baja) → resto a prorrata del pronóstico, sin pasar de lo pedido.
-          <span className="font-bold"> Regla provisional descrita por Diana: pendiente de definición comercial.</span>{' '}
+          <span className="font-bold"> Regla provisional: pendiente de definición comercial.</span>{' '}
           {gaps.length > 0 ? `El CRP actual muestra ${gaps.length} SKU-semana con faltante de producción.` : 'El CRP actual no muestra faltantes; puedes simular uno.'}
         </p>
         <div className="flex flex-wrap items-end gap-3">

@@ -4,7 +4,7 @@ import { DrpResult } from './drp';
 import { NetPlanRow } from './mps';
 
 /**
- * Regla de escasez (descrita por Diana, pendiente de validación comercial):
+ * Regla de escasez (descrita en el levantamiento, pendiente de validación comercial):
  *  1. Overrides manuales del planeador (se respetan primero, hasta lo pedido y lo disponible).
  *  2. Mínimos de cobertura por canal prioritario: cada nodo recibe `minCoverDays` de su demanda, por niveles HIGH → NORMAL → LOW;
  *     si un nivel no alcanza, se reparte a prorrata de sus mínimos.

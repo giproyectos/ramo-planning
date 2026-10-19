@@ -310,7 +310,7 @@ export function adjustOrderForVariability(s: OrderSuggestion, moq: number, sigma
 // ---------------------------------------------------------------------------------------------- prioridad y consolidación
 export type Urgency = 'CRITICAL' | 'NORMAL' | 'WAIT';
 
-/** Regla validada con Diana: crítico < 5 días hasta la ruptura; normal si hay que decidir; puede esperar si no hay riesgo cercano. */
+/** Regla de priorización: crítico < 5 días hasta la ruptura; normal si hay que decidir; puede esperar si no hay riesgo cercano. */
 export function urgencyOf(r: MaterialRisk, criticalDays = 5): Urgency {
   if (r.daysToRupture !== null && r.daysToRupture < criticalDays) return 'CRITICAL';
   return r.status === 'OK' ? 'WAIT' : 'NORMAL';

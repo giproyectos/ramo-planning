@@ -37,7 +37,7 @@ export function computeNetProduction(ds: RamoDataset, demand: DemandRecord[]): N
   return result;
 }
 
-/** Aplica los ajustes de Daniel (MPS final) sobre el neto. Nunca deja producción negativa. */
+/** Aplica los ajustes de Distribución (MPS final) sobre el neto. Nunca deja producción negativa. */
 export function applyMpsAdjustments(net: NetPlanRow[], adjustments: MpsAdjustment[]): NetPlanRow[] {
   const out = net.map((r) => ({ ...r }));
   for (const a of adjustments) {

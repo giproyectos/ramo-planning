@@ -130,7 +130,7 @@ for (const id of ['SK-001', 'SK-002', 'SK-007']) {
   weeks.slice(0, 2).forEach((w, i) => openOrders.push({ skuId: id, weekStart: w, commercialQty: Math.round(baseQty(s, i) * 0.2) }));
 }
 
-// Red de distribución: planta → CEDI → 4 agencias. Participaciones y capacidades inventadas (se afinan con datos reales de Diana).
+// Red de distribución: planta → CEDI → 4 agencias. Participaciones y capacidades inventadas (se afinan con datos reales).
 const nodes = [
   { id: 'N-CEDI', name: 'CEDI principal (sint.)', type: 'CEDI', leadTimeWeeks: 1, demandShare: 0.3, inventoryShare: 0.4, priority: 'NORMAL', minCoverDays: 0, storageCapacity: 400000 },
   { id: 'N-A1', name: 'Agencia 1 · canal moderno (sint.)', type: 'AGENCY', parentId: 'N-CEDI', leadTimeWeeks: 0, demandShare: 0.25, inventoryShare: 0.15, priority: 'HIGH', minCoverDays: 4, storageCapacity: 90000 },

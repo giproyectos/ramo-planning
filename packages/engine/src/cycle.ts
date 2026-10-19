@@ -3,10 +3,10 @@ import { CrpOptions, WeekCapacity, computeCrp } from './crp';
 import { NetPlanRow, applyMpsAdjustments } from './mps';
 
 /**
- * Ciclo semanal Miguel (CRP) ↔ Daniel (MPS final):
+ * Ciclo semanal Producción (CRP) ↔ Distribución (MPS final):
  *   DRAFT → SENT_TO_MPS → MPS_FINAL → FINAL_ALERTS
- * La necesidad llega a Miguel, él calcula capacidad y decide horas extra, se la envía a Daniel,
- * Daniel ajusta con el negocio y cierra el MPS final, y Miguel recalcula las alertas finales.
+ * La necesidad llega a Producción, él calcula capacidad y decide horas extra, se la envía a Distribución,
+ * Distribución ajusta con el negocio y cierra el MPS final, y Producción recalcula las alertas finales.
  */
 export type CycleStage = 'DRAFT' | 'SENT_TO_MPS' | 'MPS_FINAL' | 'FINAL_ALERTS';
 
@@ -41,7 +41,7 @@ export interface CycleSnapshot {
   alerts: OverloadAlert[];
 }
 
-/** Estado del plan dadas las decisiones de Miguel y los ajustes de Daniel. */
+/** Estado del plan dadas las decisiones de Producción y los ajustes de Distribución. */
 export function snapshotCycle(
   ds: RamoDataset,
   baseNet: NetPlanRow[],

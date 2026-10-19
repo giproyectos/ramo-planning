@@ -16,7 +16,7 @@ let dir: string;
 let app: App;
 let base: string;
 let clock = Date.parse('2026-10-05T08:00:00Z');
-const seedPasswords = Object.fromEntries(['admin', 'diana', 'miguel', 'daniel', 'compras', 'consulta'].map((id) => [id, PASS(id)]));
+const seedPasswords = Object.fromEntries(['admin', 'demanda', 'produccion', 'distribucion', 'compras', 'consulta'].map((id) => [id, PASS(id)]));
 
 async function start(existingDir?: string) {
   dir = existingDir ?? mkdtempSync(join(tmpdir(), 'ramo-server-'));
@@ -61,31 +61,31 @@ describe('servidor básico', () => {
 
 describe('autenticación', () => {
   it('entra con la contraseña correcta y devuelve usuario con rol', async () => {
-    const r = await call('POST', '/api/login', { body: { username: 'MIGUEL', password: PASS('miguel') } });
+    const r = await call('POST', '/api/login', { body: { username: 'PRODUCCION', password: PASS('produccion') } });
     expect(r.status).toBe(200);
-    expect(r.json.user).toMatchObject({ id: 'miguel', role: 'production' });
-    expect((await call('GET', '/api/me', { token: r.json.token })).json.user.id).toBe('miguel');
+    expect(r.json.user).toMatchObject({ id: 'produccion', role: 'production' });
+    expect((await call('GET', '/api/me', { token: r.json.token })).json.user.id).toBe('produccion');
   });
 
   it('el mismo mensaje para usuario inexistente y contraseña errónea (no revela cuáles existen)', async () => {
-    const a = await call('POST', '/api/login', { body: { username: 'miguel', password: 'mala' } });
+    const a = await call('POST', '/api/login', { body: { username: 'produccion', password: 'mala' } });
     const b = await call('POST', '/api/login', { body: { username: 'nadie', password: 'mala' } });
     expect(a.status).toBe(401);
     expect(a.json).toEqual(b.json);
   });
 
   it('tras varios fallos bloquea al usuario (aunque acierte la contraseña) y se libera con el tiempo', async () => {
-    for (let i = 0; i < 3; i++) await call('POST', '/api/login', { body: { username: 'diana', password: 'x' } });
-    const locked = await call('POST', '/api/login', { body: { username: 'diana', password: PASS('diana') } });
+    for (let i = 0; i < 3; i++) await call('POST', '/api/login', { body: { username: 'demanda', password: 'x' } });
+    const locked = await call('POST', '/api/login', { body: { username: 'demanda', password: PASS('demanda') } });
     expect(locked.status).toBe(429);
     expect(locked.headers.get('retry-after')).toBe('60');
     clock += 61_000;
-    expect((await call('POST', '/api/login', { body: { username: 'diana', password: PASS('diana') } })).status).toBe(200);
+    expect((await call('POST', '/api/login', { body: { username: 'demanda', password: PASS('demanda') } })).status).toBe(200);
   });
 
   it('rechaza tokens ausentes, manipulados y vencidos', async () => {
     expect((await call('GET', '/api/me')).status).toBe(401);
-    const token = await login('miguel');
+    const token = await login('produccion');
     const [body, sig] = token.split('.');
     const forged = `${Buffer.from(JSON.stringify({ sub: 'admin', iat: 0, exp: clock + 1e9 })).toString('base64url')}.${sig}`;
     expect((await call('GET', '/api/me', { token: forged })).status).toBe(401);
@@ -95,10 +95,10 @@ describe('autenticación', () => {
   });
 
   it('las contraseñas se guardan con hash, nunca en claro, y los fallos quedan auditados sin la contraseña', async () => {
-    await call('POST', '/api/login', { body: { username: 'miguel', password: 'incorrecta-123' } });
+    await call('POST', '/api/login', { body: { username: 'produccion', password: 'incorrecta-123' } });
     const state = readFileSync(join(dir, 'state.json'), 'utf8');
     const audit = readFileSync(join(dir, 'audit.ndjson'), 'utf8');
-    expect(state).not.toContain(PASS('miguel'));
+    expect(state).not.toContain(PASS('produccion'));
     expect(state).toContain('scrypt$');
     expect(audit).toContain('auth.failure');
     expect(audit).not.toContain('incorrecta-123');
@@ -108,7 +108,7 @@ describe('autenticación', () => {
 describe('usuarios', () => {
   it('solo administración lista y crea usuarios; la contraseña nueva se muestra una vez y sirve para entrar', async () => {
     const admin = await login('admin');
-    expect((await call('GET', '/api/users', { token: await login('miguel') })).status).toBe(403);
+    expect((await call('GET', '/api/users', { token: await login('produccion') })).status).toBe(403);
     const list = await call('GET', '/api/users', { token: admin });
     expect(list.json.users).toHaveLength(6);
     expect(JSON.stringify(list.json)).not.toContain('passwordHash');
@@ -139,13 +139,13 @@ describe('espacio de trabajo compartido', () => {
   const empty = { blocks: [], decisions: [], adjustments: [], stage: 'DRAFT', recDecisions: {}, leadTimeOverrides: {}, log: [] };
 
   it('arranca vacío; cada rol edita solo su sección y las sube la revisión', async () => {
-    const diana = await login('diana');
-    const ws = await call('GET', '/api/workspace', { token: diana });
+    const demanda = await login('demanda');
+    const ws = await call('GET', '/api/workspace', { token: demanda });
     expect(ws.json).toMatchObject({ revision: 0, data: empty });
-    const ok = await put(diana, 0, { ...empty, blocks: [{ id: 'b1' }] });
+    const ok = await put(demanda, 0, { ...empty, blocks: [{ id: 'b1' }] });
     expect(ok.status).toBe(200);
-    expect(ok.json).toMatchObject({ revision: 1, updatedBy: 'diana' });
-    const denied = await put(await login('miguel'), 1, { ...empty, blocks: [{ id: 'b1' }], decisions: [{ id: 'd1' }], adjustments: [{ id: 'a1' }] }); // Miguel no ajusta el MPS
+    expect(ok.json).toMatchObject({ revision: 1, updatedBy: 'demanda' });
+    const denied = await put(await login('produccion'), 1, { ...empty, blocks: [{ id: 'b1' }], decisions: [{ id: 'd1' }], adjustments: [{ id: 'a1' }] }); // Producción no ajusta el MPS
     expect(denied.status).toBe(403);
     expect(denied.json.error.message).toContain('adjustments');
   });
@@ -157,17 +157,17 @@ describe('espacio de trabajo compartido', () => {
   });
 
   it('rechaza guardar sobre una revisión vieja (conflicto) y deja intacto lo de la otra persona', async () => {
-    const diana = await login('diana');
-    const miguel = await login('miguel');
-    await put(diana, 0, { ...empty, blocks: [{ id: 'b1' }] });
-    const conflict = await put(miguel, 0, { ...empty, blocks: [{ id: 'b1' }], decisions: [{ id: 'd1' }] });
+    const demanda = await login('demanda');
+    const produccion = await login('produccion');
+    await put(demanda, 0, { ...empty, blocks: [{ id: 'b1' }] });
+    const conflict = await put(produccion, 0, { ...empty, blocks: [{ id: 'b1' }], decisions: [{ id: 'd1' }] });
     expect(conflict.status).toBe(409);
-    expect((await call('GET', '/api/workspace', { token: miguel })).json.data.blocks).toEqual([{ id: 'b1' }]);
+    expect((await call('GET', '/api/workspace', { token: produccion })).json.data.blocks).toEqual([{ id: 'b1' }]);
   });
 
   it('con escrituras simultáneas sobre la misma revisión solo una gana', async () => {
-    const diana = await login('diana');
-    const results = await Promise.all(Array.from({ length: 12 }, (_, i) => put(diana, 0, { ...empty, blocks: [{ id: `b${i}` }] })));
+    const demanda = await login('demanda');
+    const results = await Promise.all(Array.from({ length: 12 }, (_, i) => put(demanda, 0, { ...empty, blocks: [{ id: `b${i}` }] })));
     expect(results.filter((r) => r.status === 200)).toHaveLength(1);
     expect(results.filter((r) => r.status === 409)).toHaveLength(11);
   });
@@ -182,16 +182,16 @@ describe('espacio de trabajo compartido', () => {
   });
 
   it('las etapas del ciclo avanzan por el rol de cada capa', async () => {
-    const miguel = await login('miguel');
-    const daniel = await login('daniel');
-    expect((await put(daniel, 0, { ...empty, stage: 'SENT_TO_MPS' })).status).toBe(403); // Daniel no envía
-    expect((await put(miguel, 0, { ...empty, stage: 'SENT_TO_MPS' })).status).toBe(200); // Miguel sí
-    expect((await put(miguel, 1, { ...empty, stage: 'MPS_FINAL' })).status).toBe(403); // Miguel no cierra el MPS final
-    expect((await put(daniel, 1, { ...empty, stage: 'MPS_FINAL' })).status).toBe(200);
+    const produccion = await login('produccion');
+    const distribucion = await login('distribucion');
+    expect((await put(distribucion, 0, { ...empty, stage: 'SENT_TO_MPS' })).status).toBe(403); // Distribución no envía
+    expect((await put(produccion, 0, { ...empty, stage: 'SENT_TO_MPS' })).status).toBe(200); // Producción sí
+    expect((await put(produccion, 1, { ...empty, stage: 'MPS_FINAL' })).status).toBe(403); // Producción no cierra el MPS final
+    expect((await put(distribucion, 1, { ...empty, stage: 'MPS_FINAL' })).status).toBe(200);
   });
 
   it('valida el cuerpo', async () => {
-    const d = await login('diana');
+    const d = await login('demanda');
     expect((await call('PUT', '/api/workspace', { token: d, body: { data: empty } })).status).toBe(422);
     expect((await call('PUT', '/api/workspace', { token: d, body: { baseRevision: 0, data: [] } })).status).toBe(422);
   });
@@ -214,66 +214,66 @@ const summary = { weeks: 13 };
 describe('salida a SAP: propuesta, aprobación y publicación', () => {
   const propose = (token: string, body: Record<string, unknown>) => call('POST', '/api/releases', { token, body });
 
-  it('ciclo completo con auditoría íntegra: propone Miguel, aprueba y publica Daniel', async () => {
-    const miguel = await login('miguel');
-    const daniel = await login('daniel');
-    const { json: list } = await call('GET', '/api/releases', { token: miguel });
+  it('ciclo completo con auditoría íntegra: propone Producción, aprueba y publica Distribución', async () => {
+    const produccion = await login('produccion');
+    const distribucion = await login('distribucion');
+    const { json: list } = await call('GET', '/api/releases', { token: produccion });
     expect(list).toMatchObject({ releases: [], nextId: 'REL-0001' });
 
     const { artifacts } = artifactsFor('REL-0001');
-    const p = await propose(miguel, { releaseId: 'REL-0001', summary, artifacts, warnings: [] });
+    const p = await propose(produccion, { releaseId: 'REL-0001', summary, artifacts, warnings: [] });
     expect(p.status).toBe(201);
-    expect(p.json).toMatchObject({ id: 'REL-0001', status: 'PROPOSED', proposedBy: { id: 'miguel' } });
+    expect(p.json).toMatchObject({ id: 'REL-0001', status: 'PROPOSED', proposedBy: { id: 'produccion' } });
     expect(p.json.contentHash).toMatch(/^[0-9a-f]{64}$/);
     expect(p.json.artifacts.every((a: any) => /^[0-9a-f]{64}$/.test(a.sha256) && a.rows > 0)).toBe(true);
-    expect(p.json.approvals.capacity.by.id).toBe('miguel');
+    expect(p.json.approvals.capacity.by.id).toBe('produccion');
 
-    expect((await call('POST', '/api/releases/REL-0001/approve', { token: miguel, body: { as: 'capacity' } })).status).toBe(409); // doble control
-    expect((await call('POST', '/api/releases/REL-0001/publish', { token: daniel })).status).toBe(409); // falta la aprobación del MPS
+    expect((await call('POST', '/api/releases/REL-0001/approve', { token: produccion, body: { as: 'capacity' } })).status).toBe(409); // doble control
+    expect((await call('POST', '/api/releases/REL-0001/publish', { token: distribucion })).status).toBe(409); // falta la aprobación del MPS
     expect((await call('POST', '/api/releases/REL-0001/approve', { token: await login('compras'), body: { as: 'mps' } })).status).toBe(403);
-    const ap = await call('POST', '/api/releases/REL-0001/approve', { token: daniel, body: { as: 'mps', comment: 'Rojos resueltos' } });
+    const ap = await call('POST', '/api/releases/REL-0001/approve', { token: distribucion, body: { as: 'mps', comment: 'Rojos resueltos' } });
     expect(ap.json.status).toBe('APPROVED');
-    expect((await call('POST', '/api/releases/REL-0001/publish', { token: miguel })).status).toBe(409); // quien propone no publica
-    const pub = await call('POST', '/api/releases/REL-0001/publish', { token: daniel });
+    expect((await call('POST', '/api/releases/REL-0001/publish', { token: produccion })).status).toBe(409); // quien propone no publica
+    const pub = await call('POST', '/api/releases/REL-0001/publish', { token: distribucion });
     expect(pub.status).toBe(200);
-    expect(pub.json).toMatchObject({ status: 'RELEASED', releasedBy: { id: 'daniel' } });
+    expect(pub.json).toMatchObject({ status: 'RELEASED', releasedBy: { id: 'distribucion' } });
 
     const name = artifacts[0].name;
-    const dl = await call('GET', `/api/releases/REL-0001/artifacts/${name}`, { token: daniel });
+    const dl = await call('GET', `/api/releases/REL-0001/artifacts/${name}`, { token: distribucion });
     expect(dl.status).toBe(200);
     expect(dl.text).toBe(artifacts[0].content);
     expect(dl.headers.get('content-disposition')).toContain(name);
 
-    const verify = await call('GET', '/api/audit/verify', { token: daniel });
+    const verify = await call('GET', '/api/audit/verify', { token: distribucion });
     expect(verify.json.ok).toBe(true);
-    const types = (await call('GET', '/api/audit?limit=100', { token: daniel })).json.entries.map((e: any) => e.type);
+    const types = (await call('GET', '/api/audit?limit=100', { token: distribucion })).json.entries.map((e: any) => e.type);
     for (const t of ['release.propose', 'release.approve', 'release.publish', 'artifact.download']) expect(types).toContain(t);
   });
 
   it('el rechazo exige motivo, queda auditado y permite una propuesta nueva', async () => {
-    const miguel = await login('miguel');
-    const daniel = await login('daniel');
-    await propose(miguel, { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts });
-    expect((await call('POST', '/api/releases/REL-0001/reject', { token: daniel, body: { reason: 'no' } })).status).toBe(422);
-    const rej = await call('POST', '/api/releases/REL-0001/reject', { token: daniel, body: { reason: 'La línea de barras sigue en rojo' } });
+    const produccion = await login('produccion');
+    const distribucion = await login('distribucion');
+    await propose(produccion, { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts });
+    expect((await call('POST', '/api/releases/REL-0001/reject', { token: distribucion, body: { reason: 'no' } })).status).toBe(422);
+    const rej = await call('POST', '/api/releases/REL-0001/reject', { token: distribucion, body: { reason: 'La línea de barras sigue en rojo' } });
     expect(rej.json.status).toBe('REJECTED');
-    const again = await propose(miguel, { releaseId: 'REL-0002', summary, artifacts: artifactsFor('REL-0002').artifacts });
+    const again = await propose(produccion, { releaseId: 'REL-0002', summary, artifacts: artifactsFor('REL-0002').artifacts });
     expect(again.status).toBe(201);
   });
 
   it('quien no tiene el rol no propone; no hay dos propuestas abiertas', async () => {
     const { artifacts } = artifactsFor('REL-0001');
-    expect((await propose(await login('diana'), { releaseId: 'REL-0001', summary, artifacts })).status).toBe(403);
-    const miguel = await login('miguel');
-    expect((await propose(miguel, { releaseId: 'REL-0001', summary, artifacts })).status).toBe(201);
-    expect((await propose(miguel, { releaseId: 'REL-0002', summary, artifacts: artifactsFor('REL-0002').artifacts })).status).toBe(409);
+    expect((await propose(await login('demanda'), { releaseId: 'REL-0001', summary, artifacts })).status).toBe(403);
+    const produccion = await login('produccion');
+    expect((await propose(produccion, { releaseId: 'REL-0001', summary, artifacts })).status).toBe(201);
+    expect((await propose(produccion, { releaseId: 'REL-0002', summary, artifacts: artifactsFor('REL-0002').artifacts })).status).toBe(409);
   });
 
   it('valida la propuesta: número vigente, archivos bien formados, referencias y nombres seguros', async () => {
-    const miguel = await login('miguel');
+    const produccion = await login('produccion');
     const { artifacts } = artifactsFor('REL-0001');
-    const code = async (body: Record<string, unknown>) => (await propose(miguel, { releaseId: 'REL-0001', summary, ...body })).json?.error?.code;
-    expect((await propose(miguel, { releaseId: 'REL-0007', summary, artifacts })).json.error.code).toBe('STALE_RELEASE_ID');
+    const code = async (body: Record<string, unknown>) => (await propose(produccion, { releaseId: 'REL-0001', summary, ...body })).json?.error?.code;
+    expect((await propose(produccion, { releaseId: 'REL-0007', summary, artifacts })).json.error.code).toBe('STALE_RELEASE_ID');
     expect(await code({ artifacts: [] })).toBe('BAD_ARTIFACTS');
     expect(await code({ artifacts: [{ ...artifacts[0], name: '../secreto.csv' }] })).toBe('BAD_ARTIFACT_NAME');
     expect(await code({ artifacts: [{ ...artifacts[0], kind: 'OTRO' }] })).toBe('BAD_ARTIFACT_KIND');
@@ -287,66 +287,66 @@ describe('salida a SAP: propuesta, aprobación y publicación', () => {
   });
 
   it('una nueva publicación debe borrar exactamente las órdenes de la anterior (si no, se duplicaría la necesidad)', async () => {
-    const miguel = await login('miguel');
-    const daniel = await login('daniel');
+    const produccion = await login('produccion');
+    const distribucion = await login('distribucion');
     const first = artifactsFor('REL-0001');
-    await propose(miguel, { releaseId: 'REL-0001', summary, artifacts: first.artifacts });
-    await call('POST', '/api/releases/REL-0001/approve', { token: daniel, body: { as: 'mps' } });
-    await call('POST', '/api/releases/REL-0001/publish', { token: daniel });
+    await propose(produccion, { releaseId: 'REL-0001', summary, artifacts: first.artifacts });
+    await call('POST', '/api/releases/REL-0001/approve', { token: distribucion, body: { as: 'mps' } });
+    await call('POST', '/api/releases/REL-0001/publish', { token: distribucion });
 
-    const prior = await call('GET', '/api/releases/prior-orders', { token: miguel });
+    const prior = await call('GET', '/api/releases/prior-orders', { token: produccion });
     expect(prior.json.releaseId).toBe('REL-0001');
     expect(prior.json.orders).toHaveLength(first.created.length);
 
     const plan2 = net.map((n) => ({ ...n, netProduction: n.netProduction * 1.05 }));
     const withoutDel = artifactsFor('REL-0002', plan2);
-    expect((await propose(miguel, { releaseId: 'REL-0002', summary, artifacts: withoutDel.artifacts })).json.error.code).toBe('MISSING_DELETIONS');
+    expect((await propose(produccion, { releaseId: 'REL-0002', summary, artifacts: withoutDel.artifacts })).json.error.code).toBe('MISSING_DELETIONS');
 
     const ok = artifactsFor('REL-0002', plan2, prior.json.orders);
     expect(ok.artifacts.some((a) => a.kind === 'ORDER_DELETIONS')).toBe(true);
     const extra = ok.artifacts.map((a) => (a.kind === 'ORDER_DELETIONS' ? { ...a, content: a.content + a.content.split('\n')[1].replace(/\|A\|/, '|Z|').replace(/\|SK-\d+\|/, '|SK-999|') + '\n' } : a));
-    expect((await propose(miguel, { releaseId: 'REL-0002', summary, artifacts: extra })).json.error.code).toBe('UNEXPECTED_DELETIONS');
+    expect((await propose(produccion, { releaseId: 'REL-0002', summary, artifacts: extra })).json.error.code).toBe('UNEXPECTED_DELETIONS');
 
-    const good = await propose(miguel, { releaseId: 'REL-0002', summary, artifacts: ok.artifacts });
+    const good = await propose(produccion, { releaseId: 'REL-0002', summary, artifacts: ok.artifacts });
     expect(good.status).toBe(201);
     expect(good.json.supersedes).toBe('REL-0001');
-    await call('POST', '/api/releases/REL-0002/approve', { token: daniel, body: { as: 'mps' } });
-    await call('POST', '/api/releases/REL-0002/publish', { token: daniel });
-    const all = (await call('GET', '/api/releases', { token: daniel })).json.releases;
+    await call('POST', '/api/releases/REL-0002/approve', { token: distribucion, body: { as: 'mps' } });
+    await call('POST', '/api/releases/REL-0002/publish', { token: distribucion });
+    const all = (await call('GET', '/api/releases', { token: distribucion })).json.releases;
     expect(all.map((r: any) => [r.id, r.status])).toEqual([['REL-0001', 'SUPERSEDED'], ['REL-0002', 'RELEASED']]);
   });
 
   it('si el contenido guardado cambia después de aprobarse, la publicación se bloquea y queda auditado', async () => {
-    const miguel = await login('miguel');
-    const daniel = await login('daniel');
-    await propose(miguel, { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts });
-    await call('POST', '/api/releases/REL-0001/approve', { token: daniel, body: { as: 'mps' } });
+    const produccion = await login('produccion');
+    const distribucion = await login('distribucion');
+    await propose(produccion, { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts });
+    await call('POST', '/api/releases/REL-0001/approve', { token: distribucion, body: { as: 'mps' } });
     app.store.state.releaseState.releases[0].artifacts[0].content += 'CREAR;1000;000000000009000001;LA;999999;CJ;09.10.2026;L;X\n'; // alguien toca el archivo guardado
-    const r = await call('POST', '/api/releases/REL-0001/publish', { token: daniel });
+    const r = await call('POST', '/api/releases/REL-0001/publish', { token: distribucion });
     expect(r.status).toBe(409);
     expect(r.json.error.code).toBe('INTEGRITY_ERROR');
-    expect((await call('GET', '/api/audit', { token: daniel })).json.entries.some((e: any) => e.type === 'integrity.failure')).toBe(true);
+    expect((await call('GET', '/api/audit', { token: distribucion })).json.entries.some((e: any) => e.type === 'integrity.failure')).toBe(true);
     expect(app.store.state.releaseState.releases[0].status).toBe('APPROVED');
   });
 });
 
 describe('persistencia y auditoría', () => {
   it('al reiniciar conserva usuarios, espacio de trabajo y propuestas, y los tokens siguen valiendo', async () => {
-    const miguel = await login('miguel');
-    const diana = await login('diana');
-    await call('PUT', '/api/workspace', { token: diana, body: { baseRevision: 0, data: { blocks: [{ id: 'b1' }], decisions: [], adjustments: [], stage: 'DRAFT', recDecisions: {}, leadTimeOverrides: {}, log: [] } } });
-    await call('POST', '/api/releases', { token: miguel, body: { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts } });
+    const produccion = await login('produccion');
+    const demanda = await login('demanda');
+    await call('PUT', '/api/workspace', { token: demanda, body: { baseRevision: 0, data: { blocks: [{ id: 'b1' }], decisions: [], adjustments: [], stage: 'DRAFT', recDecisions: {}, leadTimeOverrides: {}, log: [] } } });
+    await call('POST', '/api/releases', { token: produccion, body: { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts } });
     await app.close();
     await start(dir);
-    expect((await call('GET', '/api/workspace', { token: diana })).json.data.blocks).toEqual([{ id: 'b1' }]);
-    expect((await call('GET', '/api/releases', { token: miguel })).json.releases.map((r: any) => r.id)).toEqual(['REL-0001']);
-    expect((await call('POST', '/api/login', { body: { username: 'miguel', password: PASS('miguel') } })).status).toBe(200);
-    expect((await call('GET', '/api/audit/verify', { token: miguel })).json.ok).toBe(true);
+    expect((await call('GET', '/api/workspace', { token: demanda })).json.data.blocks).toEqual([{ id: 'b1' }]);
+    expect((await call('GET', '/api/releases', { token: produccion })).json.releases.map((r: any) => r.id)).toEqual(['REL-0001']);
+    expect((await call('POST', '/api/login', { body: { username: 'produccion', password: PASS('produccion') } })).status).toBe(200);
+    expect((await call('GET', '/api/audit/verify', { token: produccion })).json.ok).toBe(true);
   });
 
   it('si alguien edita el archivo de auditoría en disco, la verificación lo detecta tras reiniciar', async () => {
-    const miguel = await login('miguel');
-    await call('POST', '/api/releases', { token: miguel, body: { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts } });
+    const produccion = await login('produccion');
+    await call('POST', '/api/releases', { token: produccion, body: { releaseId: 'REL-0001', summary, artifacts: artifactsFor('REL-0001').artifacts } });
     await app.close();
     const path = join(dir, 'audit.ndjson');
     const lines = readFileSync(path, 'utf8').split('\n').filter(Boolean);
@@ -355,7 +355,7 @@ describe('persistencia y auditoría', () => {
     lines[lines.length - 1] = JSON.stringify(forged);
     writeFileSync(path, `${lines.join('\n')}\n`);
     await start(dir);
-    const v = await call('GET', '/api/audit/verify', { token: await login('miguel') });
+    const v = await call('GET', '/api/audit/verify', { token: await login('produccion') });
     expect(v.json).toMatchObject({ ok: false, brokenAt: lines.length });
   });
 

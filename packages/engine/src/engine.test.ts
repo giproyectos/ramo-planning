@@ -74,7 +74,7 @@ describe('MPS: neto de demanda', () => {
     expect(a).toMatchObject({ grossCedi: 100, grossMto: 750, netProduction: 750 });
   });
 
-  it('los ajustes de Daniel suman, no dejan negativos y crean filas faltantes', () => {
+  it('los ajustes de Distribución suman, no dejan negativos y crean filas faltantes', () => {
     const net = [{ skuId: 'A', weekStart: W, grossCedi: 100, grossMto: 0, netProduction: 100 }];
     const adj = (skuId: string, delta: number): MpsAdjustment => ({
       id: skuId + delta, skuId, weekStart: W, deltaCommercialQty: delta, reason: 'r', author: 'a', createdAt: '',
@@ -145,7 +145,7 @@ describe('CRP con tripulación compartida', () => {
   });
 
   it('las horas extra decididas reducen el exceso hasta cerrarlo', () => {
-    const d = (h: number): CapacityDecision => ({ id: 'd' + h, crewId: 'C', weekStart: W, extraHours: h, reason: 'turno extendido', author: 'Miguel', createdAt: '' });
+    const d = (h: number): CapacityDecision => ({ id: 'd' + h, crewId: 'C', weekStart: W, extraHours: h, reason: 'turno extendido', author: 'Producción', createdAt: '' });
     expect(crewOf(mini(), 'POOLED', [d(2)]).crews[0]).toMatchObject({ excessHours: 2, extraHours: 2 });
     expect(crewOf(mini(), 'POOLED', [d(4)]).crews[0]).toMatchObject({ excessHours: 0, status: 'OK' });
   });
@@ -158,14 +158,14 @@ describe('CRP con tripulación compartida', () => {
   });
 });
 
-describe('ciclo Miguel ↔ Daniel', () => {
-  it('Daniel puede resolver el rojo de Miguel con un ajuste negativo trazado', () => {
+describe('ciclo Producción ↔ Distribución', () => {
+  it('Distribución puede resolver el rojo de Producción con un ajuste negativo trazado', () => {
     const ds = mini();
     const base = computeNetProduction(ds, [row('A', 55_000), row('B', 29_000)]);
     const before = snapshotCycle(ds, base, { decisions: [], adjustments: [] });
     expect(before.alerts).toEqual([{ weekStart: W, crewId: 'C', excessHours: 4, saturationPct: 105 }]);
 
-    const adj: MpsAdjustment = { id: 'a1', skuId: 'A', weekStart: W, deltaCommercialQty: -5_000, reason: 'Se mueve a la semana siguiente', author: 'Daniel', createdAt: '' };
+    const adj: MpsAdjustment = { id: 'a1', skuId: 'A', weekStart: W, deltaCommercialQty: -5_000, reason: 'Se mueve a la semana siguiente', author: 'Distribución', createdAt: '' };
     const after = snapshotCycle(ds, base, { decisions: [], adjustments: [adj] });
     expect(after.alerts).toEqual([]);
     expect(overloadAlerts(after.capacity)).toHaveLength(0);

@@ -2,7 +2,7 @@ import { Actor, can } from './roles';
 
 /**
  * Flujo de salida a SAP: propuesta → aprobación de Producción (capacidad) y de Distribución (MPS final), con doble control →
- * publicación. Quien propone aprueba, al proponer, la capa de su propio rol (Miguel propone = capacidad; Daniel propone = MPS) y la
+ * publicación. Quien propone aprueba, al proponer, la capa de su propio rol (Producción propone = capacidad; Distribución propone = MPS) y la
  * otra capa la aprueba otra persona; publica una persona distinta de quien propuso (así bastan dos personas y siempre hay dos distintas). Solo lo aprobado se publica y el contenido aprobado es exactamente el publicado (los archivos llevan hash y no
  * se pueden modificar: cualquier cambio exige una propuesta nueva). Funciones puras: devuelven el estado nuevo o el motivo del rechazo.
  */

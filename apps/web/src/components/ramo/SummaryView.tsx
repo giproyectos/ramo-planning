@@ -116,7 +116,7 @@ export function SummaryView({ onSelectStep }: { onSelectStep: (step: ProcessStep
     attention.push({ step: 'drp', tone: 'bad', text: `Quiebre en ${node}${a.skuId ? ` · ${skuName(a.skuId)}` : ''} · sem. ${weekLabel(a.weekStart)}: ${fmtInt(a.value)} cajas sin cubrir.` });
   }
   for (const r of critRecs.slice(0, 3)) attention.push({ step: 'ai', tone: 'warn', text: r.title });
-  if (stage === 'DRAFT' && overloads.length === 0) attention.push({ step: 'crp', tone: 'info', text: 'El plan de capacidad está en borrador: Miguel puede enviarlo a Daniel.' });
+  if (stage === 'DRAFT' && overloads.length === 0) attention.push({ step: 'crp', tone: 'info', text: 'El plan de capacidad está en borrador: Producción puede enviarlo a Distribución.' });
 
   const labels = weeks.map(weekLabel);
 
@@ -133,7 +133,7 @@ export function SummaryView({ onSelectStep }: { onSelectStep: (step: ProcessStep
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         <Kpi label="Demanda a servir" value={fmtShort(sum(demandByWeek))} unit="cajas" note={forecast ? `${forecast.n1.skus.length} productos pronosticados` : 'Demanda fija del dataset'} tone={forecast ? 'ok' : 'warn'} spark={series(demandByWeek)} onClick={() => onSelectStep('sop')} />
-        <Kpi label="Producción neta" value={fmtShort(sum(netByWeek))} unit="cajas" note={`${adjustments.length} ajuste(s) de Daniel`} tone="info" spark={series(netByWeek)} onClick={() => onSelectStep('mps')} />
+        <Kpi label="Producción neta" value={fmtShort(sum(netByWeek))} unit="cajas" note={`${adjustments.length} ajuste(s) de Distribución`} tone="info" spark={series(netByWeek)} onClick={() => onSelectStep('mps')} />
         <Kpi label="Pico de capacidad" value={peak.pct > 0 ? fmtDec(peak.pct, 0) : '—'} unit="%" note={peak.pct > 0 ? `${crewName(peak.crewId)} · ${weekLabel(peak.week)}` : ''} tone={overloads.length > 0 ? 'bad' : 'ok'} spark={satSeries} onClick={() => onSelectStep('crp')} />
         <Kpi label="Materiales en riesgo" value={String(riskCount('CRITICAL') + riskCount('ORDER'))} unit={`de ${risks.length}`} note={`${riskCount('CRITICAL')} se rompen dentro del plazo`} tone={riskCount('CRITICAL') > 0 ? 'bad' : riskCount('ORDER') > 0 ? 'warn' : 'ok'} onClick={() => onSelectStep('mrp')} />
       </div>

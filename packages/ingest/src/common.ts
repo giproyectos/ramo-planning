@@ -14,9 +14,9 @@ export interface IngestIssue {
 
 export interface IngestContext {
   dataset: RamoDataset;
-  /** Corte de las bases: 'YYYY-MM-DDTHH:MM' (lunes 8:00 en el proceso de Miguel). */
+  /** Corte de las bases: 'YYYY-MM-DDTHH:MM' (lunes 8:00 en el proceso actual). */
   cutAt: string;
-  /** Filas más viejas que esto se descartan (recorte de 2 años pedido por Marlon). */
+  /** Filas más viejas que esto se descartan (recorte de 2 años pedido por Ramo). */
   staleYears?: number;
   /** Ventana de movimientos de inventario (1 mes). */
   movementWindowDays?: number;

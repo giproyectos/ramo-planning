@@ -12,14 +12,14 @@ import { RebalanceCard } from './ai';
 const cellColor = (status: LoadStatus, pct: number) =>
   status === 'CRITICAL' ? 'bg-[#FFA27D] text-black' : status === 'OVER' ? 'bg-[#FFF87C] text-black' : pct === 0 ? 'bg-white/40 text-slate-400' : 'bg-[#7AFFA1]/60 text-black';
 
-/** Vista de Miguel: capacidad por línea y tripulación, con decisiones de horas extra. */
+/** Vista de Producción: capacidad por línea y tripulación, con decisiones de horas extra. */
 export function CrpView() {
   const { dataset, weeks, stage, crewMode, setCrewMode, miguelView, decisions, addDecision, removeDecision, advance, can, canAdvance } = useRamoPlan();
   const [sel, setSel] = useState<{ week: string; crewId: string }>({ week: weeks[1] ?? weeks[0], crewId: 'C-BARMINI' });
   const [extra, setExtra] = useState('2');
   const [reason, setReason] = useState('');
   const { user: authUser } = useAuth();
-  const [author, setAuthor] = useState(authUser?.name ?? 'Miguel');
+  const [author, setAuthor] = useState(authUser?.name ?? 'Producción');
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const editable = (stage === 'DRAFT' || stage === 'FINAL_ALERTS') && can('capacity.edit');
@@ -59,7 +59,7 @@ export function CrpView() {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
             <span className="w-2 h-2 rounded-full bg-[#FFA27D]"></span>
-            <span className="text-black font-extrabold">CRP · Vista de Miguel</span>
+            <span className="text-black font-extrabold">CRP · Vista de Producción</span>
             <span className="text-slate-300">·</span>
             <span>Horizonte {weeks.length} semanas</span>
           </div>
@@ -81,7 +81,7 @@ export function CrpView() {
             ))}
           </div>
           <span className="text-[10px] text-slate-500 max-w-xs lg:text-right">
-            Agrupada = supuesto provisional: las horas de las líneas que comparten tripulación se suman. Pendiente de confirmar con Miguel.
+            Agrupada = supuesto provisional: las horas de las líneas que comparten tripulación se suman. Pendiente de confirmar con Producción.
           </span>
         </div>
       </div>
@@ -284,7 +284,7 @@ export function CrpView() {
             >
               Registrar horas extra
             </button>
-            {!editable && <p className="text-[11px] text-slate-500">Bloqueado mientras el plan está en manos de Daniel.</p>}
+            {!editable && <p className="text-[11px] text-slate-500">Bloqueado mientras el plan está en manos de Distribución.</p>}
             {weekDecisions.length > 0 && (
               <ul className="text-xs space-y-1 pt-1">
                 {weekDecisions.map((d) => (
@@ -304,7 +304,7 @@ export function CrpView() {
           <button
             disabled={!canAdvance('SENT_TO_MPS')}
             title={canAdvance('SENT_TO_MPS') ? undefined : 'Tu rol no puede enviar el plan de capacidades'}
-            onClick={() => advance('SENT_TO_MPS', 'Miguel', `Plan de capacidades enviado a Daniel (${decisions.length} decisión(es), ${miguelView.alerts.length} alerta(s) abiertas)`)}
+            onClick={() => advance('SENT_TO_MPS', 'Producción', `Plan de capacidades enviado a Distribución (${decisions.length} decisión(es), ${miguelView.alerts.length} alerta(s) abiertas)`)}
             className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer disabled:opacity-40"
           >
             Enviar plan de capacidades al MPS →
@@ -314,13 +314,13 @@ export function CrpView() {
           <button
             disabled={!canAdvance('FINAL_ALERTS')}
             title={canAdvance('FINAL_ALERTS') ? undefined : 'Tu rol no puede emitir las alertas finales'}
-            onClick={() => advance('FINAL_ALERTS', 'Miguel', 'Recarga el MPS final, recalcula la explosión y emite las alertas de producción finales')}
+            onClick={() => advance('FINAL_ALERTS', 'Producción', 'Recarga el MPS final, recalcula la explosión y emite las alertas de producción finales')}
             className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full cursor-pointer disabled:opacity-40"
           >
             Recargar MPS final y emitir alertas →
           </button>
         )}
-        {stageIdx === 1 && <span className="text-xs text-slate-500 self-center">En manos de Daniel (MPS final). Cambia a la vista MPS para ajustar.</span>}
+        {stageIdx === 1 && <span className="text-xs text-slate-500 self-center">En manos de Distribución (MPS final). Cambia a la vista MPS para ajustar.</span>}
       </div>
     </div>
   );

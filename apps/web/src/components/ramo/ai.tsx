@@ -76,7 +76,7 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
   if (!plan) return null;
   const sku = (id: string) => dataset.skus.find((s) => s.id === id)?.name.replace(' (sint.)', '') ?? id;
   const crew = (id: string) => dataset.crews.find((c) => c.id === id)?.name.replace('Tripulación ', '') ?? id;
-  const author = user?.name ?? (view === 'capacity' ? 'Miguel' : 'Daniel');
+  const author = user?.name ?? (view === 'capacity' ? 'Producción' : 'Distribución');
   const stageIdx = CYCLE_ORDER.indexOf(stage);
 
   if (plan.overloaded === 0) {
@@ -89,8 +89,8 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
 
   const canMoves = stage === 'SENT_TO_MPS' && can('mps.edit');
   const canExtra = (stage === 'DRAFT' || stage === 'FINAL_ALERTS') && can('capacity.edit');
-  const movesReason = !can('mps.edit') ? 'Tu rol no puede ajustar el MPS.' : stage !== 'SENT_TO_MPS' ? (stageIdx < 1 ? 'Los movimientos los aplica Daniel cuando Miguel le envía el plan.' : 'El MPS ya está cerrado.') : '';
-  const extraReason = !can('capacity.edit') ? 'Tu rol no puede decidir horas extra.' : stage === 'DRAFT' || stage === 'FINAL_ALERTS' ? '' : 'El plan está en manos de Daniel.';
+  const movesReason = !can('mps.edit') ? 'Tu rol no puede ajustar el MPS.' : stage !== 'SENT_TO_MPS' ? (stageIdx < 1 ? 'Los movimientos los aplica Distribución cuando Producción le envía el plan.' : 'El MPS ya está cerrado.') : '';
+  const extraReason = !can('capacity.edit') ? 'Tu rol no puede decidir horas extra.' : stage === 'DRAFT' || stage === 'FINAL_ALERTS' ? '' : 'El plan está en manos de Distribución.';
 
   const grouped = plan.moves.reduce<Record<string, { skuId: string; from: string; to: string; qty: number; hours: number }>>((acc, m) => {
     const k = `${m.skuId}|${m.fromWeek}|${m.toWeek}`;
@@ -125,7 +125,7 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
 
       {list.length > 0 && (
         <div className="mb-3">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Adelantar producción ({list.length} movimiento{list.length > 1 ? 's' : ''}) · lo aplica Daniel en el MPS</div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Adelantar producción ({list.length} movimiento{list.length > 1 ? 's' : ''}) · lo aplica Distribución en el MPS</div>
           <ul className="text-xs space-y-1">
             {list.slice(0, 6).map((m) => (
               <li key={`${m.skuId}${m.from}${m.to}`} className="flex flex-wrap items-center gap-x-2">
@@ -147,7 +147,7 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
 
       {plan.extraHours.length > 0 && (
         <div>
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Horas extra para lo que no se pueda adelantar · lo decide Miguel</div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Horas extra para lo que no se pueda adelantar · lo decide Producción</div>
           <div className="flex flex-wrap gap-2">
             {plan.extraHours.map((e) => (
               <span key={`${e.crewId}${e.weekStart}`} className="text-[11px] font-bold rounded-full px-2.5 py-1 bg-[#FFF87C] text-black">{crew(e.crewId)} · {weekLabel(e.weekStart)} · {fmtDec(e.hours, 1)} h</span>
@@ -161,7 +161,7 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
           )}
         </div>
       )}
-      <p className="text-[10px] text-slate-500 mt-3">Heurística voraz, no un óptimo matemático: no considera el costo de la hora extra frente al de mantener más inventario, ni la canasta o la rotación. Ver ADR 0009.</p>
+      <p className="text-[10px] text-slate-500 mt-3">Heurística voraz, no un óptimo matemático: no considera el costo de la hora extra frente al de mantener más inventario, ni la canasta o la rotación..</p>
     </Card>
   );
 }
@@ -210,9 +210,9 @@ export function AiMapPanel() {
     { area: 'MPS / Capacidad', what: 'Optimizador: adelantar producción antes de pagar horas extra', method: 'Optimización', state: 'Activo' },
     { area: 'Materiales', what: 'Simulación del riesgo de quedarse sin material con retrasos reales del proveedor', method: 'Simulación', state: 'Activo' },
     { area: 'Compras', what: 'Cantidades, plazos dinámicos, cuota, anomalías y consolidación', method: 'Estadística', state: 'Activo' },
-    { area: 'Demanda', what: 'Pronóstico con promociones, festivos y precio (modelo con variables externas)', method: 'Pendiente', state: 'Necesita datos', need: 'Calendario de promociones y precios históricos (Diana)' },
+    { area: 'Demanda', what: 'Pronóstico con promociones, festivos y precio (modelo con variables externas)', method: 'Pendiente', state: 'Necesita datos', need: 'Calendario de promociones y precios históricos (área de Demanda)' },
     { area: 'Demanda', what: 'Corregir ventas por quiebres (demanda no vendida por falta de producto)', method: 'Pendiente', state: 'Necesita datos', need: 'Inventario o quiebres históricos por producto' },
-    { area: 'Capacidad', what: 'Ritmo real de línea y paradas no planeadas (en vez del ritmo estándar)', method: 'Pendiente', state: 'Necesita datos', need: 'Producción real por hora y registro de paradas (Miguel)' },
+    { area: 'Capacidad', what: 'Ritmo real de línea y paradas no planeadas (en vez del ritmo estándar)', method: 'Pendiente', state: 'Necesita datos', need: 'Producción real por hora y registro de paradas (área de Producción)' },
     { area: 'Materiales', what: 'Rendimiento y merma reales de la lista de materiales', method: 'Pendiente', state: 'Necesita datos', need: 'Consumo real de materiales por orden de producción' },
     { area: 'Compras', what: 'Riesgo de incumplimiento por proveedor (modelo de clasificación)', method: 'Pendiente', state: 'Necesita datos', need: 'Más historial por proveedor y causas de retraso' },
     { area: 'Todas', what: 'Explicar el plan en lenguaje natural y redactar correos a proveedores', method: 'Pendiente', state: 'Necesita autorización', need: 'Decisión de Ramo sobre usar un modelo de lenguaje' },

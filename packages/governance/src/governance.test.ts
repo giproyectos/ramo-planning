@@ -7,10 +7,10 @@ import {
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const actor = (id: string, role: Actor['role']): Actor => ({ id, name: id, role });
-const miguel = actor('miguel', 'production');
-const daniel = actor('daniel', 'distribution');
+const produccion = actor('produccion', 'production');
+const distribucion = actor('distribucion', 'distribution');
 const daniela = actor('daniela', 'distribution');
-const diana = actor('diana', 'demand');
+const demanda = actor('demanda', 'demand');
 const NOW = '2026-10-05T08:00:00Z';
 
 const input = (over: Partial<ProposalInput> = {}): ProposalInput => ({
@@ -70,10 +70,10 @@ describe('cambios del espacio de trabajo', () => {
   });
 
   it('la etapa del ciclo avanza solo por la transición del rol correspondiente', () => {
-    expect(checkWorkspaceChange('production', base, { ...base, stage: 'SENT_TO_MPS' }).ok).toBe(true); // Miguel envía
-    expect(checkWorkspaceChange('distribution', base, { ...base, stage: 'SENT_TO_MPS' }).ok).toBe(false); // Daniel no
+    expect(checkWorkspaceChange('production', base, { ...base, stage: 'SENT_TO_MPS' }).ok).toBe(true); // Producción envía
+    expect(checkWorkspaceChange('distribution', base, { ...base, stage: 'SENT_TO_MPS' }).ok).toBe(false); // Distribución no
     const sent = { ...base, stage: 'SENT_TO_MPS' };
-    expect(checkWorkspaceChange('distribution', sent, { ...sent, stage: 'MPS_FINAL' }).ok).toBe(true); // Daniel cierra
+    expect(checkWorkspaceChange('distribution', sent, { ...sent, stage: 'MPS_FINAL' }).ok).toBe(true); // Distribución cierra
     expect(checkWorkspaceChange('production', sent, { ...sent, stage: 'MPS_FINAL' }).ok).toBe(false);
     expect(checkWorkspaceChange('production', base, { ...base, stage: 'MPS_FINAL' }).message).toContain('no permitida'); // no se salta etapas
     expect(checkWorkspaceChange('production', sent, { ...sent, stage: 'DRAFT' }).ok).toBe(true); // reiniciar
@@ -84,7 +84,7 @@ describe('cambios del espacio de trabajo', () => {
 describe('auditoría encadenada', () => {
   const build = (n: number) => {
     const log: AuditEntry[] = [];
-    for (let i = 0; i < n; i++) log.push(appendEntry(log, i % 2 ? miguel : null, `evento.${i}`, { i, z: { b: 2, a: 1 } }, `2026-10-05T08:0${i}:00Z`, sha));
+    for (let i = 0; i < n; i++) log.push(appendEntry(log, i % 2 ? produccion : null, `evento.${i}`, { i, z: { b: 2, a: 1 } }, `2026-10-05T08:0${i}:00Z`, sha));
     return log;
   };
 
@@ -111,7 +111,7 @@ describe('auditoría encadenada', () => {
     const log = build(5);
     expect(verifyChain([log[0], log[1], log[3], log[4]], sha).ok).toBe(false); // borrada
     expect(verifyChain([log[0], log[2], log[1], log[3], log[4]], sha).ok).toBe(false); // reordenada
-    const fake = { ...appendEntry([log[0]], miguel, 'falso', {}, NOW, sha), seq: 2 };
+    const fake = { ...appendEntry([log[0]], produccion, 'falso', {}, NOW, sha), seq: 2 };
     expect(verifyChain([log[0], fake, ...log.slice(2)], sha).ok).toBe(false); // insertada
   });
 
@@ -128,92 +128,92 @@ describe('flujo de salida a SAP', () => {
     if (!r.ok) throw new Error(r.message);
     return r.state;
   };
-  /** Propuesta de Miguel (Producción): su capa (capacidad) queda aprobada al proponer. */
-  const proposed = () => ok(proposeRelease(EMPTY_RELEASE_STATE, miguel, input(), NOW));
-  const approved = (state: ReleaseState, id = 'REL-0001') => ok(approveRelease(state, daniel, id, 'mps', 'Rojos resueltos en la reunión', NOW));
+  /** Propuesta de Producción (Producción): su capa (capacidad) queda aprobada al proponer. */
+  const proposed = () => ok(proposeRelease(EMPTY_RELEASE_STATE, produccion, input(), NOW));
+  const approved = (state: ReleaseState, id = 'REL-0001') => ok(approveRelease(state, distribucion, id, 'mps', 'Rojos resueltos en la reunión', NOW));
 
-  it('ciclo completo con dos personas: propone Miguel (capacidad), aprueba Daniel (MPS), publica Daniel', () => {
+  it('ciclo completo con dos personas: propone Producción (capacidad), aprueba Distribución (MPS), publica Distribución', () => {
     const s = proposed();
-    expect(s.releases[0]).toMatchObject({ id: 'REL-0001', status: 'PROPOSED', proposedBy: { id: 'miguel' } });
-    expect(s.releases[0].approvals.capacity).toMatchObject({ by: { id: 'miguel' } });
+    expect(s.releases[0]).toMatchObject({ id: 'REL-0001', status: 'PROPOSED', proposedBy: { id: 'produccion' } });
+    expect(s.releases[0].approvals.capacity).toMatchObject({ by: { id: 'produccion' } });
     expect(s.releases[0].approvals.mps).toBeUndefined();
-    const a = approveRelease(s, daniel, 'REL-0001', 'mps', 'Rojos resueltos', NOW);
+    const a = approveRelease(s, distribucion, 'REL-0001', 'mps', 'Rojos resueltos', NOW);
     expect(a.ok && a.release.status).toBe('APPROVED');
-    const pub = publishRelease((a as { state: ReleaseState }).state, daniel, 'REL-0001', NOW);
-    expect(pub.ok && pub.release).toMatchObject({ status: 'RELEASED', releasedBy: { id: 'daniel' } });
+    const pub = publishRelease((a as { state: ReleaseState }).state, distribucion, 'REL-0001', NOW);
+    expect(pub.ok && pub.release).toMatchObject({ status: 'RELEASED', releasedBy: { id: 'distribucion' } });
   });
 
-  it('también funciona al revés: propone Daniel (MPS), aprueba y publica Miguel', () => {
-    const s = ok(proposeRelease(EMPTY_RELEASE_STATE, daniel, input(), NOW));
-    expect(s.releases[0].approvals.mps).toMatchObject({ by: { id: 'daniel' } });
-    const a = approveRelease(s, miguel, 'REL-0001', 'capacity', 'Capacidad validada', NOW);
+  it('también funciona al revés: propone Distribución (MPS), aprueba y publica Producción', () => {
+    const s = ok(proposeRelease(EMPTY_RELEASE_STATE, distribucion, input(), NOW));
+    expect(s.releases[0].approvals.mps).toMatchObject({ by: { id: 'distribucion' } });
+    const a = approveRelease(s, produccion, 'REL-0001', 'capacity', 'Capacidad validada', NOW);
     expect(a.ok && a.release.status).toBe('APPROVED');
-    expect(publishRelease((a as { state: ReleaseState }).state, miguel, 'REL-0001', NOW).ok).toBe(true);
+    expect(publishRelease((a as { state: ReleaseState }).state, produccion, 'REL-0001', NOW).ok).toBe(true);
   });
 
   it('doble control: quien propone no aprueba ni publica lo suyo', () => {
     const s = proposed();
-    expect(approveRelease(s, miguel, 'REL-0001', 'capacity', '', NOW)).toMatchObject({ ok: false, code: 'FOUR_EYES' });
-    expect(publishRelease(approved(s), miguel, 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'FOUR_EYES' });
+    expect(approveRelease(s, produccion, 'REL-0001', 'capacity', '', NOW)).toMatchObject({ ok: false, code: 'FOUR_EYES' });
+    expect(publishRelease(approved(s), produccion, 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'FOUR_EYES' });
   });
 
   it('cada aprobación exige el rol de su capa; la capa del proponente ya está aprobada', () => {
     const s = proposed();
-    expect(approveRelease(s, diana, 'REL-0001', 'mps', '', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
-    expect(approveRelease(s, daniel, 'REL-0001', 'capacity', '', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' }); // Distribución no aprueba capacidad
+    expect(approveRelease(s, demanda, 'REL-0001', 'mps', '', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    expect(approveRelease(s, distribucion, 'REL-0001', 'capacity', '', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' }); // Distribución no aprueba capacidad
     expect(approveRelease(s, actor('miguel2', 'production'), 'REL-0001', 'capacity', '', NOW)).toMatchObject({ ok: false, code: 'ALREADY_APPROVED' });
     expect(approveRelease(approved(s), daniela, 'REL-0001', 'mps', '', NOW)).toMatchObject({ ok: false, code: 'BAD_STATE' }); // ya está completa
   });
 
   it('no se publica sin la aprobación de la otra capa, y solo la publica alguien de Producción o Distribución', () => {
     const s = proposed();
-    expect(publishRelease(s, daniel, 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'NOT_APPROVED' });
+    expect(publishRelease(s, distribucion, 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'NOT_APPROVED' });
     const done = approved(s);
-    expect(publishRelease(done, diana, 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    expect(publishRelease(done, demanda, 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
     expect(publishRelease(done, actor('compras', 'purchasing'), 'REL-0001', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
   });
 
   it('el rechazo exige motivo, cierra la propuesta y permite proponer otra', () => {
     const s = proposed();
-    expect(rejectRelease(s, daniel, 'REL-0001', 'no', NOW)).toMatchObject({ ok: false, code: 'REASON_REQUIRED' });
-    expect(rejectRelease(s, diana, 'REL-0001', 'Motivo suficientemente largo', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
-    const rej = rejectRelease(s, daniel, 'REL-0001', 'La línea de barras sigue en rojo', NOW);
-    expect(rej.ok && rej.release).toMatchObject({ status: 'REJECTED', rejection: { by: { id: 'daniel' }, reason: 'La línea de barras sigue en rojo' } });
-    expect(approveRelease((rej as { state: ReleaseState }).state, daniel, 'REL-0001', 'mps', '', NOW)).toMatchObject({ ok: false, code: 'BAD_STATE' });
-    const again = proposeRelease((rej as { state: ReleaseState }).state, miguel, input(), NOW);
+    expect(rejectRelease(s, distribucion, 'REL-0001', 'no', NOW)).toMatchObject({ ok: false, code: 'REASON_REQUIRED' });
+    expect(rejectRelease(s, demanda, 'REL-0001', 'Motivo suficientemente largo', NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    const rej = rejectRelease(s, distribucion, 'REL-0001', 'La línea de barras sigue en rojo', NOW);
+    expect(rej.ok && rej.release).toMatchObject({ status: 'REJECTED', rejection: { by: { id: 'distribucion' }, reason: 'La línea de barras sigue en rojo' } });
+    expect(approveRelease((rej as { state: ReleaseState }).state, distribucion, 'REL-0001', 'mps', '', NOW)).toMatchObject({ ok: false, code: 'BAD_STATE' });
+    const again = proposeRelease((rej as { state: ReleaseState }).state, produccion, input(), NOW);
     expect(again.ok && again.release.id).toBe('REL-0002');
   });
 
   it('se puede rechazar aun aprobada, hasta que se publique; después ya no', () => {
     const done = approved(proposed());
-    expect(rejectRelease(done, daniel, 'REL-0001', 'Cambió la demanda del lunes', NOW).ok).toBe(true);
-    const released = (publishRelease(done, daniel, 'REL-0001', NOW) as { state: ReleaseState }).state;
-    expect(rejectRelease(released, daniel, 'REL-0001', 'Ya es tarde para esto', NOW)).toMatchObject({ ok: false, code: 'BAD_STATE' });
+    expect(rejectRelease(done, distribucion, 'REL-0001', 'Cambió la demanda del lunes', NOW).ok).toBe(true);
+    const released = (publishRelease(done, distribucion, 'REL-0001', NOW) as { state: ReleaseState }).state;
+    expect(rejectRelease(released, distribucion, 'REL-0001', 'Ya es tarde para esto', NOW)).toMatchObject({ ok: false, code: 'BAD_STATE' });
   });
 
   it('quien propuso puede retirar su propia propuesta con motivo', () => {
-    expect(rejectRelease(proposed(), miguel, 'REL-0001', 'Retiro: faltó cargar el inventario', NOW).ok).toBe(true);
+    expect(rejectRelease(proposed(), produccion, 'REL-0001', 'Retiro: faltó cargar el inventario', NOW).ok).toBe(true);
   });
 
   it('una sola propuesta abierta a la vez', () => {
-    expect(proposeRelease(proposed(), miguel, input(), NOW)).toMatchObject({ ok: false, code: 'OPEN_RELEASE_EXISTS' });
+    expect(proposeRelease(proposed(), produccion, input(), NOW)).toMatchObject({ ok: false, code: 'OPEN_RELEASE_EXISTS' });
   });
 
   it('valida la propuesta: rol, archivos y avisos justificados', () => {
-    expect(proposeRelease(EMPTY_RELEASE_STATE, diana, input(), NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
-    expect(proposeRelease(EMPTY_RELEASE_STATE, miguel, input({ artifacts: [] }), NOW)).toMatchObject({ ok: false, code: 'NO_ARTIFACTS' });
-    expect(proposeRelease(EMPTY_RELEASE_STATE, miguel, input({ artifacts: [{ ...input().artifacts[0], rows: 0 }] }), NOW)).toMatchObject({ ok: false, code: 'EMPTY_ARTIFACT' });
+    expect(proposeRelease(EMPTY_RELEASE_STATE, demanda, input(), NOW)).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    expect(proposeRelease(EMPTY_RELEASE_STATE, produccion, input({ artifacts: [] }), NOW)).toMatchObject({ ok: false, code: 'NO_ARTIFACTS' });
+    expect(proposeRelease(EMPTY_RELEASE_STATE, produccion, input({ artifacts: [{ ...input().artifacts[0], rows: 0 }] }), NOW)).toMatchObject({ ok: false, code: 'EMPTY_ARTIFACT' });
     const warn = { code: 'CRP_OVERLOAD', message: 'Quedan 6 rojos de capacidad', requiresJustification: true };
-    expect(proposeRelease(EMPTY_RELEASE_STATE, miguel, input({ warnings: [warn] }), NOW)).toMatchObject({ ok: false, code: 'WARNING_NOT_JUSTIFIED' });
-    expect(proposeRelease(EMPTY_RELEASE_STATE, miguel, input({ warnings: [{ ...warn, justification: 'corto' }] }), NOW).ok).toBe(false);
-    expect(proposeRelease(EMPTY_RELEASE_STATE, miguel, input({ warnings: [{ ...warn, justification: 'Horas extra autorizadas por Alejandro' }] }), NOW).ok).toBe(true);
-    expect(proposeRelease(EMPTY_RELEASE_STATE, miguel, input({ warnings: [{ code: 'INFO', message: 'x', requiresJustification: false }] }), NOW).ok).toBe(true);
+    expect(proposeRelease(EMPTY_RELEASE_STATE, produccion, input({ warnings: [warn] }), NOW)).toMatchObject({ ok: false, code: 'WARNING_NOT_JUSTIFIED' });
+    expect(proposeRelease(EMPTY_RELEASE_STATE, produccion, input({ warnings: [{ ...warn, justification: 'corto' }] }), NOW).ok).toBe(false);
+    expect(proposeRelease(EMPTY_RELEASE_STATE, produccion, input({ warnings: [{ ...warn, justification: 'Horas extra autorizadas por el gerente' }] }), NOW).ok).toBe(true);
+    expect(proposeRelease(EMPTY_RELEASE_STATE, produccion, input({ warnings: [{ code: 'INFO', message: 'x', requiresJustification: false }] }), NOW).ok).toBe(true);
   });
 
   it('una publicación nueva reemplaza a la anterior y la propuesta enlaza con lo que reemplaza', () => {
-    const publish = (state: ReleaseState, id: string) => (publishRelease(approved(state, id), daniel, id, NOW) as { state: ReleaseState }).state;
+    const publish = (state: ReleaseState, id: string) => (publishRelease(approved(state, id), distribucion, id, NOW) as { state: ReleaseState }).state;
     let s = publish(proposed(), 'REL-0001');
-    const second = proposeRelease(s, miguel, input(), NOW);
+    const second = proposeRelease(s, produccion, input(), NOW);
     expect(second.ok && second.release.supersedes).toBe('REL-0001');
     s = publish((second as { state: ReleaseState }).state, 'REL-0002');
     expect(s.releases.map((r) => [r.id, r.status])).toEqual([['REL-0001', 'SUPERSEDED'], ['REL-0002', 'RELEASED']]);
@@ -222,8 +222,8 @@ describe('flujo de salida a SAP', () => {
   it('las funciones no mutan el estado recibido', () => {
     const s = proposed();
     const snapshot = JSON.stringify(s);
-    approveRelease(s, daniel, 'REL-0001', 'mps', 'ok', NOW);
-    rejectRelease(s, daniel, 'REL-0001', 'Motivo suficientemente largo', NOW);
+    approveRelease(s, distribucion, 'REL-0001', 'mps', 'ok', NOW);
+    rejectRelease(s, distribucion, 'REL-0001', 'Motivo suficientemente largo', NOW);
     expect(JSON.stringify(s)).toBe(snapshot);
   });
 });

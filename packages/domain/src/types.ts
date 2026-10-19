@@ -221,7 +221,7 @@ export interface OpenOrder {
   commercialQty: number;
 }
 
-/** Ajuste de Daniel (MPS final) sobre la producción neta de un SKU en una semana. */
+/** Ajuste de Distribución (MPS final) sobre la producción neta de un SKU en una semana. */
 export interface MpsAdjustment {
   id: string;
   skuId: string;
@@ -232,7 +232,7 @@ export interface MpsAdjustment {
   createdAt: string;
 }
 
-/** Decisión de capacidad de Miguel/Alejandro: horas extra en una tripulación una semana. */
+/** Decisión de capacidad (Producción): horas extra en una tripulación una semana. */
 export interface CapacityDecision {
   id: string;
   crewId: string;

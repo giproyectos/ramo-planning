@@ -9,7 +9,7 @@ import { dayHours, weekDays } from '@ramo/engine';
  * no se conecta a SAP ni se ha probado contra el cargue real.
  *
  * Una publicación nueva reemplaza a la anterior: se borran las órdenes previas desde la primera semana del nuevo plan, para no
- * duplicar necesidad (la solución de Daniel Rangel era borrar las provisionales cuando entraban las órdenes en firme).
+ * duplicar necesidad (la solución histórica era borrar las provisionales cuando entraban las órdenes en firme).
  */
 export const ORDERS_HEADER = ['Accion', 'Centro', 'Material', 'Tipo_orden', 'Cantidad', 'UM', 'Fecha_fin', 'Linea', 'Referencia'] as const;
 export const ORDER_COLUMNS = ORDERS_HEADER.length;
@@ -40,7 +40,7 @@ export interface ProvisionalOrdersOptions {
   /** Tipo de orden (supuesto: 'LA', orden previsional). */
   orderType?: string;
   unit?: string;
-  /** Factor sobre la cantidad del plan (Miguel mencionó un "factor de cantidad" por línea); 1 por defecto. */
+  /** Factor sobre la cantidad del plan (se mencionó un "factor de cantidad" por línea); 1 por defecto. */
   quantityFactor?: number;
   /** Órdenes creadas por la publicación anterior; se borran las de fecha ≥ inicio del nuevo plan. */
   priorOrders?: ProvisionalOrderRow[];

@@ -61,11 +61,11 @@ export function MrpView() {
         </div>
         <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950">¿Qué insumo se rompe, cuándo, y alcanza a llegar a tiempo?</h1>
         <p className="text-xs text-slate-500 mt-0.5 font-medium max-w-4xl">
-          La producción del MPS final (con los ajustes de Daniel) se baja a días según el calendario de cada línea, se explota con la lista de materiales (las mezclas de la planta secreta
+          La producción del MPS final (con los ajustes de Distribución) se baja a días según el calendario de cada línea, se explota con la lista de materiales (las mezclas de la planta secreta
           son ítems de paso) y se proyecta el inventario día a día con las órdenes de compra abiertas. Es de solo lectura: no crea pedidos. Materiales, listas y órdenes son sintéticos.
         </p>
         <p className="text-[11px] text-slate-500 mt-1.5 max-w-4xl">
-          <span className="font-bold">Fuente de cálculo:</span> explosión propia. La alternativa es la simulación nativa del MRP de SAP (sin tocar el plan firme) una vez el MPS+CRP llegue a SAP como órdenes provisionales; este tablero está pensado para contrastar contra ella. Decisión pendiente (ver ADR 0006).
+          <span className="font-bold">Fuente de cálculo:</span> explosión propia. La alternativa es la simulación nativa del MRP de SAP (sin tocar el plan firme) una vez el MPS+CRP llegue a SAP como órdenes provisionales; este tablero está pensado para contrastar contra ella. Decisión pendiente.
         </p>
       </div>
 

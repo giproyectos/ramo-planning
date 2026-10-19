@@ -96,7 +96,7 @@ interface RamoPlanState {
   leadTimeOverrides: Record<string, number>;
   consolidationDays: number;
   setConsolidationDays: (d: number) => void;
-  /** Riesgo de abastecimiento de insumos y empaques a partir del plan de producción final (MPS con los ajustes de Daniel); null si no hay materiales. */
+  /** Riesgo de abastecimiento de insumos y empaques a partir del plan de producción final (MPS con los ajustes de Distribución); null si no hay materiales. */
   supplyRisk: SupplyRiskResult | null;
   /** DRP de la red (agencias → CEDI → planta); null si el dataset no define red. */
   drp: DrpResult | null;
@@ -119,10 +119,10 @@ interface RamoPlanState {
   stockoutRiskList: StockoutRisk[];
   /** Simulación Monte Carlo del riesgo de abastecimiento por material. */
   supplySim: MaterialSim[];
-  /** Optimizador de capacidad: sugerencia para lo que ve Miguel y para lo que ve Daniel. */
+  /** Optimizador de capacidad: sugerencia para lo que ve Producción y para lo que ve Distribución. */
   rebalanceMiguel: RebalancePlan | null;
   rebalanceDaniel: RebalancePlan | null;
-  /** Aplica la sugerencia del optimizador: movimientos como ajustes del MPS (Daniel) y/o horas extra (Miguel). */
+  /** Aplica la sugerencia del optimizador: movimientos como ajustes del MPS (Distribución) y/o horas extra (área de Producción). */
   applyRebalanceMoves: (plan: RebalancePlan, author: string) => void;
   applyRebalanceExtra: (plan: RebalancePlan, author: string) => void;
   /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
@@ -139,9 +139,9 @@ interface RamoPlanState {
   decisions: CapacityDecision[];
   adjustments: MpsAdjustment[];
   log: LogEntry[];
-  /** Vista de Miguel: sus decisiones y, solo desde el MPS final, los ajustes de Daniel. */
+  /** Vista de Producción: sus decisiones y, solo desde el MPS final, los ajustes de Distribución. */
   miguelView: CycleSnapshot;
-  /** Vista de Daniel: decisiones de Miguel más sus propios ajustes en vivo. */
+  /** Vista de Distribución: decisiones de Producción más sus propios ajustes en vivo. */
   danielView: CycleSnapshot;
   setCrewMode: (m: CrewMode) => void;
   addDecision: (d: Omit<CapacityDecision, 'id' | 'createdAt'>) => void;

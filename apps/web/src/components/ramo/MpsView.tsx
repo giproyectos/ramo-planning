@@ -9,7 +9,7 @@ import { SERIES_COLORS } from './charts';
 import { Card, Disclosure, StackedBars } from './ui';
 import { RebalanceCard } from './ai';
 
-/** Vista de Daniel: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
+/** Vista de Distribución: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
 export function MpsView() {
   const { dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance } = useRamoPlan();
   const [measure, setMeasure] = useState<MeasureView>('commercial_units');
@@ -19,7 +19,7 @@ export function MpsView() {
   const [chartSku, setChartSku] = useState('');
   const [reason, setReason] = useState('');
   const { user: authUser } = useAuth();
-  const [author, setAuthor] = useState(authUser?.name ?? 'Daniel');
+  const [author, setAuthor] = useState(authUser?.name ?? 'Distribución');
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const received = stageIdx >= CYCLE_ORDER.indexOf('SENT_TO_MPS');
@@ -54,11 +54,11 @@ export function MpsView() {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
             <span className="w-2 h-2 rounded-full bg-[#DDCBF5]"></span>
-            <span className="text-black font-extrabold">MPS final · Vista de Daniel</span>
+            <span className="text-black font-extrabold">MPS final · Vista de Distribución</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950">Producción neta consolidada del negocio</h1>
           <p className="text-xs text-slate-500 mt-0.5 font-medium">
-            Demanda − inventario − órdenes en curso (+ Hard Discount y Exportaciones completos). Los "rojos" vienen del CRP de Miguel. Datos sintéticos.
+            Demanda − inventario − órdenes en curso (+ Hard Discount y Exportaciones completos). Los "rojos" vienen del CRP de Producción. Datos sintéticos.
           </p>
         </div>
         <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
@@ -75,13 +75,13 @@ export function MpsView() {
 
       {!received && (
         <div className="rounded-3xl px-5 py-3 text-xs font-bold bg-[#FFF87C]/50 border border-[#FFF87C]">
-          Miguel todavía no envía su plan de capacidades. Puedes ver el neto, pero los ajustes se habilitan cuando lo reciba.
+          Producción todavía no envía su plan de capacidades. Puedes ver el neto, pero los ajustes se habilitan cuando lo reciba.
         </div>
       )}
 
       <Card
         title="Producción neta por semana"
-        hint={chartSku ? 'Cajas a producir de este producto; las semanas ajustadas por Daniel se ven más intensas.' : 'Lo que hay que producir cada semana, apilado por planta. Pasa el cursor sobre una barra para ver el detalle.'}
+        hint={chartSku ? 'Cajas a producir de este producto; las semanas ajustadas por Distribución se ven más intensas.' : 'Lo que hay que producir cada semana, apilado por planta. Pasa el cursor sobre una barra para ver el detalle.'}
         action={
           <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
             Ver
@@ -117,7 +117,7 @@ export function MpsView() {
             );
           })}
         </div>
-        <p className="text-[10px] text-slate-500 mt-2">{decisions.length > 0 ? `Incluye ${decisions.length} decisión(es) de horas extra de Miguel. ` : ''}La fila "Capacidad" muestra, semana a semana, si las líneas alcanzan (✓) o cuántas tripulaciones quedan en rojo.</p>
+        <p className="text-[10px] text-slate-500 mt-2">{decisions.length > 0 ? `Incluye ${decisions.length} decisión(es) de horas extra de Producción. ` : ''}La fila "Capacidad" muestra, semana a semana, si las líneas alcanzan (✓) o cuántas tripulaciones quedan en rojo.</p>
         <Disclosure title="Ver la tabla producto por semana (también sirve para escoger la celda a ajustar)">
         <table className="w-full text-xs border-separate border-spacing-y-0.5">
           <thead>
@@ -175,7 +175,7 @@ export function MpsView() {
             </tr>
           </tbody>
         </table>
-        <p className="text-[10px] text-slate-500 mt-2">Morado = semana ajustada. Pasa el cursor sobre una cifra para ver la demanda bruta. {decisions.length > 0 && `Incluye ${decisions.length} decisión(es) de horas extra de Miguel.`}</p>
+        <p className="text-[10px] text-slate-500 mt-2">Morado = semana ajustada. Pasa el cursor sobre una cifra para ver la demanda bruta. {decisions.length > 0 && `Incluye ${decisions.length} decisión(es) de horas extra de Producción.`}</p>
         </Disclosure>
       </Card>
 
@@ -225,13 +225,13 @@ export function MpsView() {
             Riesgos de distribución (canasta, espacio, rotación) y frecuencias de distribución: pendientes de modelar (fase DRP).
           </p>
           <button
-            onClick={() => advance('MPS_FINAL', 'Daniel', `MPS final cerrado con ${adjustments.length} ajuste(s); ${danielView.alerts.length} rojo(s) pendiente(s)`)}
+            onClick={() => advance('MPS_FINAL', 'Distribución', `MPS final cerrado con ${adjustments.length} ajuste(s); ${danielView.alerts.length} rojo(s) pendiente(s)`)}
             disabled={!editable || !canAdvance('MPS_FINAL')}
             className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer"
           >
-            Cerrar MPS final y devolver a Miguel →
+            Cerrar MPS final y devolver a Producción →
           </button>
-          {stage === 'MPS_FINAL' && <p className="text-xs font-bold text-emerald-800">MPS final cerrado. Miguel lo recarga desde la vista CRP.</p>}
+          {stage === 'MPS_FINAL' && <p className="text-xs font-bold text-emerald-800">MPS final cerrado. Producción lo recarga desde la vista CRP.</p>}
         </div>
       </div>
     </div>
