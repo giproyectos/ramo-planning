@@ -11,7 +11,7 @@ import { RebalanceCard } from './ai';
 
 /** Vista de Distribución: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
 export function MpsView() {
-  const { dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance } = useRamoPlan();
+  const { dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance, drp, supplyRisk, rebalanceDaniel } = useRamoPlan();
   const [measure, setMeasure] = useState<MeasureView>('commercial_units');
   const [skuId, setSkuId] = useState(dataset.skus[0].id);
   const [week, setWeek] = useState(weeks[1] ?? weeks[0]);
@@ -200,39 +200,126 @@ export function MpsView() {
           <button onClick={submit} disabled={!editable || !Number(delta) || !reason.trim()} className="px-4 py-2 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer">
             Registrar ajuste (cajas)
           </button>
-          {adjustments.length > 0 && (
-            <ul className="text-xs space-y-1 pt-1">
-              {adjustments.map((a) => (
-                <li key={a.id} className="flex items-start justify-between gap-2">
-                  <span>
-                    <span className="font-mono font-bold">{a.deltaCommercialQty > 0 ? '+' : ''}{fmtInt(a.deltaCommercialQty)}</span> {dataset.skus.find((s) => s.id === a.skuId)?.name} · {weekLabel(a.weekStart)} — {a.reason} <span className="text-slate-400">({a.author})</span>
-                  </span>
-                  {editable && <button onClick={() => removeAdjustment(a.id)} className="text-slate-400 hover:text-black cursor-pointer" aria-label="Quitar">✕</button>}
-                </li>
-              ))}
-            </ul>
-          )}
+          {adjustments.length > 0 && (() => {
+            const isOpt = (x: { reason: string }) => x.reason.startsWith('Rebalanceo sugerido');
+            const manual = adjustments.filter((x) => !isOpt(x));
+            const opt = adjustments.filter(isOpt);
+            const row = (a: (typeof adjustments)[number]) => (
+              <li key={a.id} className="flex items-start justify-between gap-2">
+                <span>
+                  <span className="font-mono font-bold">{a.deltaCommercialQty > 0 ? '+' : ''}{fmtInt(a.deltaCommercialQty)}</span> {dataset.skus.find((s) => s.id === a.skuId)?.name.replace(' (sint.)', '')} · {weekLabel(a.weekStart)} — {a.reason} <span className="text-slate-400">({a.author})</span>
+                </span>
+                {editable && <button onClick={() => removeAdjustment(a.id)} className="text-slate-400 hover:text-black cursor-pointer" aria-label="Quitar">✕</button>}
+              </li>
+            );
+            return (
+              <div className="pt-1 space-y-2">
+                {manual.length > 0 && <ul className="text-xs space-y-1">{manual.map(row)}</ul>}
+                {opt.length > 0 && (
+                  <div className="rounded-2xl bg-[#DDCBF5]/30 border border-[#DDCBF5] px-3 py-2 text-xs space-y-1.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span><span className="font-black">✦ Rebalanceo del optimizador:</span> {Math.ceil(opt.length / 2)} movimiento(s) de producción ({opt.length} ajustes, cada uno suma y resta las mismas cajas en dos semanas)</span>
+                      {editable && <button onClick={() => opt.forEach((x) => removeAdjustment(x.id))} className="text-[11px] font-bold underline text-slate-600 hover:text-black cursor-pointer">Quitar todos</button>}
+                    </div>
+                    <Disclosure title={`Ver los ${opt.length} ajustes`}>
+                      <ul className="space-y-1">{opt.map(row)}</ul>
+                    </Disclosure>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
-        <div className="glass-panel rounded-3xl p-5 space-y-3">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Cierre del MPS final</div>
-          <p className="text-xs text-slate-600">
-            {danielView.alerts.length === 0
-              ? 'Con los ajustes actuales no quedan rojos de capacidad.'
-              : `Quedan ${danielView.alerts.length} rojo(s) de capacidad: ${danielView.alerts.map((a) => `${crewName(a.crewId)} ${weekLabel(a.weekStart)} (${fmtDec(a.excessHours)} h)`).join(' · ')}.`}
-          </p>
-          <p className="text-[11px] text-slate-500">
-            Riesgos de distribución (canasta, espacio, rotación) y frecuencias de distribución: pendientes de modelar (fase DRP).
-          </p>
-          <button
-            onClick={() => advance('MPS_FINAL', 'Distribución', `MPS final cerrado con ${adjustments.length} ajuste(s); ${danielView.alerts.length} rojo(s) pendiente(s)`)}
-            disabled={!editable || !canAdvance('MPS_FINAL')}
-            className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer"
-          >
-            Cerrar MPS final y devolver a Producción →
-          </button>
-          {stage === 'MPS_FINAL' && <p className="text-xs font-bold text-emerald-800">MPS final cerrado. Producción lo recarga desde la vista CRP.</p>}
-        </div>
+        {(() => {
+          const reds = danielView.alerts;
+          const redWeeks = new Set(reds.map((r) => r.weekStart));
+          const closed = stage === 'MPS_FINAL' || stage === 'FINAL_ALERTS';
+          const ready = received && !closed;
+          const stockouts = drp?.alerts.filter((x) => x.code === 'STOCKOUT').length ?? 0;
+          const criticalMats = supplyRisk?.risks.filter((r) => r.status === 'CRITICAL').length ?? 0;
+          const plus = adjustments.filter((x) => x.deltaCommercialQty > 0).reduce((acc, x) => acc + x.deltaCommercialQty, 0);
+          const minus = adjustments.filter((x) => x.deltaCommercialQty < 0).reduce((acc, x) => acc + x.deltaCommercialQty, 0);
+          const status = closed
+            ? { label: 'MPS final cerrado', tone: 'bg-[#7AFFA1]' }
+            : !received
+            ? { label: 'Esperando el plan de Producción', tone: 'bg-[#DDCBF5]' }
+            : reds.length === 0
+            ? { label: 'Listo para cerrar', tone: 'bg-[#7AFFA1]' }
+            : { label: `Se puede cerrar con ${reds.length} pendiente(s) de capacidad`, tone: 'bg-[#FFF87C]' };
+          const why = closed ? 'Ya está cerrado: Producción lo recarga desde la vista de Capacidad.' : !received ? 'Se habilita cuando Producción envíe su plan de capacidades.' : !can('mps.edit') ? 'Tu rol no puede cerrar el MPS final.' : '';
+          const items: { tone: 'ok' | 'warn' | 'info'; title: string; detail: React.ReactNode }[] = [
+            reds.length === 0
+              ? { tone: 'ok', title: 'Capacidad', detail: 'Con los ajustes actuales ninguna tripulación pasa de su capacidad.' }
+              : {
+                  tone: 'warn',
+                  title: `Capacidad: ${reds.length} pendiente(s)`,
+                  detail: (
+                    <span>
+                      {[...reds].sort((x, y) => y.excessHours - x.excessHours).slice(0, 4).map((x) => `${crewName(x.crewId)} · ${weekLabel(x.weekStart)} (faltan ${fmtDec(x.excessHours)} h)`).join(' · ')}
+                      {reds.length > 4 ? ` · y ${reds.length - 4} más` : ''}.
+                      {rebalanceDaniel && rebalanceDaniel.movedHours > 0 ? ' El optimizador de arriba propone resolver ' + fmtDec(rebalanceDaniel.movedHours, 1) + ' h adelantando producción.' : ''}
+                    </span>
+                  ),
+                },
+            adjustments.length === 0
+              ? { tone: 'info', title: 'Ajustes de Distribución', detail: 'Todavía no hay ajustes. El MPS final sería igual al plan que envió Producción.' }
+              : { tone: 'ok', title: `Ajustes de Distribución: ${adjustments.length}`, detail: `Suman ${fmtInt(plus)} cajas y restan ${fmtInt(-minus)}; cada uno queda con su motivo y su autor.` },
+            stockouts === 0
+              ? { tone: 'ok', title: 'Red de distribución', detail: 'El DRP no proyecta quiebres.' }
+              : { tone: 'warn', title: `Red de distribución: ${stockouts} quiebre(s) proyectado(s)`, detail: 'Revisa la pantalla DRP. Canasta, rotación y frecuencias de despacho todavía no se modelan.' },
+            criticalMats === 0
+              ? { tone: 'ok', title: 'Materiales', detail: 'Ningún material se acaba dentro de su plazo de entrega.' }
+              : { tone: 'info', title: `Materiales: ${criticalMats} con ruptura dentro del plazo`, detail: 'Se resuelven con compras (pantalla Materiales); no impiden cerrar el MPS.' },
+          ];
+          const icon = { ok: ['bg-[#7AFFA1]', '✓'], warn: ['bg-[#FFA27D]', '!'], info: ['bg-[#DDCBF5]', 'i'] } as const;
+          return (
+            <div className="glass-panel rounded-3xl p-5 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="text-sm font-black text-slate-950">Cierre del MPS final</div>
+                <span className={`text-[11px] font-black rounded-full px-3 py-1 text-black ${status.tone}`}>{status.label}</span>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1.5">
+                  <span>Capacidad semana a semana</span>
+                  <span className="font-bold text-slate-700">{weeks.length - redWeeks.size} de {weeks.length} semanas resueltas</span>
+                </div>
+                <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }}>
+                  {weeks.map((w) => (
+                    <span key={w} title={`${weekLabel(w)}: ${redWeeks.has(w) ? reds.filter((x) => x.weekStart === w).map((x) => `${crewName(x.crewId)} faltan ${fmtDec(x.excessHours)} h`).join(' · ') : 'capacidad alcanza'}`} className={`h-3 rounded-full ${redWeeks.has(w) ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}></span>
+                  ))}
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-400 mt-1"><span>{weeks[0] ? weekLabel(weeks[0]) : ''}</span><span>{weeks.length ? weekLabel(weeks[weeks.length - 1]) : ''}</span></div>
+              </div>
+
+              <ul className="space-y-2.5">
+                {items.map((it) => (
+                  <li key={it.title} className="flex items-start gap-3">
+                    <span className={`mt-0.5 w-5 h-5 rounded-full shrink-0 flex items-center justify-center text-[10px] font-black text-black ${icon[it.tone][0]}`}>{icon[it.tone][1]}</span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-black text-slate-900">{it.title}</div>
+                      <div className="text-[11px] text-slate-600 leading-snug">{it.detail}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="border-t border-black/5 pt-3 space-y-1.5">
+                <button
+                  onClick={() => advance('MPS_FINAL', 'Distribución', `MPS final cerrado con ${adjustments.length} ajuste(s); ${reds.length} rojo(s) pendiente(s)`)}
+                  disabled={!editable || !canAdvance('MPS_FINAL')}
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-slate-950 rounded-full disabled:opacity-40 cursor-pointer"
+                >
+                  Cerrar MPS final y devolver a Producción →
+                </button>
+                <p className="text-[11px] text-slate-500">
+                  {why || (ready ? 'Al cerrar, el plan vuelve a Producción, que lo recarga y emite las alertas finales de producción.' : '')}
+                </p>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
