@@ -4,6 +4,15 @@ import { BuildingBlock, CapacityDecision, DemandHistoryRow, DemandRecord, MpsAdj
 import {
   CYCLE_ORDER,
   CrewMode,
+  DemandNudge,
+  MaterialSim,
+  RebalancePlan,
+  StockoutRisk,
+  movesToAdjustments,
+  simulateSupplyRisk,
+  stockoutRisks,
+  suggestBiasCorrections,
+  suggestRebalance,
   CycleSnapshot,
   FC_N1_ID,
   FC_PBO_ID,
@@ -101,6 +110,21 @@ interface RamoPlanState {
   /** Suponer que el flujo en camino durante el plazo es el de régimen (hasta cargar tránsito y órdenes abiertas reales). */
   drpPipeline: boolean;
   setDrpPipeline: (v: boolean) => void;
+  /** Asistentes (estadística, optimización y simulación; no hay LLM): todo es una sugerencia que una persona acepta o descarta. */
+  /** Ajustes de demanda sugeridos por sesgo sistemático del pronóstico (los ya aceptados o descartados no aparecen). */
+  demandNudges: DemandNudge[];
+  acceptNudge: (n: DemandNudge, author: string) => void;
+  dismissNudge: (skuId: string) => void;
+  /** Riesgo de quiebre por punto de la red y producto, dentro del plazo de entrega. */
+  stockoutRiskList: StockoutRisk[];
+  /** Simulación Monte Carlo del riesgo de abastecimiento por material. */
+  supplySim: MaterialSim[];
+  /** Optimizador de capacidad: sugerencia para lo que ve Miguel y para lo que ve Daniel. */
+  rebalanceMiguel: RebalancePlan | null;
+  rebalanceDaniel: RebalancePlan | null;
+  /** Aplica la sugerencia del optimizador: movimientos como ajustes del MPS (Daniel) y/o horas extra (Miguel). */
+  applyRebalanceMoves: (plan: RebalancePlan, author: string) => void;
+  applyRebalanceExtra: (plan: RebalancePlan, author: string) => void;
   /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
   logEvent: (actor: string, text: string) => void;
   userBlocks: BuildingBlock[];
@@ -250,6 +274,18 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     () => (supplyRisk ? buildInsights({ ds: riskDataset, net: danielView.net, risk: supplyRisk, sigmaBySku, demandHistory: history.rows, today: targetStart, consolidationDays }) : null),
     [supplyRisk, riskDataset, danielView.net, sigmaBySku, history.rows, targetStart, consolidationDays],
   );
+  const [nudgesDismissed, setNudgesDismissed] = useState<Record<string, true>>({});
+  const demandNudges = useMemo(() => {
+    if (!forecast) return [];
+    return suggestBiasCorrections(forecast.n1).filter(
+      (n) => !nudgesDismissed[n.skuId] && !userBlocks.some((b) => b.scope.skuId === n.skuId && b.reason.startsWith('Sugerido por el modelo')),
+    );
+  }, [forecast, nudgesDismissed, userBlocks]);
+
+  const stockoutRiskList = useMemo(() => (drp && sigmaBySku ? stockoutRisks(dataset, drp, sigmaBySku) : []), [dataset, drp, sigmaBySku]);
+  const supplySim = useMemo(() => (supplyRisk ? simulateSupplyRisk(riskDataset, supplyRisk, { sigmaBySku }) : []), [riskDataset, supplyRisk, sigmaBySku]);
+  const rebalanceMiguel = useMemo(() => suggestRebalance(dataset, miguelView.net, { crewMode, decisions }), [dataset, miguelView.net, crewMode, decisions]);
+  const rebalanceDaniel = useMemo(() => suggestRebalance(dataset, danielView.net, { crewMode, decisions }), [dataset, danielView.net, crewMode, decisions]);
   const pendingRecommendations = useMemo(() => (insights?.recommendations ?? []).filter((r) => !recDecisions[r.id]), [insights, recDecisions]);
 
   const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
@@ -289,6 +325,21 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     },
     [addLog],
   );
+
+  const acceptNudge = useCallback(
+    (n: DemandNudge, author: string) => {
+      addBlock({
+        scope: { skuId: n.skuId },
+        deltaCommercialQty: n.weeklyDelta,
+        reason: `Sugerido por el modelo (sesgo sistemático): ${n.evidence}`,
+        author,
+        role: 'demand',
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  const dismissNudge = useCallback((skuId: string) => setNudgesDismissed((p) => ({ ...p, [skuId]: true })), []);
 
   const loadHistory = useCallback((text: string, label: string) => {
     const parsed = parseDemandHistory(text, { dataset: baseDataset, cutAt: baselineCutAt });
@@ -428,6 +479,21 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     setStaticDays,
     drpPipeline,
     setDrpPipeline,
+    demandNudges,
+    acceptNudge: guarded('demand.edit', (n: DemandNudge, author: string) => acceptNudge(n, author)),
+    dismissNudge,
+    stockoutRiskList,
+    supplySim,
+    rebalanceMiguel,
+    rebalanceDaniel,
+    applyRebalanceMoves: guarded('mps.edit', (plan: RebalancePlan, author: string) => {
+      const adj = movesToAdjustments(plan.moves);
+      const reason = 'Rebalanceo sugerido por el optimizador de capacidad: adelantar producción a semanas con holgura';
+      for (const a of adj) addAdjustment({ ...a, reason, author });
+    }),
+    applyRebalanceExtra: guarded('capacity.edit', (plan: RebalancePlan, author: string) => {
+      for (const e of plan.extraHours) addDecision({ crewId: e.crewId, weekStart: e.weekStart, extraHours: e.hours, reason: 'Horas extra sugeridas por el optimizador de capacidad (lo que no se pudo adelantar)', author });
+    }),
     logEvent: addLog,
     userBlocks,
     addBlock: guarded('demand.edit', addBlock),

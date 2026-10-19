@@ -4,6 +4,7 @@ import { useRamoPlan } from '../../ramo/store';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { ProcessStep } from '../../ramo/steps';
 import { CycleStepper } from './CycleStepper';
+import { AiMapPanel, BriefingCard } from './ai';
 import { LineChart, SERIES_COLORS, Sparkline, fmtShort } from './charts';
 
 type Tone = 'ok' | 'warn' | 'bad' | 'info';
@@ -251,6 +252,11 @@ export function SummaryView({ onSelectStep }: { onSelectStep: (step: ProcessStep
           )}
         </Panel>
         <CycleStepper showLog={false} />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.4fr] gap-5 items-start">
+        <BriefingCard />
+        <AiMapPanel />
       </div>
     </div>
   );

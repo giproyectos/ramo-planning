@@ -5,6 +5,7 @@ import { useRamoPlan } from '../../ramo/store';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { StockChart } from './StockChart';
 import { Disclosure } from './ui';
+import { AiTag } from './ai';
 
 const STATUS: Record<RiskStatus, { label: string; chip: string }> = {
   CRITICAL: { label: 'Ruptura dentro del plazo', chip: 'bg-[#FFA27D]' },
@@ -23,7 +24,8 @@ const TYPE_LABEL: Record<MaterialType, string> = { RAW: 'Insumo', PACKAGING: 'Em
 
 /** Tablero de riesgo de abastecimiento: producción del MPS explotada a insumos y empaques, con alertas contra el plazo de entrega. */
 export function MrpView() {
-  const { dataset, supplyRisk } = useRamoPlan();
+  const { dataset, supplyRisk, supplySim } = useRamoPlan();
+  const simOf = (id: string) => supplySim.find((x) => x.materialId === id);
   const [statusFilter, setStatusFilter] = useState<RiskStatus | ''>('');
   const [typeFilter, setTypeFilter] = useState<MaterialType | ''>('');
   const [selected, setSelected] = useState('');
@@ -102,6 +104,12 @@ export function MrpView() {
                     </div>
                     <div className="text-xs font-black mt-1 truncate">{mm.name.replace(' (sint.)', '')} <span className="font-medium text-slate-400">· {TYPE_LABEL[mm.type]}</span></div>
                     <div className="text-[10px] text-slate-500">Inventario {fmtInt(mm.stock)} {mm.unit}{r.coverageDays !== null ? ` · alcanza ${fmtDec(r.coverageDays, 0)} días` : ''}</div>
+                    {simOf(r.materialId) && (
+                      <div className="text-[10px] mt-0.5" title="Simulación de 400 escenarios con los retrasos reales del proveedor">
+                        <span className="text-slate-500">✦ Prob. de acabarse antes del pedido: </span>
+                        <span className={`font-mono font-extrabold ${simOf(r.materialId)!.pRuptureBeforeArrival >= 0.5 ? 'text-[#c2410c]' : simOf(r.materialId)!.pRuptureBeforeArrival >= 0.2 ? 'text-amber-700' : 'text-emerald-800'}`}>{fmtDec(simOf(r.materialId)!.pRuptureBeforeArrival * 100, 0)} %</span>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <div className="relative h-3 rounded-full bg-black/[0.06]">
@@ -168,6 +176,22 @@ export function MrpView() {
               <span className={`text-[9px] font-black rounded-full px-2 py-0.5 text-black ${STATUS[current.status].chip}`}>{STATUS[current.status].label}</span>
             </div>
             <p className="text-xs text-slate-600">{REASON[current.reason]}</p>
+            {simOf(current.materialId) && (() => {
+              const sm = simOf(current.materialId)!;
+              const day = (d: number | null) => (d === null ? '—' : weekLabel(supplyRisk.dates[Math.min(d, supplyRisk.dates.length - 1)]));
+              return (
+                <div className="rounded-2xl bg-[#DDCBF5]/30 border border-[#DDCBF5] p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2"><span className="text-xs font-black">Qué tan probable es quedarse sin material</span><AiTag kind="Simulación" /></div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                    <div><div className="text-[10px] uppercase font-bold text-slate-500">Se acaba antes de que llegue un pedido de hoy</div><div className="font-mono font-black text-lg">{fmtDec(sm.pRuptureBeforeArrival * 100, 0)} %</div></div>
+                    <div><div className="text-[10px] uppercase font-bold text-slate-500">Se acaba en los próximos 28 días</div><div className="font-mono font-black text-lg">{fmtDec(sm.pRuptureIn28Days * 100, 0)} %</div></div>
+                    <div><div className="text-[10px] uppercase font-bold text-slate-500">Día de ruptura (rango)</div><div className="font-mono font-black text-sm">{sm.ruptureDayP10 === null ? 'casi nunca' : `${day(sm.ruptureDayP10)} – ${day(sm.ruptureDayP90)}`}</div><div className="text-[10px] text-slate-500">{sm.ruptureDayP50 === null ? '' : `lo más probable: ${day(sm.ruptureDayP50)}`}</div></div>
+                    <div><div className="text-[10px] uppercase font-bold text-slate-500">Plazo real probable</div><div className="font-mono font-black text-lg">{fmtDec(sm.leadTimeP50, 0)} d</div><div className="text-[10px] text-slate-500">SAP: {current.leadTimeDays} d</div></div>
+                  </div>
+                  <p className="text-[10px] text-slate-500">{sm.sims} escenarios: el consumo varía ±{fmtDec(sm.consumptionCv * 100, 0)} % por semana (la incertidumbre del pronóstico) y las entregas se atrasan como lo hizo el proveedor en {sm.delaySamples} órdenes pasadas. Aproximación declarada.</p>
+                </div>
+              );
+            })()}
             <StockChart dates={supplyRisk.dates} stock={proj.stock} receipts={proj.receipts} safety={m.safetyDays * current.avgDailyConsumption} leadTimeDays={m.leadTimeDays} ruptureIndex={current.daysToRupture} unit={m.unit} />
             <p className="text-[10px] text-slate-500">Línea negra = inventario proyectado ({m.unit}) · punto verde = llega una orden de compra · morado = hasta aquí no llega un pedido hecho hoy · naranja punteado = colchón de seguridad ({m.safetyDays} días).</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">

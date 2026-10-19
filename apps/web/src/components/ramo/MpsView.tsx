@@ -7,6 +7,7 @@ import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
 import { SERIES_COLORS } from './charts';
 import { Card, Disclosure, StackedBars } from './ui';
+import { RebalanceCard } from './ai';
 
 /** Vista de Daniel: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
 export function MpsView() {
@@ -177,6 +178,8 @@ export function MpsView() {
         <p className="text-[10px] text-slate-500 mt-2">Morado = semana ajustada. Pasa el cursor sobre una cifra para ver la demanda bruta. {decisions.length > 0 && `Incluye ${decisions.length} decisión(es) de horas extra de Miguel.`}</p>
         </Disclosure>
       </Card>
+
+      <RebalanceCard view="mps" />
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr] gap-5 items-start">
         <div className="glass-panel rounded-3xl p-5 space-y-3">

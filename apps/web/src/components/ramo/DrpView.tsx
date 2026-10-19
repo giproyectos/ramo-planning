@@ -5,6 +5,7 @@ import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { LineChart, SERIES_COLORS } from './charts';
 import { Card, Disclosure, ProgressBar, StackedBars } from './ui';
+import { StockoutRiskCard } from './ai';
 
 const PRIORITY_LABEL = { HIGH: 'Alta', NORMAL: 'Normal', LOW: 'Baja' } as const;
 const REASON_LABEL: Record<AllocationReason, string> = { FULL: 'Completo', OVERRIDE: 'Ajuste manual', MINIMUM: 'Mínimo de cobertura', PRO_RATA: 'Prorrata' };
@@ -12,7 +13,7 @@ const REASON_LABEL: Record<AllocationReason, string> = { FULL: 'Completo', OVERR
 /** Paso DRP: reposición de la red (agencias → CEDI → planta), stock de seguridad dinámico y regla de escasez. */
 export function DrpView() {
   const {
-    dataset, drp, useDrp, setUseDrp, drpPolicy, setDrpPolicy, staticDays, setStaticDays, drpPipeline, setDrpPipeline, danielView, logEvent,
+    dataset, drp, useDrp, setUseDrp, drpPolicy, setDrpPolicy, staticDays, setStaticDays, drpPipeline, setDrpPipeline, danielView, logEvent, stockoutRiskList,
     can,
   } = useRamoPlan();
   const nodes = dataset.nodes ?? [];
@@ -59,6 +60,7 @@ export function DrpView() {
       initial,
       coverDays: weekly > 0 ? initial / (weekly / 7) : null,
       occupancy: n.storageCapacity > 0 ? initial / n.storageCapacity : 0,
+      risk: Math.max(0, ...stockoutRiskList.filter((r) => r.nodeId === n.id).map((r) => r.probability)),
       stockouts: al.filter((a) => a.code === 'STOCKOUT').length,
       below: al.filter((a) => a.code === 'BELOW_SAFETY').length,
       space: al.filter((a) => a.code === 'SPACE').length,
@@ -162,6 +164,8 @@ export function DrpView() {
           </div>
         ))}
       </div>
+
+      <StockoutRiskCard />
 
       <Card title="Mapa de la red" hint="Así fluye el producto: la planta abastece al CEDI y el CEDI a las agencias. Haz clic en un punto para ver su inventario semana a semana.">
         <div className="flex flex-col items-center">
@@ -409,7 +413,7 @@ export function DrpView() {
   );
 }
 
-interface NodeStats { initial: number; coverDays: number | null; occupancy: number; stockouts: number; below: number; space: number }
+interface NodeStats { risk: number; initial: number; coverDays: number | null; occupancy: number; stockouts: number; below: number; space: number }
 
 function NodeCard({ n, stats, selected, onSelect, wide = false }: { n: { name: string; type: string; priority: 'HIGH' | 'NORMAL' | 'LOW'; leadTimeWeeks: number; demandShare: number }; stats: NodeStats; selected: boolean; onSelect: () => void; wide?: boolean }) {
   const tone = stats.stockouts > 0 ? 'bg-[#FFA27D]' : stats.below > 0 || stats.space > 0 ? 'bg-[#FFF87C]' : 'bg-[#7AFFA1]';
@@ -430,6 +434,12 @@ function NodeCard({ n, stats, selected, onSelect, wide = false }: { n: { name: s
           <ProgressBar value={stats.occupancy} max={1} color={stats.occupancy > 0.9 ? '#FFA27D' : '#9CF5B8'} height={6} />
         </div>
       </div>
+      {stats.risk >= 0.05 && (
+        <div className="mt-1.5">
+          <div className="flex justify-between text-[10px] text-slate-500"><span>Riesgo de quiebre ✦</span><span className="font-mono font-bold">{fmtDec(stats.risk * 100, 0)} %</span></div>
+          <ProgressBar value={stats.risk} max={1} color={stats.risk >= 0.5 ? '#FFA27D' : '#FFF87C'} height={6} />
+        </div>
+      )}
       <div className="text-[10px] text-slate-600 mt-1.5">Inventario: <span className="font-mono font-bold">{fmtInt(stats.initial)}</span>{stats.coverDays !== null ? ` cajas · ≈ ${fmtDec(stats.coverDays, 1)} días` : ' cajas'}</div>
       {(stats.stockouts > 0 || stats.below > 0) && (
         <div className="flex flex-wrap gap-1 mt-1.5">

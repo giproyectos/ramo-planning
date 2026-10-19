@@ -10,3 +10,7 @@ export * from './scarcity';
 export * from './supplyRisk';
 export * from './insights';
 export * from './recommendations';
+export * from './rebalance';
+export * from './stockoutRisk';
+export * from './demandNudges';
+export * from './supplySim';

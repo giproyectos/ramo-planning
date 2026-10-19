@@ -7,6 +7,7 @@ import { EXCEPTION_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
 import { LineChart, SERIES_COLORS } from './charts';
 import { Disclosure, ProgressBar } from './ui';
+import { RebalanceCard } from './ai';
 
 const cellColor = (status: LoadStatus, pct: number) =>
   status === 'CRITICAL' ? 'bg-[#FFA27D] text-black' : status === 'OVER' ? 'bg-[#FFF87C] text-black' : pct === 0 ? 'bg-white/40 text-slate-400' : 'bg-[#7AFFA1]/60 text-black';
@@ -149,6 +150,8 @@ export function CrpView() {
         </table>
         <p className="text-[10px] text-slate-500 mt-2">Verde ≤ 100 % · amarillo &gt; 100 % · naranja &gt; 110 %. Clic en una celda para ver el detalle.</p>
       </div>
+
+      <RebalanceCard view="capacity" />
 
       {crewLoad && crew && (
         <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-5 items-start">

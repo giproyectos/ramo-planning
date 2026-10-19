@@ -9,6 +9,7 @@ import { SAMPLE_HISTORY_LIMPIO, SAMPLE_HISTORY_SUCIO } from '../../ramo/samples'
 import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { DemandChart } from './DemandChart';
 import { Disclosure, ProgressBar } from './ui';
+import { NudgesCard } from './ai';
 import { SERIES_COLORS } from './charts';
 
 const pct = (n: number, d = 1) => `${fmtDec(n * 100, d)}%`;
@@ -304,6 +305,8 @@ export function DemandView() {
               se prefiere un modelo estacional si no es peor que el mejor en más de 10 % (supuesto de negocio a calibrar con datos reales).
             </p>
           </div>
+
+          <NudgesCard />
 
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr] gap-5 items-start">
             <div className="glass-panel rounded-3xl p-5 space-y-3">
