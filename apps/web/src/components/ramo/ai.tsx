@@ -167,7 +167,7 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
 }
 
 /** Riesgo de quiebre por punto de la red (probabilidad), para el DRP. */
-export function StockoutRiskCard() {
+export function StockoutRiskCard({ onPick }: { onPick?: (nodeId: string, skuId: string) => void }) {
   const { dataset, stockoutRiskList } = useRamoPlan();
   const nodeName = (id: string) => dataset.nodes?.find((n) => n.id === id)?.name.replace(' (sint.)', '') ?? id;
   const skuName = (id: string) => dataset.skus.find((s) => s.id === id)?.name.replace(' (sint.)', '') ?? id;
@@ -183,15 +183,22 @@ export function StockoutRiskCard() {
       ) : top.length === 0 ? (
         <p className="text-xs text-emerald-800 font-bold">Ningún punto supera el 10 % de riesgo de quiebre.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {top.map((r) => (
-            <li key={`${r.nodeId}${r.skuId}`} className="grid grid-cols-[1.4fr_2fr_auto] items-center gap-3 text-xs">
-              <div className="min-w-0">
-                <div className="font-bold truncate">{nodeName(r.nodeId)}</div>
-                <div className="text-[10px] text-slate-500 truncate">{skuName(r.skuId)} · sem. {weekLabel(r.weekStart)}</div>
-              </div>
-              <ProgressBar value={r.probability} max={1} color={r.probability >= 0.5 ? '#FFA27D' : '#FFF87C'} height={10} />
-              <span className="font-mono font-extrabold w-12 text-right">{fmtDec(r.probability * 100, 0)} %</span>
+            <li key={`${r.nodeId}${r.skuId}`}>
+              <button
+                onClick={() => onPick?.(r.nodeId, r.skuId)}
+                disabled={!onPick}
+                title={onPick ? 'Ver el inventario de este producto en este punto' : undefined}
+                className={`w-full text-left grid grid-cols-[1.4fr_2fr_auto] items-center gap-3 text-xs rounded-xl px-2 py-1 ${onPick ? 'hover:bg-white/70 cursor-pointer' : ''}`}
+              >
+                <div className="min-w-0">
+                  <div className="font-bold truncate">{nodeName(r.nodeId)}</div>
+                  <div className="text-[10px] text-slate-500 truncate">{skuName(r.skuId)} · sem. {weekLabel(r.weekStart)}</div>
+                </div>
+                <ProgressBar value={r.probability} max={1} color={r.probability >= 0.5 ? '#FFA27D' : '#FFF87C'} height={10} />
+                <span className="font-mono font-extrabold w-12 text-right">{fmtDec(r.probability * 100, 0)} %</span>
+              </button>
             </li>
           ))}
         </ul>

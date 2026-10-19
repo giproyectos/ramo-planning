@@ -22,7 +22,6 @@ export function DrpView() {
   const nodeName = (id: string) => nodes.find((n) => n.id === id)?.name ?? id;
 
   const [skuId, setSkuId] = useState('');
-  const sku = skuId || skuIds[0] || '';
   const [nodeSel, setNodeSel] = useState('');
 
   const gaps = useMemo(() => supplyGaps(dataset, danielView.net, danielView.capacity), [dataset, danielView]);
@@ -49,6 +48,30 @@ export function DrpView() {
   const cediNode = nodes.find((n) => n.type === 'CEDI');
   const agencyNodes = nodes.filter((n) => n.type !== 'CEDI');
   const selNode = nodes.find((n) => n.id === nodeSel) ?? cediNode;
+  // Qué productos tienen algo que mirar en cada punto: alertas del DRP (caso esperado) o riesgo de quiebre (probabilidad).
+  const issuesFor = (nodeId: string) =>
+    skuIds.map((id) => {
+      const al = drp.alerts.filter((a) => a.nodeId === nodeId && a.skuId === id);
+      return {
+        id,
+        stockouts: al.filter((a) => a.code === 'STOCKOUT').length,
+        below: al.filter((a) => a.code === 'BELOW_SAFETY').length,
+        risk: stockoutRiskList.find((r) => r.nodeId === nodeId && r.skuId === id)?.probability ?? 0,
+      };
+    });
+  const issueScore = (i: { stockouts: number; below: number; risk: number }) => i.stockouts * 1000 + i.below * 100 + (i.risk >= 0.1 ? i.risk * 50 : 0);
+  const worstSku = (nodeId: string) => {
+    const best = [...issuesFor(nodeId)].sort((a, b) => issueScore(b) - issueScore(a))[0];
+    return best && issueScore(best) > 0 ? best.id : '';
+  };
+  const selectNode = (id: string) => { setNodeSel(id); setSkuId(worstSku(id)); };
+  const pickRisk = (nodeId: string, skuToShow: string) => {
+    setNodeSel(nodeId);
+    setSkuId(skuToShow);
+    setTimeout(() => document.getElementById('drp-node-detail')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  };
+  const nodeIssues = selNode ? issuesFor(selNode.id).filter((i) => issueScore(i) > 0 || i.risk >= 0.05) : [];
+  const sku = skuId || (selNode ? worstSku(selNode.id) : '') || skuIds[0] || '';
   const selRow = selNode ? drp.rows.find((r) => r.nodeId === selNode.id && r.skuId === sku) : undefined;
   const plantOfSku = (id: string) => dataset.lines.find((l) => l.id === dataset.skus.find((x) => x.id === id)?.lineId)?.plantId;
   // Lo que el punto atiende cada semana: en el CEDI, su demanda propia más los pedidos de las agencias.
@@ -173,7 +196,7 @@ export function DrpView() {
         ))}
       </div>
 
-      <StockoutRiskCard />
+      <StockoutRiskCard onPick={pickRisk} />
 
       <Card title="Mapa de la red" hint="Así fluye el producto: la planta abastece al CEDI y el CEDI a las agencias. Haz clic en un punto para ver su inventario semana a semana.">
         <div className="flex flex-col items-center">
@@ -182,18 +205,19 @@ export function DrpView() {
             <div className="font-mono font-bold text-[11px]">{fmtInt(total)} cajas en {weeks.length} semanas</div>
           </div>
           <div className="h-5 w-px bg-slate-300"></div>
-          {cediNode && <NodeCard n={cediNode} stats={nodeStats(cediNode)} selected={selNode?.id === cediNode.id} onSelect={() => setNodeSel(cediNode.id)} wide />}
+          {cediNode && <NodeCard n={cediNode} stats={nodeStats(cediNode)} selected={selNode?.id === cediNode.id} onSelect={() => selectNode(cediNode.id)} wide />}
           <div className="h-5 w-px bg-slate-300"></div>
           <div className="relative w-full">
             <div className="absolute left-[12.5%] right-[12.5%] top-0 h-px bg-slate-300 hidden lg:block"></div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-0 lg:pt-3">
-              {agencyNodes.map((n) => <NodeCard key={n.id} n={n} stats={nodeStats(n)} selected={selNode?.id === n.id} onSelect={() => setNodeSel(n.id)} />)}
+              {agencyNodes.map((n) => <NodeCard key={n.id} n={n} stats={nodeStats(n)} selected={selNode?.id === n.id} onSelect={() => selectNode(n.id)} />)}
             </div>
           </div>
         </div>
       </Card>
 
       {selNode && selRow && (
+        <div id="drp-node-detail">
         <Card
           title={`${selNode.name}: inventario y órdenes`}
           hint={`Producto: ${skuName(sku)}. Cada semana el punto recibe lo que necesita para volver a su stock de seguridad después de atender la demanda; por eso el inventario "al cierre" se mantiene en el colchón y lo que cambia es cuánto se mueve. Dentro del plazo de entrega no puede llegar nada nuevo.`}
@@ -201,11 +225,35 @@ export function DrpView() {
             <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
               Producto
               <select value={sku} onChange={(e) => setSkuId(e.target.value)} className="rounded-xl border border-black/10 bg-white/80 px-2.5 py-1.5 text-xs font-bold">
-                {skuIds.map((id) => <option key={id} value={id}>{skuName(id)}</option>)}
+                {skuIds.map((id) => {
+                  const iss = issuesFor(selNode.id).find((i) => i.id === id)!;
+                  const mark = iss.stockouts > 0 ? ' ⚠ quiebre' : iss.below > 0 ? ' ⚠ bajo seguridad' : iss.risk >= 0.1 ? ` · riesgo ${fmtDec(iss.risk * 100, 0)} %` : '';
+                  return <option key={id} value={id}>{skuName(id)}{mark}</option>;
+                })}
               </select>
             </label>
           }
         >
+          <div className="mb-4 rounded-2xl bg-white/50 border border-white/80 px-3 py-2 text-xs">
+            {nodeIssues.length === 0 ? (
+              <span className="text-emerald-800 font-bold">Este punto no tiene alertas ni riesgo relevante de quiebre en ningún producto.</span>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-bold text-slate-700">Productos con algo que mirar en este punto:</span>
+                {nodeIssues.map((i) => (
+                  <button
+                    key={i.id}
+                    onClick={() => setSkuId(i.id)}
+                    className={`rounded-full px-2.5 py-1 font-bold text-black cursor-pointer ${i.stockouts > 0 ? 'bg-[#FFA27D]' : i.below > 0 || i.risk >= 0.1 ? 'bg-[#FFF87C]' : 'bg-white/80 border border-black/10'} ${sku === i.id ? 'ring-2 ring-slate-900' : ''}`}
+                  >
+                    {skuName(i.id).replace(' (sint.)', '')}
+                    {i.stockouts > 0 ? ` · ${i.stockouts} quiebre(s)` : i.below > 0 ? ` · ${i.below} sem. bajo seguridad` : ''}
+                    {i.risk >= 0.05 ? ` · riesgo ${fmtDec(i.risk * 100, 0)} %` : ''}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-xs">
             <div className="rounded-xl bg-white/60 border border-white/80 px-3 py-2">
               <div className="text-[10px] uppercase font-bold text-slate-500">Inventario hoy</div>
@@ -260,7 +308,18 @@ export function DrpView() {
                 {a.code === 'STOCKOUT' ? 'Quiebre' : a.code === 'SPACE' ? 'Espacio' : 'Bajo seguridad'} · {weekLabel(a.weekStart)} · {fmtInt(a.value)} cajas
               </span>
             ))}
-            {drp.alerts.filter((a) => a.nodeId === selNode.id && a.skuId === sku).length === 0 && <span className="text-emerald-800 font-bold">Sin alertas para este producto en este punto.</span>}
+            {(() => {
+              const risk = stockoutRiskList.find((r) => r.nodeId === selNode.id && r.skuId === sku);
+              return risk && risk.probability >= 0.05 ? (
+                <span className="rounded-full px-2.5 py-1 font-bold text-black bg-[#DDCBF5]" title="Probabilidad de quedarse sin inventario antes de la próxima reposición (asistente de riesgo de quiebre)">✦ Riesgo de quiebre {fmtDec(risk.probability * 100, 0)} % · semana del {weekLabel(risk.weekStart)}</span>
+              ) : null;
+            })()}
+            {drp.alerts.filter((a) => a.nodeId === selNode.id && a.skuId === sku).length === 0 && !(stockoutRiskList.find((r) => r.nodeId === selNode.id && r.skuId === sku)?.probability! >= 0.05) && (
+              <span className="text-emerald-800 font-bold">
+                Sin alertas ni riesgo relevante para este producto en este punto.
+                {nodeIssues.length > 0 ? ' Otros productos de este punto sí tienen algo que mirar (ver arriba).' : ''}
+              </span>
+            )}
           </div>
           <Disclosure title="Ver el detalle semana a semana (tabla)">
             <table className="w-full text-[11px]">
@@ -289,6 +348,7 @@ export function DrpView() {
             </table>
           </Disclosure>
         </Card>
+        </div>
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] gap-5 items-start">
