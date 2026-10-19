@@ -51,6 +51,14 @@ export function DrpView() {
   const selNode = nodes.find((n) => n.id === nodeSel) ?? cediNode;
   const selRow = selNode ? drp.rows.find((r) => r.nodeId === selNode.id && r.skuId === sku) : undefined;
   const plantOfSku = (id: string) => dataset.lines.find((l) => l.id === dataset.skus.find((x) => x.id === id)?.lineId)?.plantId;
+  // Lo que el punto atiende cada semana: en el CEDI, su demanda propia más los pedidos de las agencias.
+  const agencyRows = drp.rows.filter((r) => r.skuId === sku && nodes.find((n) => n.id === r.nodeId)?.type !== 'CEDI');
+  const fromAgencies = (t: number) => (selNode?.type === 'CEDI' ? agencyRows.reduce((a, r) => a + (r.cells[t]?.plannedRelease ?? 0), 0) : 0);
+  const gross = selRow ? selRow.cells.map((c) => c.gross) : [];
+  const avgGross = gross.length ? gross.reduce((a, b) => a + b, 0) / gross.length : 0;
+  const avgFromAgencies = gross.length && selNode?.type === 'CEDI' ? gross.reduce((a, _, t) => a + fromAgencies(t), 0) / gross.length : 0;
+  const daysOf = (q: number) => (avgGross > 0 ? q / (avgGross / 7) : null);
+  const totalRelease = selRow ? selRow.cells.reduce((a, c) => a + c.plannedRelease, 0) : 0;
   const nodeStats = (n: (typeof nodes)[number]): NodeStats => {
     const rows = drp.rows.filter((r) => r.nodeId === n.id);
     const initial = rows.reduce((a, r) => a + r.initialOnHand, 0);
@@ -188,7 +196,7 @@ export function DrpView() {
       {selNode && selRow && (
         <Card
           title={`${selNode.name}: inventario y órdenes`}
-          hint="El inventario proyectado debe quedarse por encima del stock de seguridad. Dentro del plazo de entrega no se puede recibir nada nuevo, por eso ahí puede aparecer un faltante."
+          hint={`Producto: ${skuName(sku)}. Cada semana el punto recibe lo que necesita para volver a su stock de seguridad después de atender la demanda; por eso el inventario "al cierre" se mantiene en el colchón y lo que cambia es cuánto se mueve. Dentro del plazo de entrega no puede llegar nada nuevo.`}
           action={
             <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
               Producto
@@ -198,21 +206,53 @@ export function DrpView() {
             </label>
           }
         >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-xs">
+            <div className="rounded-xl bg-white/60 border border-white/80 px-3 py-2">
+              <div className="text-[10px] uppercase font-bold text-slate-500">Inventario hoy</div>
+              <div className="font-mono font-black text-lg">{fmtInt(selRow.initialOnHand)}</div>
+              <div className="text-[10px] text-slate-500">cajas{daysOf(selRow.initialOnHand) !== null ? ` · ≈ ${fmtDec(daysOf(selRow.initialOnHand)!, 1)} días de demanda` : ''}</div>
+            </div>
+            <div className="rounded-xl bg-white/60 border border-white/80 px-3 py-2">
+              <div className="text-[10px] uppercase font-bold text-slate-500">Demanda que atiende</div>
+              <div className="font-mono font-black text-lg">{fmtInt(avgGross)}</div>
+              <div className="text-[10px] text-slate-500">cajas por semana{selNode.type === 'CEDI' ? ` (${fmtInt(avgGross - avgFromAgencies)} propia + ${fmtInt(avgFromAgencies)} de las agencias)` : ''}</div>
+            </div>
+            <div className="rounded-xl bg-white/60 border border-white/80 px-3 py-2">
+              <div className="text-[10px] uppercase font-bold text-slate-500">Colchón de seguridad</div>
+              <div className="font-mono font-black text-lg">{fmtInt(selRow.cells[0]?.safetyStock ?? 0)}</div>
+              <div className="text-[10px] text-slate-500">cajas{daysOf(selRow.cells[0]?.safetyStock ?? 0) !== null ? ` · ≈ ${fmtDec(daysOf(selRow.cells[0]?.safetyStock ?? 0)!, 1)} días de demanda` : ''}</div>
+            </div>
+            <div className="rounded-xl bg-white/60 border border-white/80 px-3 py-2">
+              <div className="text-[10px] uppercase font-bold text-slate-500">Se pide {selNode.type === 'CEDI' ? 'a la planta' : 'al CEDI'}</div>
+              <div className="font-mono font-black text-lg">{fmtInt(totalRelease)}</div>
+              <div className="text-[10px] text-slate-500">cajas en {weeks.length} semanas</div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-6">
-            <LineChart
-              labels={weeks.map(weekLabel)}
-              height={230}
-              series={[
-                { name: 'Inventario proyectado', color: SERIES_COLORS[0], values: selRow.cells.map((c) => c.projectedOnHand) },
-                { name: 'Stock de seguridad', color: SERIES_COLORS[2], values: selRow.cells.map((c) => c.safetyStock), dashed: true },
-                { name: 'Demanda', color: SERIES_COLORS[1], values: selRow.cells.map((c) => c.gross) },
-              ]}
-            />
-            <StackedBars
-              labels={weeks.map(weekLabel)}
-              height={230}
-              stacks={[{ name: 'Orden a liberar', color: SERIES_COLORS[0], values: selRow.cells.map((c) => c.plannedRelease) }]}
-            />
+            <div>
+              <div className="text-xs font-black">¿Cuánto inventario hay en el punto?</div>
+              <p className="text-[11px] text-slate-500 mb-2">Cada semana el inventario sube hasta la línea azul cuando llega la mercancía y baja hasta la verde azulada al despachar. La diferencia entre ambas es la demanda de esa semana. Nunca debe quedar por debajo del stock de seguridad (punteada).</p>
+              <LineChart
+                labels={weeks.map(weekLabel)}
+                height={230}
+                series={[
+                  { name: 'Al recibir (inicio de la semana)', color: SERIES_COLORS[0], values: selRow.cells.map((c) => c.projectedOnHand + c.gross) },
+                  { name: 'Al cierre de la semana', color: SERIES_COLORS[2], values: selRow.cells.map((c) => c.projectedOnHand) },
+                  { name: 'Stock de seguridad', color: SERIES_COLORS[1], values: selRow.cells.map((c) => c.safetyStock), dashed: true },
+                ]}
+              />
+            </div>
+            <div>
+              <div className="text-xs font-black">¿Qué hay que pedir cada semana?</div>
+              <p className="text-[11px] text-slate-500 mb-2">Las barras son lo que hay que liberar {selNode.type === 'CEDI' ? 'a la planta' : 'al CEDI'}; la línea punteada, la demanda del punto. Después de las primeras semanas (en las que se usa el inventario y lo que ya viene en camino) se pide lo mismo que se vende.</p>
+              <StackedBars
+                labels={weeks.map(weekLabel)}
+                height={230}
+                stacks={[{ name: 'Orden a liberar', color: SERIES_COLORS[0], values: selRow.cells.map((c) => c.plannedRelease) }]}
+                line={{ name: 'Demanda del punto', color: SERIES_COLORS[1], values: gross }}
+              />
+            </div>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
             {drp.alerts.filter((a) => a.nodeId === selNode.id && a.skuId === sku).slice(0, 8).map((a, i) => (
@@ -231,9 +271,13 @@ export function DrpView() {
                 </tr>
               </thead>
               <tbody>
-                {cellRows.map((cr) => (
+                {cellRows.flatMap((cr) => (cr.label === 'Demanda' && selNode.type === 'CEDI'
+                  ? [cr,
+                     { label: '   · demanda propia', get: (c: DrpCell) => c.gross - fromAgencies(weeks.indexOf(c.weekStart)), bold: false },
+                     { label: '   · pedidos de las agencias', get: (c: DrpCell) => fromAgencies(weeks.indexOf(c.weekStart)), bold: false }]
+                  : [cr])).map((cr) => (
                   <tr key={cr.label} className="text-right font-mono">
-                    <td className={`text-left font-sans ${cr.bold ? 'font-bold' : 'text-slate-500'}`}>{cr.label}</td>
+                    <td className={`text-left font-sans whitespace-pre ${cr.bold ? 'font-bold' : 'text-slate-500'}`}>{cr.label}</td>
                     {selRow.cells.map((c) => {
                       const v = cr.get(c);
                       const low = cr.label === 'Stock proyectado' && v < c.safetyStock - 0.5;
@@ -426,7 +470,7 @@ function NodeCard({ n, stats, selected, onSelect, wide = false }: { n: { name: s
       <div className="text-[10px] text-slate-500 mt-0.5">{PRIORITY_LABEL[n.priority]} · {n.type === 'CEDI' ? 'desde planta' : 'desde CEDI'}: {n.leadTimeWeeks} sem.</div>
       <div className="mt-2 space-y-1.5">
         <div>
-          <div className="flex justify-between text-[10px] text-slate-500"><span>Parte de la demanda</span><span className="font-mono font-bold">{fmtDec(n.demandShare * 100, 0)} %</span></div>
+          <div className="flex justify-between text-[10px] text-slate-500"><span>{n.type === 'CEDI' ? 'Demanda propia (además abastece a las agencias)' : 'Parte de la demanda'}</span><span className="font-mono font-bold">{fmtDec(n.demandShare * 100, 0)} %</span></div>
           <ProgressBar value={n.demandShare} max={1} color={SERIES_COLORS[0]} height={6} />
         </div>
         <div>

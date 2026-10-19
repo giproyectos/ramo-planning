@@ -40,7 +40,7 @@ export interface Stack {
 }
 
 /** Barras apiladas por semana, con tooltip y total. */
-export function StackedBars({ labels, stacks, height = 220, unit = 'cajas', highlight }: { labels: string[]; stacks: Stack[]; height?: number; unit?: string; highlight?: (i: number) => boolean }) {
+export function StackedBars({ labels, stacks, height = 220, unit = 'cajas', highlight, line }: { labels: string[]; stacks: Stack[]; height?: number; unit?: string; highlight?: (i: number) => boolean; line?: { name: string; color: string; values: number[] } }) {
   const [hover, setHover] = useState<number | null>(null);
   const W = 720;
   const H = height;
@@ -48,7 +48,7 @@ export function StackedBars({ labels, stacks, height = 220, unit = 'cajas', high
   const iw = W - m.l - m.r;
   const ih = H - m.t - m.b;
   const totals = labels.map((_, i) => stacks.reduce((a, s) => a + (s.values[i] ?? 0), 0));
-  const rawMax = Math.max(...totals, 1) * 1.05;
+  const rawMax = Math.max(...totals, ...(line?.values ?? []), 1) * 1.05;
   const p = Math.pow(10, Math.floor(Math.log10(rawMax)));
   const f = rawMax / p;
   const maxV = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
@@ -66,6 +66,12 @@ export function StackedBars({ labels, stacks, height = 220, unit = 'cajas', high
             {s.name}
           </span>
         ))}
+        {line && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
+            <span className="inline-block w-4 border-t-2" style={{ borderColor: line.color }}></span>
+            {line.name}
+          </span>
+        )}
       </div>
       <div className="relative" onMouseLeave={() => setHover(null)}>
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label={`Barras apiladas por semana: ${stacks.map((s) => s.name).join(', ')}`}>
@@ -93,6 +99,12 @@ export function StackedBars({ labels, stacks, height = 220, unit = 'cajas', high
               </g>
             );
           })}
+          {line && (
+            <g pointerEvents="none">
+              <polyline points={line.values.map((v, i) => `${m.l + slot * i + slot / 2},${y(v)}`).join(' ')} fill="none" stroke={line.color} strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" strokeDasharray="5 4" />
+              {line.values.map((v, i) => <circle key={i} cx={m.l + slot * i + slot / 2} cy={y(v)} r="3" fill={line.color} stroke="#fff" strokeWidth="1.5" />)}
+            </g>
+          )}
         </svg>
         {hover !== null && (
           <div className="absolute z-10 pointer-events-none rounded-xl bg-slate-900 text-white text-[11px] px-3 py-2 shadow-lg" style={{ left: `${((m.l + slot * hover + slot / 2) / W) * 100}%`, top: 0, transform: `translateX(${hover > labels.length / 2 ? '-105%' : '8%'})` }}>
@@ -104,6 +116,7 @@ export function StackedBars({ labels, stacks, height = 220, unit = 'cajas', high
                 <span className="ml-auto font-bold tabular-nums pl-3">{Math.round(s.values[hover] ?? 0).toLocaleString('es-CO')}</span>
               </div>
             ))}
+            {line && <div className="flex items-center gap-2"><span className="w-2 h-0.5" style={{ background: line.color }}></span><span className="text-slate-300">{line.name}</span><span className="ml-auto font-bold tabular-nums pl-3">{Math.round(line.values[hover] ?? 0).toLocaleString('es-CO')}</span></div>}
             <div className="border-t border-white/20 mt-1 pt-1 flex justify-between"><span className="text-slate-300">Total</span><span className="font-bold tabular-nums">{Math.round(totals[hover]).toLocaleString('es-CO')} {unit}</span></div>
           </div>
         )}
