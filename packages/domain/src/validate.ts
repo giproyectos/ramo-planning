@@ -126,6 +126,29 @@ export function validateDataset(ds: RamoDataset): ValidationIssue[] {
   validateMaterials(ds, add);
   validateOrderHistory(ds, add);
 
+  for (const t of ds.templates ?? []) {
+    const p = `templates.${t.id}`;
+    const crew = crews.get(t.crewId);
+    if (!crew) add('UNKNOWN_CREW', p, `tripulación inexistente: ${t.crewId}`);
+    if (t.lineIds.length === 0) add('TEMPLATE_NO_LINES', p, 'la plantilla no tiene líneas');
+    for (const lid of t.lineIds) {
+      if (!lines.has(lid)) add('UNKNOWN_LINE', p, `línea inexistente: ${lid}`);
+      else if (crew && lines.get(lid)!.crewId !== t.crewId) add('LINE_CREW_MISMATCH', p, `la línea ${lid} no pertenece a la tripulación ${t.crewId}`);
+    }
+    if (!(t.hoursPerShift > 0)) add('BAD_SHIFT_HOURS', p, 'horas por turno inválidas');
+    if (t.changeoverHours < 0) add('BAD_CHANGEOVER', p, 'horas de cambio negativas');
+    for (const [wd, list] of Object.entries(t.days)) {
+      if (!(Number(wd) >= 1 && Number(wd) <= 7)) add('BAD_WEEKDAY', p, `día de la semana inválido: ${wd}`);
+      for (const sid of list) {
+        const sku = skus.get(sid);
+        if (!sku) add('UNKNOWN_SKU', p, `producto inexistente: ${sid}`);
+        else if (!t.lineIds.includes(sku.lineId)) add('SKU_LINE_NOT_IN_TEMPLATE', p, `el producto ${sid} es de la línea ${sku.lineId}, que no está en la plantilla`);
+      }
+    }
+    for (const [wd, n] of Object.entries(t.shifts)) {
+      if (!(Number(wd) >= 1 && Number(wd) <= 7) || !(n >= 0 && Number.isInteger(n))) add('BAD_SHIFTS', p, `turnos inválidos: día ${wd} = ${n}`);
+    }
+  }
   return issues;
 }
 

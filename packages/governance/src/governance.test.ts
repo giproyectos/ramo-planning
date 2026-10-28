@@ -46,12 +46,22 @@ describe('cambios del espacio de trabajo', () => {
   it('detecta qué secciones cambiaron', () => {
     expect(changedSections(base, { ...base, blocks: [1] })).toEqual(['blocks']);
     expect(changedSections(base, base)).toEqual([]);
+    // una sección que no existía y aparece vacía no cuenta como cambio (espacios de trabajo guardados antes de que existiera)
+    expect(changedSections(base, { ...base, templateOverrides: [], dailyAdjustments: [] })).toEqual([]);
+    expect(changedSections({ ...base, x: {} }, base)).toEqual([]);
+    expect(changedSections(base, { ...base, templateOverrides: [{ id: 1 }] })).toEqual(['templateOverrides']);
   });
 
   it('cada sección exige el permiso de su capa', () => {
     expect(checkWorkspaceChange('demand', base, { ...base, blocks: [1] }).ok).toBe(true);
     expect(checkWorkspaceChange('production', base, { ...base, blocks: [1] })).toMatchObject({ ok: false });
     expect(checkWorkspaceChange('production', base, { ...base, decisions: [1] }).ok).toBe(true);
+    // la programación diaria (plantillas y ajustes por día) es de Producción; Demanda no puede tocarla pero sí guardar lo suyo sin que las secciones nuevas estorben
+    expect(checkWorkspaceChange('production', base, { ...base, templateOverrides: [1] }).ok).toBe(true);
+    expect(checkWorkspaceChange('production', base, { ...base, dailyAdjustments: [1] }).ok).toBe(true);
+    expect(checkWorkspaceChange('demand', base, { ...base, templateOverrides: [1] })).toMatchObject({ ok: false });
+    expect(checkWorkspaceChange('distribution', base, { ...base, dailyAdjustments: [1] })).toMatchObject({ ok: false });
+    expect(checkWorkspaceChange('demand', base, { ...base, blocks: [1], templateOverrides: [], dailyAdjustments: [] }).ok).toBe(true);
     expect(checkWorkspaceChange('distribution', base, { ...base, decisions: [1] }).ok).toBe(false);
     expect(checkWorkspaceChange('distribution', base, { ...base, adjustments: [1] }).ok).toBe(true);
     expect(checkWorkspaceChange('purchasing', base, { ...base, recDecisions: { a: 1 }, leadTimeOverrides: { m: 3 } }).ok).toBe(true);

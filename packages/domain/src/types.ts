@@ -243,6 +243,51 @@ export interface CapacityDecision {
   createdAt: string;
 }
 
+/**
+ * Plantilla semanal de programación: qué producto se produce cada día de la semana en una línea (o en varias líneas que comparten
+ * tripulación y se turnan) y con cuántos turnos. Es el "esquema de producción" que hoy se maneja a mano en Excel.
+ */
+export interface ProductionTemplate {
+  id: string;
+  name: string;
+  /** Tripulación que ejecuta la plantilla. */
+  crewId: string;
+  /** Líneas de la plantilla. Si hay más de una, la tripulación se turna entre ellas (una por día). */
+  lineIds: string[];
+  /** 1 = lunes … 7 = domingo → productos (SKU) que se producen ese día. Un día sin entrada no se produce. */
+  days: Record<number, string[]>;
+  /** 1 = lunes … 7 = domingo → turnos ese día (0 = no se trabaja). */
+  shifts: Record<number, number>;
+  hoursPerShift: number;
+  /** Horas que se pierden (aseo, cambio de sabor o de producto) cuando el día no repite lo que se produjo el día de producción anterior. */
+  changeoverHours: number;
+}
+
+/** Cambio a una plantilla: para una sola semana o desde una semana en adelante (siempre). El más reciente que aplique manda. */
+export interface TemplateOverride {
+  id: string;
+  templateId: string;
+  /** 'WEEK' = solo la semana `weekStart`; 'FROM' = desde `weekStart` en adelante. */
+  scope: 'WEEK' | 'FROM';
+  weekStart: string;
+  days: Record<number, string[]>;
+  shifts: Record<number, number>;
+  reason: string;
+  author: string;
+  createdAt: string;
+}
+
+/** Ajuste manual de cajas de un producto en un día concreto de la programación diaria (positivo suma, negativo resta). */
+export interface DailyAdjustment {
+  id: string;
+  skuId: string;
+  date: string;
+  deltaCommercialQty: number;
+  reason: string;
+  author: string;
+  createdAt: string;
+}
+
 export interface RamoDataset {
   synthetic: boolean;
   plants: Plant[];
@@ -264,4 +309,6 @@ export interface RamoDataset {
   /** Historial de órdenes recibidas y solicitudes de pedido abiertas (capa de recomendaciones). */
   orderHistory?: OrderHistoryRow[];
   requisitions?: PurchaseRequisition[];
+  /** Plantillas semanales de programación diaria; opcionales para datasets que no usan la programación diaria. */
+  templates?: ProductionTemplate[];
 }

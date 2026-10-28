@@ -1,13 +1,19 @@
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { Permission } from '@ramo/governance';
-import { BuildingBlock, CapacityDecision, DemandHistoryRow, DemandRecord, MpsAdjustment, RamoDataset, validateDataset } from '@ramo/domain';
+import { BuildingBlock, CapacityDecision, DailyAdjustment, DemandHistoryRow, DemandRecord, MpsAdjustment, RamoDataset, TemplateOverride, validateDataset } from '@ramo/domain';
 import {
   CYCLE_ORDER,
+  AllocationRule,
   CrewMode,
+  DailyBalancePlan,
+  DailyResult,
   DemandNudge,
   MaterialSim,
   RebalancePlan,
   StockoutRisk,
+  buildDailySchedule,
+  dailyMovesToAdjustments,
+  suggestDailyBalance,
   movesToAdjustments,
   simulateSupplyRisk,
   stockoutRisks,
@@ -125,6 +131,19 @@ interface RamoPlanState {
   /** Aplica la sugerencia del optimizador: movimientos como ajustes del MPS (Distribución) y/o horas extra (área de Producción). */
   applyRebalanceMoves: (plan: RebalancePlan, author: string) => void;
   applyRebalanceExtra: (plan: RebalancePlan, author: string) => void;
+  /** Programación diaria: plantillas semanales (qué producto se hace cada día), cambios a esas plantillas y ajustes manuales por día. */
+  daily: DailyResult | null;
+  dailyBalance: DailyBalancePlan | null;
+  allocationRule: AllocationRule;
+  setAllocationRule: (r: AllocationRule) => void;
+  templateOverrides: TemplateOverride[];
+  saveTemplateOverride: (o: Omit<TemplateOverride, 'id' | 'createdAt'>) => void;
+  removeTemplateOverride: (id: string) => void;
+  dailyAdjustments: DailyAdjustment[];
+  /** Mueve cajas de un día a otro (dos ajustes: resta en el origen, suma en el destino). */
+  moveDaily: (m: { skuId: string; fromDate: string; toDate: string; qty: number; reason: string; author: string }) => void;
+  applyDailyBalance: (plan: DailyBalancePlan, author: string) => void;
+  removeDailyAdjustment: (id: string) => void;
   /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
   logEvent: (actor: string, text: string) => void;
   userBlocks: BuildingBlock[];
@@ -286,6 +305,14 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const supplySim = useMemo(() => (supplyRisk ? simulateSupplyRisk(riskDataset, supplyRisk, { sigmaBySku }) : []), [riskDataset, supplyRisk, sigmaBySku]);
   const rebalanceMiguel = useMemo(() => suggestRebalance(dataset, miguelView.net, { crewMode, decisions }), [dataset, miguelView.net, crewMode, decisions]);
   const rebalanceDaniel = useMemo(() => suggestRebalance(dataset, danielView.net, { crewMode, decisions }), [dataset, danielView.net, crewMode, decisions]);
+  const [templateOverrides, setTemplateOverrides] = useState<TemplateOverride[]>([]);
+  const [dailyAdjustments, setDailyAdjustments] = useState<DailyAdjustment[]>([]);
+  const [allocationRule, setAllocationRule] = useState<AllocationRule>('EVEN');
+  const daily = useMemo(
+    () => ((dataset.templates?.length ?? 0) > 0 ? buildDailySchedule(dataset, danielView.net, { overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule }) : null),
+    [dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule],
+  );
+  const dailyBalance = useMemo(() => (daily ? suggestDailyBalance(dataset, daily) : null), [dataset, daily]);
   const pendingRecommendations = useMemo(() => (insights?.recommendations ?? []).filter((r) => !recDecisions[r.id]), [insights, recDecisions]);
 
   const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
@@ -326,6 +353,34 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     [addLog],
   );
 
+  const saveTemplateOverride = useCallback<RamoPlanState['saveTemplateOverride']>(
+    (o) => {
+      setTemplateOverrides((prev) => [...prev, { ...o, id: nextId('tpl'), createdAt: now() }]);
+      addLog(o.author, `Cambio de plantilla ${o.templateId} (${o.scope === 'WEEK' ? `solo la semana del ${o.weekStart}` : `desde la semana del ${o.weekStart}`}): ${o.reason}`);
+    },
+    [addLog],
+  );
+  const moveDaily = useCallback<RamoPlanState['moveDaily']>(
+    (m) => {
+      const at = now();
+      setDailyAdjustments((prev) => [
+        ...prev,
+        { id: nextId('day'), skuId: m.skuId, date: m.fromDate, deltaCommercialQty: -m.qty, reason: m.reason, author: m.author, createdAt: at },
+        { id: nextId('day'), skuId: m.skuId, date: m.toDate, deltaCommercialQty: m.qty, reason: m.reason, author: m.author, createdAt: at },
+      ]);
+      addLog(m.author, `Movió ${m.qty} cajas de ${m.skuId} del ${m.fromDate} al ${m.toDate}: ${m.reason}`);
+    },
+    [addLog],
+  );
+  const applyDailyBalance = useCallback<RamoPlanState['applyDailyBalance']>(
+    (plan, author) => {
+      const at = now();
+      const reason = 'Rebalanceo diario sugerido por el optimizador: pasar producción a días con holgura';
+      setDailyAdjustments((prev) => [...prev, ...dailyMovesToAdjustments(plan.moves).map((a) => ({ id: nextId('day'), ...a, reason, author, createdAt: at }))]);
+      addLog(author, `Aplicó el rebalanceo diario sugerido (${plan.moves.length} movimiento(s))`);
+    },
+    [addLog],
+  );
   const acceptNudge = useCallback(
     (n: DemandNudge, author: string) => {
       addBlock({
@@ -386,11 +441,13 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     stage: (d.stage as CycleStage) ?? 'DRAFT',
     recDecisions: (d.recDecisions as Record<string, RecDecision>) ?? {},
     leadTimeOverrides: (d.leadTimeOverrides as Record<string, number>) ?? {},
+    templateOverrides: (d.templateOverrides as TemplateOverride[]) ?? [],
+    dailyAdjustments: (d.dailyAdjustments as DailyAdjustment[]) ?? [],
     log: (d.log as LogEntry[]) ?? [],
   });
   const snapshot = useMemo(
-    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, log }),
-    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, log],
+    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, log }),
+    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, log],
   );
 
   const reloadWorkspace = useCallback(async () => {
@@ -404,6 +461,8 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     setStage(s.stage);
     setRecDecisions(s.recDecisions);
     setLeadTimeOverrides(s.leadTimeOverrides);
+    setTemplateOverrides(s.templateOverrides);
+    setDailyAdjustments(s.dailyAdjustments);
     setLog(s.log);
   }, []);
 
@@ -479,6 +538,17 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     setStaticDays,
     drpPipeline,
     setDrpPipeline,
+    daily,
+    dailyBalance,
+    allocationRule,
+    setAllocationRule,
+    templateOverrides,
+    saveTemplateOverride: guarded('capacity.edit', (o: Omit<TemplateOverride, 'id' | 'createdAt'>) => saveTemplateOverride(o)),
+    removeTemplateOverride: guarded('capacity.edit', (id: string) => setTemplateOverrides((p) => p.filter((o) => o.id !== id))),
+    dailyAdjustments,
+    moveDaily: guarded('capacity.edit', (m: Parameters<RamoPlanState['moveDaily']>[0]) => moveDaily(m)),
+    applyDailyBalance: guarded('capacity.edit', (plan: DailyBalancePlan, author: string) => applyDailyBalance(plan, author)),
+    removeDailyAdjustment: guarded('capacity.edit', (id: string) => setDailyAdjustments((p) => p.filter((a) => a.id !== id))),
     demandNudges,
     acceptNudge: guarded('demand.edit', (n: DemandNudge, author: string) => acceptNudge(n, author)),
     dismissNudge,

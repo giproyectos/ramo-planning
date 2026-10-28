@@ -7,6 +7,7 @@ import { DemandView } from './components/ramo/DemandView';
 import { DrpView } from './components/ramo/DrpView';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
+import { DailyView } from './components/ramo/DailyView';
 import { MrpView } from './components/ramo/MrpView';
 import { DataView } from './components/ramo/DataView';
 import { AiView } from './components/ramo/AiView';
@@ -53,6 +54,7 @@ function AppContent() {
           {currentStep === 'drp' && <DrpView />}
           {currentStep === 'mps' && <MpsView />}
           {currentStep === 'crp' && <CrpView />}
+          {currentStep === 'daily' && <DailyView />}
           {currentStep === 'mrp' && <MrpView />}
           {currentStep === 'data' && <DataView />}
           {currentStep === 'ai' && <AiView />}

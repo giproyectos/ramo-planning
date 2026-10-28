@@ -150,6 +150,22 @@ describe('espacio de trabajo compartido', () => {
     expect(denied.json.error.message).toContain('adjustments');
   });
 
+  it('la programación diaria (cambios de plantilla y ajustes por día) es de Producción; las demás secciones no se estorban', async () => {
+    const tpl = { templateOverrides: [{ id: 't1' }], dailyAdjustments: [{ id: 'd1' }] };
+    const prod = await login('produccion');
+    expect((await put(prod, 0, { ...empty, ...tpl })).status).toBe(200);
+    const demanda = await login('demanda');
+    expect((await call('GET', '/api/workspace', { token: demanda })).json.data).toMatchObject(tpl);
+    // Demanda guarda sus building blocks sin tocar lo de Producción
+    expect((await put(demanda, 1, { ...empty, ...tpl, blocks: [{ id: 'b1' }] })).status).toBe(200);
+    // pero no puede cambiar ni borrar la programación diaria
+    const denied = await put(demanda, 2, { ...empty, blocks: [{ id: 'b1' }], templateOverrides: [], dailyAdjustments: [{ id: 'd1' }] });
+    expect(denied.status).toBe(403);
+    expect(denied.json.error.message).toContain('templateOverrides');
+    // Distribución tampoco la modifica
+    expect((await put(await login('distribucion'), 2, { ...empty, blocks: [{ id: 'b1' }], ...tpl, dailyAdjustments: [] })).status).toBe(403);
+  });
+
   it('un cambio denegado queda en la auditoría', async () => {
     await put(await login('consulta'), 0, { ...empty, blocks: [1] });
     const audit = await call('GET', '/api/audit', { token: await login('consulta') });

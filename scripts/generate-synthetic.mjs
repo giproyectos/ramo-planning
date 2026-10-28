@@ -255,7 +255,21 @@ const requisitions = [
   { id: 'SP-1004', materialId: 'MT-VAINILLA', qty: typicalOf('MT-VAINILLA'), neededDate: addDays(CUT, 30), createdAt: addDays(CUT, -1) }, // normal
 ];
 
-const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders, orderHistory, requisitions };
+// Esquemas de producción (plantillas semanales). Los patrones imitan los reales (producto en dos presentaciones, tripulación compartida que rota
+// por producto, y una línea que alterna sabores por día); las cifras de turnos y cambios son supuestos de ejemplo a validar con Producción.
+const rep = (days, v) => Object.fromEntries(days.map((d) => [d, v]));
+const templates = [
+  { id: 'T-PONQ', name: 'Ponqués (una línea, dos productos)', crewId: 'C-PONQ', lineIds: ['L-PONQ'],
+    days: rep([1, 2, 3, 4, 5], ['SK-001', 'SK-002']), shifts: { ...rep([1, 2, 3, 4, 5], 2), 6: 1 }, hoursPerShift: 8, changeoverHours: 0 }, // sábado: turno opcional, sin producto asignado
+  { id: 'T-BARMINI', name: 'Barras y Mini (tripulación compartida)', crewId: 'C-BARMINI', lineIds: ['L-MINI', 'L-BARR'],
+    days: { 1: ['SK-005'], 2: ['SK-005'], 3: ['SK-003'], 4: ['SK-003'], 5: ['SK-004'], 6: ['SK-004'] }, shifts: rep([1, 2, 3, 4, 5, 6], 3), hoursPerShift: 8, changeoverHours: 1 },
+  { id: 'T-CRISP', name: 'Crispetas (una línea, un producto)', crewId: 'C-CRISP', lineIds: ['L-CRISP'],
+    days: rep([1, 2, 3, 4, 5], ['SK-006']), shifts: { ...rep([1, 2, 3, 4, 5], 2), 6: 1 }, hoursPerShift: 8, changeoverHours: 0 }, // sábado: turno opcional, sin producto asignado
+  { id: 'T-MAIZTOST', name: 'Maicitos y Tostadas (tripulación compartida)', crewId: 'C-MAIZTOST', lineIds: ['L-MAIZ', 'L-TOST'],
+    days: { 1: ['SK-007'], 2: ['SK-007'], 3: ['SK-007'], 4: ['SK-007'], 5: ['SK-008'], 6: ['SK-008'] }, shifts: { 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3 }, hoursPerShift: 8, changeoverHours: 1.5 },
+];
+
+const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders, orderHistory, requisitions, templates };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(dataset, null, 2) + '\n');
 console.log(`dataset.json: ${skus.length} SKUs, ${lines.length} líneas, ${demand.length} filas de demanda`);

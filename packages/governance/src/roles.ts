@@ -59,12 +59,16 @@ export const SECTION_PERMISSIONS: Record<string, Permission[] | 'any'> = {
   stage: ['capacity.edit', 'mps.edit'],
   recDecisions: ['procurement.decide'],
   leadTimeOverrides: ['procurement.decide'],
+  templateOverrides: ['capacity.edit'],
+  dailyAdjustments: ['capacity.edit'],
   log: 'any',
 };
 
 export type Workspace = Record<string, unknown>;
 
-const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+/** Una sección ausente, `[]` y `{}` son lo mismo: un espacio de trabajo guardado antes de que existiera una sección no cuenta como "cambiado" por tenerla vacía. */
+const empty = (v: unknown) => v === undefined || v === null || (Array.isArray(v) && v.length === 0) || (typeof v === 'object' && !Array.isArray(v) && Object.keys(v as object).length === 0);
+const same = (a: unknown, b: unknown) => (empty(a) && empty(b)) || JSON.stringify(a) === JSON.stringify(b);
 
 /** Secciones cuyo contenido cambió entre dos versiones del espacio de trabajo. */
 export function changedSections(prev: Workspace, next: Workspace): string[] {

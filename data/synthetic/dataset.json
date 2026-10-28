@@ -4659,5 +4659,160 @@
       "neededDate": "2026-11-04",
       "createdAt": "2026-10-04"
     }
+  ],
+  "templates": [
+    {
+      "id": "T-PONQ",
+      "name": "Ponqués (una línea, dos productos)",
+      "crewId": "C-PONQ",
+      "lineIds": [
+        "L-PONQ"
+      ],
+      "days": {
+        "1": [
+          "SK-001",
+          "SK-002"
+        ],
+        "2": [
+          "SK-001",
+          "SK-002"
+        ],
+        "3": [
+          "SK-001",
+          "SK-002"
+        ],
+        "4": [
+          "SK-001",
+          "SK-002"
+        ],
+        "5": [
+          "SK-001",
+          "SK-002"
+        ]
+      },
+      "shifts": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 1
+      },
+      "hoursPerShift": 8,
+      "changeoverHours": 0
+    },
+    {
+      "id": "T-BARMINI",
+      "name": "Barras y Mini (tripulación compartida)",
+      "crewId": "C-BARMINI",
+      "lineIds": [
+        "L-MINI",
+        "L-BARR"
+      ],
+      "days": {
+        "1": [
+          "SK-005"
+        ],
+        "2": [
+          "SK-005"
+        ],
+        "3": [
+          "SK-003"
+        ],
+        "4": [
+          "SK-003"
+        ],
+        "5": [
+          "SK-004"
+        ],
+        "6": [
+          "SK-004"
+        ]
+      },
+      "shifts": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3
+      },
+      "hoursPerShift": 8,
+      "changeoverHours": 1
+    },
+    {
+      "id": "T-CRISP",
+      "name": "Crispetas (una línea, un producto)",
+      "crewId": "C-CRISP",
+      "lineIds": [
+        "L-CRISP"
+      ],
+      "days": {
+        "1": [
+          "SK-006"
+        ],
+        "2": [
+          "SK-006"
+        ],
+        "3": [
+          "SK-006"
+        ],
+        "4": [
+          "SK-006"
+        ],
+        "5": [
+          "SK-006"
+        ]
+      },
+      "shifts": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 1
+      },
+      "hoursPerShift": 8,
+      "changeoverHours": 0
+    },
+    {
+      "id": "T-MAIZTOST",
+      "name": "Maicitos y Tostadas (tripulación compartida)",
+      "crewId": "C-MAIZTOST",
+      "lineIds": [
+        "L-MAIZ",
+        "L-TOST"
+      ],
+      "days": {
+        "1": [
+          "SK-007"
+        ],
+        "2": [
+          "SK-007"
+        ],
+        "3": [
+          "SK-007"
+        ],
+        "4": [
+          "SK-007"
+        ],
+        "5": [
+          "SK-008"
+        ],
+        "6": [
+          "SK-008"
+        ]
+      },
+      "shifts": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 3,
+        "6": 3
+      },
+      "hoursPerShift": 8,
+      "changeoverHours": 1.5
+    }
   ]
 }

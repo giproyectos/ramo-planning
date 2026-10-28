@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, BarChart3, Truck, CalendarRange, Cpu, Boxes, Database, Sparkles, Send } from 'lucide-react';
+import { LayoutGrid, BarChart3, Truck, CalendarRange, CalendarClock, Cpu, Boxes, Database, Sparkles, Send } from 'lucide-react';
 import { ROLE_LABELS } from '@ramo/governance';
 import { useAuth } from '../ramo/auth';
 import { useRamoPlan } from '../ramo/store';
@@ -19,10 +19,12 @@ type Tone = keyof typeof TONE;
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) => {
   const { mode, user, logout } = useAuth();
-  const { sync, dataset, baseline, forecast, drp, stage, danielView, supplyRisk, pendingRecommendations, serverMode } = useRamoPlan();
+  const { sync, dataset, baseline, forecast, drp, stage, danielView, supplyRisk, pendingRecommendations, serverMode, daily } = useRamoPlan();
 
   const stockouts = drp?.alerts.filter((a) => a.code === 'STOCKOUT').length ?? 0;
   const overloads = danielView.alerts.length;
+  // Semanas con algún día sobre capacidad (no días: un número de días con tres dígitos no dice nada en el menú).
+  const dailyOver = new Set(daily?.alerts.filter((a) => a.code === 'OVER_CAPACITY').map((a) => a.weekStart)).size;
   const critical = supplyRisk?.risks.filter((r) => r.status === 'CRITICAL').length ?? 0;
   const stageBadge = { DRAFT: 'Borrador', SENT_TO_MPS: 'En revisión', MPS_FINAL: 'Cerrado', FINAL_ALERTS: 'Cerrado' }[stage];
 
@@ -32,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) =
     { id: 'drp', code: 'DRP', name: 'Red de distribución', icon: Truck, badge: !drp ? '—' : stockouts > 0 ? `${stockouts} quiebre(s)` : 'Sin quiebres', tone: !drp ? 'info' : stockouts > 0 ? 'bad' : 'ok' },
     { id: 'mps', code: 'MPS', name: 'MPS final', icon: CalendarRange, badge: stageBadge, tone: stage === 'DRAFT' ? 'info' : stage === 'SENT_TO_MPS' ? 'warn' : 'ok' },
     { id: 'crp', code: 'CRP', name: 'Capacidad por línea', icon: Cpu, badge: overloads > 0 ? `${overloads} en rojo` : 'Factible', tone: overloads > 0 ? 'bad' : 'ok' },
+    { id: 'daily', code: 'Día a día', name: 'Programación diaria', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. en rojo` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
     { id: 'mrp', code: 'MRP', name: 'Materiales', icon: Boxes, badge: !supplyRisk ? '—' : critical > 0 ? `${critical} crítico(s)` : 'Sin críticos', tone: !supplyRisk ? 'info' : critical > 0 ? 'bad' : 'ok' },
     { id: 'data', code: 'Datos', name: 'Bases SAP del lunes', icon: Database, badge: baseline?.usable ? 'SAP' : 'Ejemplo', tone: baseline?.usable ? 'ok' : 'warn' },
     { id: 'ai', code: 'Compras', name: 'Recomendaciones', icon: Sparkles, badge: String(pendingRecommendations.length), tone: pendingRecommendations.length === 0 ? 'ok' : 'info' },

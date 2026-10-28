@@ -14,3 +14,4 @@ export * from './rebalance';
 export * from './stockoutRisk';
 export * from './demandNudges';
 export * from './supplySim';
+export * from './daily';
