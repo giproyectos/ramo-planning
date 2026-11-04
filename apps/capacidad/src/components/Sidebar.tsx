@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, CalendarRange, CalendarClock, Cpu } from 'lucide-react';
+import { LayoutGrid, CalendarRange, CalendarClock, Cpu, Factory } from 'lucide-react';
 import { ROLE_LABELS } from '@ramo/governance';
 import { useAuth } from '../ramo/auth';
 import { useRamoPlan } from '../ramo/store';
@@ -19,7 +19,9 @@ type Tone = keyof typeof TONE;
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) => {
   const { mode, user, logout } = useAuth();
-  const { sync, dataset, stage, miguelView, daily } = useRamoPlan();
+  const { sync, dataset, stage, miguelView, daily, plantRows } = useRamoPlan();
+  const plantPending = plantRows.filter((r) => r.status === 'PENDING').length;
+  const plantShort = plantRows.filter((r) => r.shortfall > 0 || r.planChanged).length;
 
   const overloads = miguelView.alerts.length;
   // Semanas con algún día sobre capacidad (no días: un número de días con tres dígitos no dice nada en el menú).
@@ -30,6 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) =
     { id: 'summary', code: 'Resumen', name: 'Vista general', icon: LayoutGrid, badge: '', tone: 'info' },
     { id: 'crp', code: 'CRP', name: 'Capacidad por línea', icon: Cpu, badge: overloads > 0 ? `${overloads} en rojo` : 'Factible', tone: overloads > 0 ? 'bad' : 'ok' },
     { id: 'mps', code: 'MPS', name: 'MPS final', icon: CalendarRange, badge: stageBadge, tone: stage === 'DRAFT' ? 'info' : stage === 'SENT_TO_MPS' ? 'warn' : 'ok' },
+    { id: 'plants', code: 'Plantas', name: 'Confirmación de plantas', icon: Factory, badge: plantRows.length === 0 ? '—' : plantPending > 0 ? `${plantPending} por confirmar` : plantShort > 0 ? `${plantShort} bajo el plan` : 'Al día', tone: plantRows.length === 0 ? 'info' : plantPending > 0 ? 'info' : plantShort > 0 ? 'warn' : 'ok' },
     { id: 'daily', code: 'Día a día', name: 'Mesa de programación', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. en rojo` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
   ];
 

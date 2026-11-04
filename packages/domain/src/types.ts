@@ -267,15 +267,21 @@ export interface ProductionTemplate {
 export interface TemplateOverride {
   id: string;
   templateId: string;
-  /** 'WEEK' = solo la semana `weekStart`; 'FROM' = desde `weekStart` en adelante. */
+  /** 'WEEK' = solo la semana `weekStart`; 'FROM' = desde `weekStart` en adelante (hasta `untilWeek` si se indica). */
   scope: 'WEEK' | 'FROM';
   weekStart: string;
+  /** Solo con 'FROM': última semana (lunes, inclusive) en que rige el cambio. Sin ella rige hasta que otro cambio lo reemplace. */
+  untilWeek?: string;
   days: Record<number, string[]>;
   shifts: Record<number, number>;
+  /** Por qué cambia el esquema (para poder analizar las causas más frecuentes). */
+  cause?: ChangeCause;
   reason: string;
   author: string;
   createdAt: string;
 }
+
+export type ChangeCause = 'PACKAGING' | 'STAFF' | 'EQUIPMENT' | 'FOCUS' | 'OTHER';
 
 /** Ajuste manual de cajas de un producto en un día concreto de la programación diaria (positivo suma, negativo resta). */
 export interface DailyAdjustment {
@@ -297,6 +303,53 @@ export interface LineDayHistory {
   effectiveHours: number;
   stoppageHours: number;
 }
+
+/** Confirmación de Producción de lo que cada planta puede fabricar de un producto en una semana. Solo se añade: la vigente es la más reciente. */
+export interface PlantConfirmation {
+  id: string;
+  skuId: string;
+  weekStart: string;
+  /** Cajas que pedía el MPS cuando se confirmó. */
+  plannedQty: number;
+  /** Cajas que Producción confirma que sí puede fabricar. */
+  confirmedQty: number;
+  reason: string;
+  author: string;
+  createdAt: string;
+}
+
+/** Cajas entregadas (producidas) de un producto en una semana, para el seguimiento contra lo confirmado. Se suman. */
+export interface PlantDelivery {
+  id: string;
+  skuId: string;
+  weekStart: string;
+  qty: number;
+  note: string;
+  author: string;
+  createdAt: string;
+}
+
+/** Cambio de calendario hecho en la aplicación: festivo, mantenimiento, parada no programada, cierre o turno extendido en una o varias líneas. */
+export interface CalendarEdit {
+  id: string;
+  lineIds: string[];
+  date: string;
+  /** Horas disponibles ese día (0 = cerrado). Para EXTENDED, el total del día. */
+  hours: number;
+  reason: CalendarExceptionReason;
+  note: string;
+  author: string;
+  createdAt: string;
+}
+
+/** Regla de planta que el esquema debe respetar. */
+export type PlantRuleSpec =
+  | { kind: 'NO_TOGETHER'; skuA: string; skuB: string }
+  | { kind: 'NO_WEEKDAY'; skuId: string; weekday: number }
+  | { kind: 'MIN_DAYS'; skuId: string; days: number }
+  | { kind: 'CHANGEOVER'; skuA: string; skuB: string; hours: number };
+
+export type PlantRule = PlantRuleSpec & { id: string; reason: string; author: string; createdAt: string };
 
 export interface RamoDataset {
   synthetic: boolean;

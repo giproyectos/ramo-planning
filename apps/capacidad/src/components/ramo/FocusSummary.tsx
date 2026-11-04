@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CYCLE_ORDER, CycleStage, recommendTemplates } from '@ramo/engine';
+import { CYCLE_ORDER, CycleStage, recommendTemplates, summarizePlants } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { ProcessStep } from '../../ramo/steps';
@@ -18,7 +18,7 @@ const heatColor = (pct: number) => (pct > 110 ? '#FFA27D' : pct > 100 ? '#FFCB7D
 /** Resumen: qué toca hacer ahora, cómo está el plan semana a semana y qué conviene mirar primero. */
 export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) => void }) {
   const {
-    dataset, stage, danielView, miguelView, weeks, daily, weeklyAltsCapacity, crewConfidence, templateOverrides, dailyAdjustments, allocationRule, adjustments, decisions,
+    dataset, stage, danielView, miguelView, weeks, daily, weeklyAltsCapacity, crewConfidence, templateOverrides, dailyAdjustments, allocationRule, adjustments, decisions, plantRows, plantRules,
   } = useRamoPlan();
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const crewName = (id: string) => dataset.crews.find((c) => c.id === id)?.name.replace('Tripulación ', '') ?? id;
@@ -30,6 +30,7 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
   const riskyWeeks = new Set(riskyList.map((c) => c.weekStart)).size;
   const dailyOver = daily?.alerts.filter((a) => a.code === 'OVER_CAPACITY') ?? [];
   const dailyRedWeeks = new Set(dailyOver.map((a) => a.weekStart));
+  const plantSum = summarizePlants(plantRows);
   const totalCajas = danielView.net.reduce((a, r) => a + r.netProduction, 0);
 
   const worstTemplate = useMemo(() => {
@@ -42,7 +43,7 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
   const bestScheme = useMemo(() => {
     const out = (dataset.templates ?? [])
       .map((t) => {
-        const r = recommendTemplates(dataset, danielView.net, t.id, { fromWeek: weeks[0], weeks: 4, overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule });
+        const r = recommendTemplates(dataset, danielView.net, t.id, { fromWeek: weeks[0], weeks: 4, overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule, rules: plantRules });
         const cur = r.find((e) => e.current);
         const top = r[0];
         if (!cur || !top || top.current) return null;
@@ -51,7 +52,7 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
       .filter((x): x is { name: string; gain: number; days: number } => x !== null && x.gain > 0.05)
       .sort((a, b) => b.gain - a.gain);
     return out[0] ?? null;
-  }, [dataset, danielView.net, weeks, templateOverrides, dailyAdjustments, allocationRule]);
+  }, [dataset, danielView.net, weeks, templateOverrides, dailyAdjustments, allocationRule, plantRules]);
 
   // ---- Siguiente paso, según el paso del ciclo -------------------------------------------------------------------------
   const next: { who: string; title: string; detail: string; go: ProcessStep; button: string } =
@@ -97,6 +98,13 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
       detail: `${worstTemplate.name} es donde más faltan horas (${fmtDec(worstTemplate.hours, 0)} h en el horizonte). La mesa propone cómo moverlas entre días.`,
     });
   }
+  if (plantSum.rows > 0 && (plantSum.pending > 0 || plantSum.shortfall > 0 || plantSum.planChanged > 0)) {
+    items.push({
+      tone: plantSum.shortfall > 0 || plantSum.planChanged > 0 ? 'bad' : 'info', go: 'plants', button: 'Abrir confirmación de plantas',
+      title: plantSum.pending > 0 ? `${plantSum.pending} producto-semana(s) sin confirmar con las plantas` : plantSum.planChanged > 0 ? `${plantSum.planChanged} confirmación(es) quedaron viejas porque el MPS cambió` : `Las plantas no pueden fabricar ${fmtInt(plantSum.shortfall)} cajas`,
+      detail: `${plantSum.shortfall > 0 ? `Faltan ${fmtInt(plantSum.shortfall)} cajas confirmadas por debajo del MPS. ` : ''}${plantSum.coverage !== null ? `Lo ya confirmado cubre ${fmtDec(plantSum.coverage * 100, 0)} % de lo que pide el MPS.` : 'Todavía no hay ninguna confirmación.'}`,
+    });
+  }
   if (riskyWeeks > 0) {
     items.push({
       tone: 'warn', go: 'crp', button: 'Ver con rendimiento real',
@@ -111,6 +119,7 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
     { label: 'Producción del MPS', value: fmtInt(totalCajas), note: `cajas en ${weeks.length} semanas · ${adjustments.length} ajuste(s)`, tone: 'info', go: 'mps' },
     { label: 'Capacidad', value: alerts.length ? `${alerts.length} en rojo` : 'Todo cabe', note: alerts.length ? `faltan ${fmtDec(hoursToSolve, 1)} h` : `${decisions.length} decisión(es) de horas extra`, tone: alerts.length ? 'bad' : 'ok', go: 'crp' },
     { label: 'Riesgo real', value: riskyWeeks ? `${riskyWeeks} semanas` : 'Sin riesgo', note: 'caben en el papel, pero con menos de 90 % de probabilidad', tone: riskyWeeks ? 'warn' : 'ok', go: 'crp' },
+    { label: 'Plantas', value: plantSum.rows === 0 ? '—' : plantSum.pending > 0 ? `${plantSum.pending} por confirmar` : plantSum.shortfall > 0 ? `faltan ${fmtInt(plantSum.shortfall)}` : 'Al día', note: plantSum.fulfillment !== null ? `cumplimiento de lo entregado ${fmtDec(plantSum.fulfillment * 100, 0)} %` : 'confirmación de lo que cada planta puede fabricar', tone: plantSum.rows === 0 ? 'info' : plantSum.pending > 0 ? 'info' : plantSum.shortfall > 0 ? 'bad' : 'ok', go: 'plants' },
     { label: 'Mesa de programación', value: dailyRedWeeks.size ? `${dailyRedWeeks.size} sem. en rojo` : 'Todo cabe', note: 'semanas con días sobre su capacidad', tone: dailyRedWeeks.size ? 'bad' : 'ok', go: 'daily' },
   ];
 
@@ -144,7 +153,7 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
       </section>
 
       {/* Cifras */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {tiles.map((t) => (
           <button key={t.label} onClick={() => onSelectStep(t.go)} className="glass-card glass-card-hover rounded-3xl p-4 text-left cursor-pointer">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500"><span className={`w-2 h-2 rounded-full ${TONE[t.tone]}`} />{t.label}</div>

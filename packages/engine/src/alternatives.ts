@@ -1,4 +1,4 @@
-import { CapacityDecision, RamoDataset } from '@ramo/domain';
+import { CapacityDecision, PlantRule, RamoDataset } from '@ramo/domain';
 import { CrewMode } from './crp';
 import { NetPlanRow } from './mps';
 import { RebalancePlan, suggestRebalance } from './rebalance';
@@ -106,19 +106,20 @@ export function weeklyAlternatives(ds: RamoDataset, net: NetPlanRow[], options: 
 }
 
 /** Tres formas de resolver los días sobre capacidad: solo días en que ya se produce, usar también días libres, o solo horas extra. */
-export function dailyAlternatives(ds: RamoDataset, result: DailyResult): Alternative<DailyBalancePlan>[] {
+export function dailyAlternatives(ds: RamoDataset, result: DailyResult, options: { rules?: PlantRule[] } = {}): Alternative<DailyBalancePlan>[] {
+  const rules = options.rules;
   const defs: { id: AlternativeId; label: string; description: string; plan: DailyBalancePlan }[] = [
     {
       id: 'MIN_INVENTORY',
       label: 'Solo días de producción',
       description: 'Pasa producción únicamente a días en que el producto ya se fabrica según el esquema; el resto va a horas extra.',
-      plan: suggestDailyBalance(ds, result, { allowNewDays: false }),
+      plan: suggestDailyBalance(ds, result, { allowNewDays: false, rules }),
     },
     {
       id: 'BALANCED',
       label: 'Usar también días libres',
       description: 'Además de los días del esquema, abre días libres en que la tripulación no esté en otra línea.',
-      plan: suggestDailyBalance(ds, result, { allowNewDays: true }),
+      plan: suggestDailyBalance(ds, result, { allowNewDays: true, rules }),
     },
     {
       id: 'NO_OVERTIME',

@@ -1,9 +1,12 @@
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { Permission } from '@ramo/governance';
-import { BuildingBlock, CapacityDecision, DailyAdjustment, DemandHistoryRow, DemandRecord, MpsAdjustment, RamoDataset, TemplateOverride, validateDataset } from '@ramo/domain';
+import { BuildingBlock, CalendarEdit, CapacityDecision, DailyAdjustment, DemandHistoryRow, DemandRecord, MpsAdjustment, PlantConfirmation, PlantDelivery, PlantRule, PlantRuleSpec, RamoDataset, TemplateOverride, validateDataset } from '@ramo/domain';
 import {
   CYCLE_ORDER,
   Alternative,
+  PlantRow,
+  applyCalendarEdits,
+  plantFollowUp,
   LineEfficiency,
   WeekConfidence,
   CrewWeekConfidence,
@@ -161,6 +164,22 @@ interface RamoPlanState {
   moveDaily: (m: { skuId: string; fromDate: string; toDate: string; qty: number; reason: string; author: string }) => void;
   applyDailyBalance: (plan: DailyBalancePlan, author: string) => void;
   removeDailyAdjustment: (id: string) => void;
+  /** Reglas de planta (productos que no van juntos, días prohibidos, mínimo de días, tiempos de cambio por par). */
+  plantRules: PlantRule[];
+  addPlantRule: (r: PlantRuleSpec & { reason: string; author: string }) => void;
+  removePlantRule: (id: string) => void;
+  /** Cambios de calendario hechos en la aplicación (festivos, paradas, mantenimientos, cierres, turnos extendidos). */
+  calendarEdits: CalendarEdit[];
+  addCalendarEdit: (e: Omit<CalendarEdit, 'id' | 'createdAt'>) => void;
+  removeCalendarEdit: (id: string) => void;
+  /** Confirmación de plantas: lo que Producción confirma que puede fabricar, con historial, y el seguimiento contra lo entregado. */
+  plantRows: PlantRow[];
+  plantConfirmations: PlantConfirmation[];
+  plantDeliveries: PlantDelivery[];
+  confirmPlant: (c: Omit<PlantConfirmation, 'id' | 'createdAt'>) => void;
+  confirmPlantMany: (list: Omit<PlantConfirmation, 'id' | 'createdAt'>[]) => void;
+  recordDelivery: (d: Omit<PlantDelivery, 'id' | 'createdAt'>) => void;
+  removeDelivery: (id: string) => void;
   /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
   logEvent: (actor: string, text: string) => void;
   userBlocks: BuildingBlock[];
@@ -219,6 +238,10 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const [decisions, setDecisions] = useState<CapacityDecision[]>([]);
   const [adjustments, setAdjustments] = useState<MpsAdjustment[]>([]);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [calendarEdits, setCalendarEdits] = useState<CalendarEdit[]>([]);
+  const [plantRules, setPlantRules] = useState<PlantRule[]>([]);
+  const [plantConfirmations, setPlantConfirmations] = useState<PlantConfirmation[]>([]);
+  const [plantDeliveries, setPlantDeliveries] = useState<PlantDelivery[]>([]);
   const [baseline, setBaseline] = useState<Baseline | null>(null);
   const [baselineCutAt, setBaselineCutAt] = useState(DEFAULT_CUT_AT);
 
@@ -250,7 +273,9 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
 
   const usingForecast = useForecast && forecastDs !== null;
   const source = usingForecast ? forecastDs! : baseDataset;
-  const dataset = useMemo(() => (baseline?.usable ? applyBaseline(source, baseline) : source), [source, baseline]);
+  const datasetCore = useMemo(() => (baseline?.usable ? applyBaseline(source, baseline) : source), [source, baseline]);
+  // Los cambios de calendario hechos en la aplicación (festivos, paradas…) valen para todo el cálculo: CRP, MPS y programación diaria.
+  const dataset = useMemo(() => applyCalendarEdits(datasetCore, calendarEdits), [datasetCore, calendarEdits]);
 
   // Demanda del horizonte (N+1 con sus building blocks; el PBO completa si falta): es lo que entra al DRP.
   const horizonDemand = useMemo(() => {
@@ -329,12 +354,13 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const [dailyAdjustments, setDailyAdjustments] = useState<DailyAdjustment[]>([]);
   const [allocationRule, setAllocationRule] = useState<AllocationRule>('EVEN');
   const daily = useMemo(
-    () => ((dataset.templates?.length ?? 0) > 0 ? buildDailySchedule(dataset, danielView.net, { overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule }) : null),
-    [dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule],
+    () => ((dataset.templates?.length ?? 0) > 0 ? buildDailySchedule(dataset, danielView.net, { overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule, rules: plantRules }) : null),
+    [dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule, plantRules],
   );
   const dailyBalance = useMemo(() => (daily ? suggestDailyBalance(dataset, daily) : null), [dataset, daily]);
   const crewConfidence = useMemo(() => crpConfidence(miguelView.capacity, efficiency), [miguelView.capacity, efficiency]);
   const confidence = useMemo(() => (daily ? weeklyConfidence(dataset, daily, efficiency) : []), [dataset, daily, efficiency]);
+  const plantRows = useMemo(() => plantFollowUp(dataset, danielView.net, plantConfirmations, plantDeliveries), [dataset, danielView.net, plantConfirmations, plantDeliveries]);
   const pendingRecommendations = useMemo(() => (insights?.recommendations ?? []).filter((r) => !recDecisions[r.id]), [insights, recDecisions]);
 
   const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
@@ -403,6 +429,37 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     },
     [addLog],
   );
+  const addPlantRule = useCallback<RamoPlanState['addPlantRule']>(
+    (r) => {
+      setPlantRules((prev) => [...prev, { ...r, id: nextId('rule'), createdAt: now() } as PlantRule]);
+      addLog(r.author, `Regla de planta (${r.kind}): ${r.reason}`);
+    },
+    [addLog],
+  );
+  const addCalendarEdit = useCallback<RamoPlanState['addCalendarEdit']>(
+    (e) => {
+      setCalendarEdits((prev) => [...prev, { ...e, id: nextId('cal'), createdAt: now() }]);
+      addLog(e.author, `Calendario ${e.date} (${e.lineIds.join(', ')}): ${e.hours} h · ${e.reason}${e.note ? ` · ${e.note}` : ''}`);
+    },
+    [addLog],
+  );
+  const confirmPlantMany = useCallback<RamoPlanState['confirmPlantMany']>(
+    (list) => {
+      if (list.length === 0) return;
+      const at = now();
+      setPlantConfirmations((prev) => [...prev, ...list.map((c) => ({ ...c, id: nextId('pc'), createdAt: at }))]);
+      const first = list[0];
+      addLog(first.author, list.length === 1 ? `Confirmó ${first.confirmedQty} de ${first.plannedQty} cajas de ${first.skuId} (sem. ${first.weekStart}): ${first.reason}` : `Confirmó ${list.length} productos de la semana ${first.weekStart}: ${first.reason}`);
+    },
+    [addLog],
+  );
+  const recordDelivery = useCallback<RamoPlanState['recordDelivery']>(
+    (d) => {
+      setPlantDeliveries((prev) => [...prev, { ...d, id: nextId('pd'), createdAt: now() }]);
+      addLog(d.author, `Registró ${d.qty} cajas entregadas de ${d.skuId} (sem. ${d.weekStart})${d.note ? `: ${d.note}` : ''}`);
+    },
+    [addLog],
+  );
   const acceptNudge = useCallback(
     (n: DemandNudge, author: string) => {
       addBlock({
@@ -465,11 +522,15 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     leadTimeOverrides: (d.leadTimeOverrides as Record<string, number>) ?? {},
     templateOverrides: (d.templateOverrides as TemplateOverride[]) ?? [],
     dailyAdjustments: (d.dailyAdjustments as DailyAdjustment[]) ?? [],
+    calendarEdits: (d.calendarEdits as CalendarEdit[]) ?? [],
+    plantRules: (d.plantRules as PlantRule[]) ?? [],
+    plantConfirmations: (d.plantConfirmations as PlantConfirmation[]) ?? [],
+    plantDeliveries: (d.plantDeliveries as PlantDelivery[]) ?? [],
     log: (d.log as LogEntry[]) ?? [],
   });
   const snapshot = useMemo(
-    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, log }),
-    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, log],
+    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, calendarEdits, plantRules, plantConfirmations, plantDeliveries, log }),
+    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, calendarEdits, plantRules, plantConfirmations, plantDeliveries, log],
   );
 
   const reloadWorkspace = useCallback(async () => {
@@ -485,6 +546,10 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     setLeadTimeOverrides(s.leadTimeOverrides);
     setTemplateOverrides(s.templateOverrides);
     setDailyAdjustments(s.dailyAdjustments);
+    setCalendarEdits(s.calendarEdits);
+    setPlantRules(s.plantRules);
+    setPlantConfirmations(s.plantConfirmations);
+    setPlantDeliveries(s.plantDeliveries);
     setLog(s.log);
   }, []);
 
@@ -567,6 +632,19 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     templateOverrides,
     saveTemplateOverride: guarded('capacity.edit', (o: Omit<TemplateOverride, 'id' | 'createdAt'>) => saveTemplateOverride(o)),
     removeTemplateOverride: guarded('capacity.edit', (id: string) => setTemplateOverrides((p) => p.filter((o) => o.id !== id))),
+    plantRules,
+    addPlantRule: guarded('capacity.edit', addPlantRule),
+    removePlantRule: guarded('capacity.edit', (id: string) => setPlantRules((p) => p.filter((r) => r.id !== id))),
+    calendarEdits,
+    addCalendarEdit: guarded('capacity.edit', addCalendarEdit),
+    removeCalendarEdit: guarded('capacity.edit', (id: string) => setCalendarEdits((p) => p.filter((e) => e.id !== id))),
+    plantRows,
+    plantConfirmations,
+    plantDeliveries,
+    confirmPlant: guarded('capacity.edit', (c: Omit<PlantConfirmation, 'id' | 'createdAt'>) => confirmPlantMany([c])),
+    confirmPlantMany: guarded('capacity.edit', confirmPlantMany),
+    recordDelivery: guarded('capacity.edit', recordDelivery),
+    removeDelivery: guarded('capacity.edit', (id: string) => setPlantDeliveries((p) => p.filter((d) => d.id !== id))),
     dailyAdjustments,
     moveDaily: guarded('capacity.edit', (m: Parameters<RamoPlanState['moveDaily']>[0]) => moveDaily(m)),
     applyDailyBalance: guarded('capacity.edit', (plan: DailyBalancePlan, author: string) => applyDailyBalance(plan, author)),

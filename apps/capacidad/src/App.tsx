@@ -5,6 +5,7 @@ import { GlassAtmosphere } from './components/common/GlassAtmosphere';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
 import { DeskView } from './components/ramo/DeskView';
+import { PlantsView } from './components/ramo/PlantsView';
 import { FocusSummary } from './components/ramo/FocusSummary';
 import { LoginScreen } from './components/ramo/LoginScreen';
 import { AuthProvider, useAuth } from './ramo/auth';
@@ -46,6 +47,7 @@ function AppContent() {
           {currentStep === 'summary' && <FocusSummary onSelectStep={setCurrentStep} />}
           {currentStep === 'mps' && <MpsView />}
           {currentStep === 'crp' && <CrpView />}
+          {currentStep === 'plants' && <PlantsView onSelectStep={setCurrentStep} />}
           {currentStep === 'daily' && <DeskView />}
         </main>
 
@@ -54,7 +56,7 @@ function AppContent() {
             <span className="w-2 h-2 rounded-full bg-[#7AFFA1]"></span>
             <span className="font-extrabold text-black">Ramo · Programación de capacidad</span>
             <span className="text-slate-300">·</span>
-            <span>CRP ⇄ MPS → Esquema → Día a día</span>
+            <span>CRP ⇄ MPS → Plantas → Esquema → Día a día</span>
           </div>
           <div className="text-slate-500 font-mono text-[11px]">Piloto GI Proyectos</div>
         </footer>

@@ -61,6 +61,11 @@ export const SECTION_PERMISSIONS: Record<string, Permission[] | 'any'> = {
   leadTimeOverrides: ['procurement.decide'],
   templateOverrides: ['capacity.edit'],
   dailyAdjustments: ['capacity.edit'],
+  // Confirmación de plantas, calendario y reglas de planta: los lleva Producción (el registro de confirmaciones y entregas solo crece en la interfaz).
+  plantConfirmations: ['capacity.edit'],
+  plantDeliveries: ['capacity.edit'],
+  calendarEdits: ['capacity.edit'],
+  plantRules: ['capacity.edit'],
   log: 'any',
 };
 

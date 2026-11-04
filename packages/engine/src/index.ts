@@ -18,3 +18,4 @@ export * from './daily';
 export * from './realCapacity';
 export * from './alternatives';
 export * from './templateAdvisor';
+export * from './plants';

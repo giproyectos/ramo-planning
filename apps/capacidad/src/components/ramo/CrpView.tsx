@@ -158,16 +158,18 @@ export function CrpView() {
             )}
 
             <div className="overflow-x-auto">
-              <div className="grid gap-1.5 min-w-[640px]" style={{ gridTemplateColumns: `124px repeat(${weeks.length}, minmax(40px, 1fr))` }}>
+              <div className="grid gap-1.5 min-w-[640px]" style={{ gridTemplateColumns: `142px repeat(${weeks.length}, minmax(40px, 1fr))` }}>
                 <div />
                 {weeks.map((w) => (
                   <div key={w} className={`text-center text-[10px] font-bold rounded-lg py-1 ${w === sel.week ? 'bg-white text-black' : 'text-slate-500'}`}>{weekLabel(w)}</div>
                 ))}
                 {dataset.crews.map((c) => (
                   <React.Fragment key={c.id}>
-                    <button onClick={() => setSel({ ...sel, crewId: c.id })} className={`text-left rounded-xl px-2 py-2 text-xs font-black cursor-pointer ${c.id === sel.crewId ? 'bg-white shadow-sm' : 'hover:bg-white/50'}`}>
-                      {crewName(c.id)}
-                      {c.lineIds.length > 1 && <span className="ml-1.5 text-[9px] font-bold bg-[#DDCBF5] rounded-full px-1.5 py-0.5">compartida</span>}
+                    <button onClick={() => setSel({ ...sel, crewId: c.id })}
+                      title={c.lineIds.length > 1 ? `Las líneas ${c.lineIds.map((l) => lineName(l).replace('Línea ', '')).join(' y ')} comparten la misma tripulación` : lineName(c.lineIds[0])}
+                      className={`min-w-0 text-left rounded-xl px-2 py-1.5 cursor-pointer border-l-4 ${c.lineIds.length > 1 ? 'border-[#B79BE8]' : 'border-transparent'} ${c.id === sel.crewId ? 'bg-white shadow-sm' : 'hover:bg-white/50'}`}>
+                      <div className="text-[11.5px] font-black truncate">{crewName(c.id)}</div>
+                      <div className="text-[10px] text-slate-500 truncate">{c.lineIds.length > 1 ? 'comparten tripulación' : 'tripulación propia'}</div>
                     </button>
                     {weeks.map((w) => {
                       const cl = crewWeek(cap, w, c.id);
@@ -194,7 +196,7 @@ export function CrpView() {
               </div>
             </div>
             <p className="text-[10px] text-slate-500 mt-3">
-              {mode === 'paper' ? 'Porcentaje de las horas disponibles que pide el plan. Verde: cabe · amarillo: pasa del 100 % · naranja: pasa del 110 %.' : 'Probabilidad de que la semana alcance la carga con el rendimiento real de las líneas. «No cabe»: ya pasa el 100 % sobre el papel.'} Flechas del teclado para moverte entre semanas y tripulaciones.
+              {mode === 'paper' ? 'Porcentaje de las horas disponibles que pide el plan. Verde: cabe · amarillo: pasa del 100 % · naranja: pasa del 110 %.' : 'Probabilidad de que la semana alcance la carga con el rendimiento real de las líneas. «No cabe»: ya pasa el 100 % sobre el papel.'} La barra lila a la izquierda de un nombre marca una tripulación compartida entre dos líneas. Flechas del teclado para moverte entre semanas y tripulaciones.
             </p>
           </section>
 

@@ -62,6 +62,12 @@ describe('cambios del espacio de trabajo', () => {
     expect(checkWorkspaceChange('demand', base, { ...base, templateOverrides: [1] })).toMatchObject({ ok: false });
     expect(checkWorkspaceChange('distribution', base, { ...base, dailyAdjustments: [1] })).toMatchObject({ ok: false });
     expect(checkWorkspaceChange('demand', base, { ...base, blocks: [1], templateOverrides: [], dailyAdjustments: [] }).ok).toBe(true);
+    // confirmación de plantas, calendario y reglas de planta: de Producción; las secciones nuevas vacías no estorban a otros roles
+    for (const section of ['plantConfirmations', 'plantDeliveries', 'calendarEdits', 'plantRules']) {
+      expect(checkWorkspaceChange('production', base, { ...base, [section]: [1] }).ok).toBe(true);
+      expect(checkWorkspaceChange('distribution', base, { ...base, [section]: [1] })).toMatchObject({ ok: false });
+      expect(checkWorkspaceChange('demand', base, { ...base, blocks: [1], [section]: [] }).ok).toBe(true);
+    }
     expect(checkWorkspaceChange('distribution', base, { ...base, decisions: [1] }).ok).toBe(false);
     expect(checkWorkspaceChange('distribution', base, { ...base, adjustments: [1] }).ok).toBe(true);
     expect(checkWorkspaceChange('purchasing', base, { ...base, recDecisions: { a: 1 }, leadTimeOverrides: { m: 3 } }).ok).toBe(true);

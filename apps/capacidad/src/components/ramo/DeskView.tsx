@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { DailyAdjustment, TemplateOverride, toProductiveQty } from '@ramo/domain';
+import { CalendarEdit, CalendarExceptionReason, ChangeCause, DailyAdjustment, TemplateOverride, toProductiveQty } from '@ramo/domain';
 import {
-  DailyCell, DailyWeek, TemplateEvaluation, buildDailySchedule, dailyAlternatives, dayAvailableHours, dayConfidence, recommendTemplates, weekdayOf, weekdayShort,
+  DailyCell, DailyWeek, TemplateEvaluation, applyCalendarEdits, buildDailySchedule, dailyAlternatives, dayAvailableHours, dayConfidence, recommendTemplates, rulesToConstraints, weekdayOf, weekdayShort,
 } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { ConfidenceChip } from './focus';
+import { CAUSES, CalendarForm, RulesPanel, SequenceMenu, causeLabel } from './DeskTools';
 
 /**
  * Mesa de programación: el tablero de la semana de una línea, con cambios en borrador (se prueban antes de aplicarse),
@@ -15,6 +16,8 @@ import { ConfidenceChip } from './focus';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const NAMES = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom'];
+const CAL_LABEL: Record<CalendarExceptionReason, string> = { HOLIDAY: 'Festivo', MAINTENANCE: 'Mantenimiento', PLANT_STOP: 'Parada', EXTENDED: 'Turno extendido' };
+const WEEKDAY_LONG = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
 const PASTEL = ['#C9DBFF', '#FFD9BC', '#BFEBDD', '#E4D3FA'];
 const INK = ['#2b50aa', '#c9601c', '#2a9d8f', '#7c4dbd'];
 const dayNum = (iso: string) => new Date(`${iso}T00:00:00Z`).getUTCDate();
@@ -25,8 +28,22 @@ type Days = Record<number, string[]>;
 type Shifts = Record<number, number>;
 interface DraftMove { id: string; skuId: string; fromDate: string; toDate: string; qty: number }
 interface DraftScheme { templateId: string; weekStart: string; days: Days; shifts: Shifts; source: string }
-interface Draft { moves: DraftMove[]; schemes: DraftScheme[] }
-const EMPTY: Draft = { moves: [], schemes: [] };
+interface DraftCal { id: string; lineIds: string[]; date: string; hours: number; reason: CalendarExceptionReason; note: string }
+interface Draft { moves: DraftMove[]; schemes: DraftScheme[]; calendar: DraftCal[] }
+const EMPTY: Draft = { moves: [], schemes: [], calendar: [] };
+const addDaysIso = (iso: string, n: number) => {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+const calToEdits = (cal: DraftCal[]): CalendarEdit[] => cal.map((c) => ({ id: c.id, lineIds: c.lineIds, date: c.date, hours: c.hours, reason: c.reason, note: c.note, author: '', createdAt: '9999' }));
+/** Opciones de vigencia de un esquema nuevo («desde esta semana»): cuántas semanas rige, o sin fin. */
+const UNTIL_OPTIONS: { weeks: number | null; label: string }[] = [
+  { weeks: null, label: 'sin fin' },
+  { weeks: 4, label: '1 mes (4 sem.)' },
+  { weeks: 13, label: '3 meses (13 sem.)' },
+  { weeks: 26, label: '6 meses (26 sem.)' },
+];
 let moveSeq = 0;
 
 interface Proposal {
@@ -45,7 +62,7 @@ const sameDays = (a: Days, b: Days) => JSON.stringify(Object.entries(a).filter((
 export function DeskView() {
   const {
     dataset, daily, danielView, templateOverrides, dailyAdjustments, allocationRule, setAllocationRule, saveTemplateOverride, removeTemplateOverride, moveDaily,
-    removeDailyAdjustment, efficiency, can,
+    removeDailyAdjustment, efficiency, can, plantRules, addPlantRule, removePlantRule, calendarEdits, addCalendarEdit, removeCalendarEdit,
   } = useRamoPlan();
   const { user } = useAuth();
   const templates = dataset.templates ?? [];
@@ -58,6 +75,12 @@ export function DeskView() {
   const [past, setPast] = useState<Draft[]>([]);
   const [future, setFuture] = useState<Draft[]>([]);
   const [scope, setScope] = useState<'WEEK' | 'FROM'>('FROM');
+  const [until, setUntil] = useState<number | null>(null);
+  const [cause, setCause] = useState<ChangeCause>('OTHER');
+  const [swapPick, setSwapPick] = useState<number | null>(null);
+  const [dragDay, setDragDay] = useState<number | null>(null);
+  const [calOpen, setCalOpen] = useState(false);
+  const [seqOpen, setSeqOpen] = useState(false);
   const [selected, setSelected] = useState<{ date: string; lineId: string; skuId?: string } | null>(null);
   const [hover, setHover] = useState<Proposal | null>(null);
   const [dragging, setDragging] = useState<{ skuId: string; date: string; qty: number; lineId: string } | null>(null);
@@ -87,17 +110,20 @@ export function DeskView() {
       { id: `${m.id}b`, skuId: m.skuId, date: m.toDate, deltaCommercialQty: m.qty, reason: '', author: '', createdAt: '' },
     ]);
   const schemesToOverrides = (schemes: DraftScheme[]): TemplateOverride[] =>
-    schemes.map((s, i) => ({ id: `draft-${i}`, templateId: s.templateId, scope, weekStart: s.weekStart, days: s.days, shifts: s.shifts, reason: '', author: '', createdAt: '9999' }));
+    schemes.map((s, i) => ({ id: `draft-${i}`, templateId: s.templateId, scope, weekStart: s.weekStart, untilWeek: scope === 'FROM' && until ? addDaysIso(s.weekStart, 7 * (until - 1)) : undefined, days: s.days, shifts: s.shifts, reason: '', author: '', createdAt: '9999' }));
 
-  const hasDraft = draft.moves.length > 0 || draft.schemes.length > 0;
+  const hasDraft = draft.moves.length > 0 || draft.schemes.length > 0 || draft.calendar.length > 0;
+  // Conjunto de datos con las paradas y festivos del borrador (además de los ya aplicados, que vienen en `dataset`).
+  const dsLive = useMemo(() => (draft.calendar.length ? applyCalendarEdits(dataset, calToEdits(draft.calendar)) : dataset), [dataset, draft.calendar]);
   const schedule = (d: Draft, extra?: Proposal | null, extraTid?: string, extraWeek?: string) => {
     const ov = [...templateOverrides, ...schemesToOverrides(d.schemes)];
     const adj = [...dailyAdjustments, ...movesToAdj(d.moves), ...(extra?.moves ? movesToAdj(extra.moves) : [])];
     if (extra?.scheme && extraTid && extraWeek) ov.push({ id: 'hover', templateId: extraTid, scope, weekStart: extraWeek, days: extra.scheme.days, shifts: extra.scheme.shifts, reason: '', author: '', createdAt: '99999' });
-    return buildDailySchedule(dataset, danielView.net, { overrides: ov, adjustments: adj, rule: allocationRule });
+    const dsx = d.calendar.length ? applyCalendarEdits(dataset, calToEdits(d.calendar)) : dataset;
+    return buildDailySchedule(dsx, danielView.net, { overrides: ov, adjustments: adj, rule: allocationRule, rules: plantRules });
   };
 
-  const live = useMemo(() => (hasDraft ? schedule(draft, null) : daily), [hasDraft, draft, scope, daily, dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule]); // eslint-disable-line react-hooks/exhaustive-deps
+  const live = useMemo(() => (hasDraft ? schedule(draft, null) : daily), [hasDraft, draft, scope, until, daily, dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule, plantRules]); // eslint-disable-line react-hooks/exhaustive-deps
   const weeks = useMemo(() => [...new Set((live?.weeks ?? []).map((w) => w.weekStart))].sort(), [live]);
   const firstRed = useMemo(() => {
     const w = daily?.alerts.filter((a) => a.code === 'OVER_CAPACITY').map((a) => a.weekStart).sort()[0];
@@ -112,7 +138,7 @@ export function DeskView() {
   const currentTid = tid ?? defaultTid;
   const tpl = templates.find((t) => t.id === currentTid);
 
-  const hovered = useMemo(() => (hover && week ? schedule(draft, hover, currentTid, week) : null), [hover, draft, scope, week, currentTid]); // eslint-disable-line react-hooks/exhaustive-deps
+  const hovered = useMemo(() => (hover && week ? schedule(draft, hover, currentTid, week) : null), [hover, draft, scope, until, week, currentTid, plantRules]); // eslint-disable-line react-hooks/exhaustive-deps
   const shown = hovered ?? live;
   const w: DailyWeek | undefined = shown?.weeks.find((x) => x.weekStart === week && x.templateId === currentTid);
   const wLive: DailyWeek | undefined = live?.weeks.find((x) => x.weekStart === week && x.templateId === currentTid);
@@ -176,9 +202,35 @@ export function DeskView() {
     if (set.size === 0) delete d[wd]; else d[wd] = [...set];
   });
 
+  const addCalendar = (e: Omit<DraftCal, 'id'>) => {
+    push({ ...draft, calendar: [...draft.calendar, { ...e, id: `cal${++moveSeq}` }] });
+    setCalOpen(false);
+  };
+  // Cambiar la secuencia de un golpe (siempre al borrador).
+  const swapDays = (a: number, b: number) => editScheme((d) => {
+    const x = d[a];
+    const y = d[b];
+    if (y) d[a] = y; else delete d[a];
+    if (x) d[b] = x; else delete d[b];
+  });
+  const invertWeek = () => editScheme((d) => {
+    const prod = Object.keys(d).map(Number).filter((k) => (d[k] ?? []).length > 0).sort((p, q) => p - q);
+    const copy = prod.map((k) => d[k]);
+    prod.forEach((k, i) => { d[k] = copy[prod.length - 1 - i]; });
+  });
+  const swapProducts = (x: string, y: string) => editScheme((d) => {
+    for (const k of Object.keys(d).map(Number)) d[k] = d[k].map((id) => (id === x ? y : id === y ? x : id));
+  });
+
   const applyDraft = () => {
     if (!reason.trim() || !canEdit) return;
-    for (const s of draft.schemes) saveTemplateOverride({ templateId: s.templateId, scope, weekStart: s.weekStart, days: s.days, shifts: s.shifts, reason: reason.trim(), author });
+    for (const s of draft.schemes) {
+      saveTemplateOverride({
+        templateId: s.templateId, scope, weekStart: s.weekStart, untilWeek: scope === 'FROM' && until ? addDaysIso(s.weekStart, 7 * (until - 1)) : undefined,
+        days: s.days, shifts: s.shifts, cause, reason: reason.trim(), author,
+      });
+    }
+    for (const c of draft.calendar) addCalendarEdit({ lineIds: c.lineIds, date: c.date, hours: c.hours, reason: c.reason, note: [c.note, reason.trim()].filter(Boolean).join(' · '), author });
     for (const m of draft.moves) moveDaily({ skuId: m.skuId, fromDate: m.fromDate, toDate: m.toDate, qty: m.qty, reason: reason.trim(), author });
     setDraft(EMPTY); setPast([]); setFuture([]); setConfirming(false); setReason('');
   };
@@ -186,7 +238,7 @@ export function DeskView() {
   // ---- Propuestas del asistente -----------------------------------------------------------------------------------------
   const dayProposals = useMemo<Proposal[]>(() => {
     if (!wLive || wLive.excessHours <= 0.05) return [];
-    const alts = dailyAlternatives(dataset, { weeks: [wLive], alerts: [] });
+    const alts = dailyAlternatives(dsLive, { weeks: [wLive], alerts: [] }, { rules: plantRules });
     return alts
       .filter((a) => a.plan.moves.length > 0)
       .sort((a, b) => Number(b.recommended) - Number(a.recommended))
@@ -200,12 +252,12 @@ export function DeskView() {
         ],
         moves: a.plan.moves.map((m) => ({ id: `p${++moveSeq}`, skuId: m.skuId, fromDate: m.fromDate, toDate: m.toDate, qty: m.qty })),
       }));
-  }, [wLive, dataset]);
+  }, [wLive, dsLive, plantRules]);
 
   const schemeEvals = useMemo<TemplateEvaluation[]>(() => {
     if (!week || !currentTid) return [];
-    return recommendTemplates(dataset, danielView.net, currentTid, { fromWeek: week, weeks: 4, overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule });
-  }, [dataset, danielView.net, currentTid, week, templateOverrides, dailyAdjustments, allocationRule]);
+    return recommendTemplates(dsLive, danielView.net, currentTid, { fromWeek: week, weeks: 4, overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule, rules: plantRules, constraints: rulesToConstraints(plantRules) });
+  }, [dsLive, danielView.net, currentTid, week, templateOverrides, dailyAdjustments, allocationRule, plantRules]);
   const schemeProposals = useMemo<Proposal[]>(() => {
     const cur = schemeEvals.find((e) => e.current);
     return schemeEvals
@@ -259,9 +311,24 @@ export function DeskView() {
   const cellOf = (ww: DailyWeek | undefined, lineId: string, date: string): DailyCell | undefined => ww?.cells.find((c) => c.lineId === lineId && c.date === date);
   const changedVsLive = (lineId: string, date: string, skuId: string) => !!hovered && Math.round(cellOf(w, lineId, date)?.qty[skuId] ?? 0) !== Math.round(cellOf(wLive, lineId, date)?.qty[skuId] ?? 0);
 
-  const fit = (lineId: string, date: string, skuId: string, qty: number) => {
+  /** ¿Poner este producto ese día rompe una regla de planta? (día prohibido, o ya hay ese día un producto con el que no puede ir) */
+  const ruleBlock = (skuId: string, date: string): string | null => {
+    const wd = weekdayOf(date);
+    for (const r of plantRules) {
+      if (r.kind === 'NO_WEEKDAY' && r.skuId === skuId && r.weekday === wd) return 'día prohibido para este producto';
+      if (r.kind === 'NO_TOGETHER' && (r.skuA === skuId || r.skuB === skuId)) {
+        const other = r.skuA === skuId ? r.skuB : r.skuA;
+        if (wLive.cells.some((c) => c.date === date && ((c.qty[other] ?? 0) > 0.5 || c.skuIds.includes(other)))) return `no puede ir el mismo día que ${skuName(other)}`;
+      }
+    }
+    return null;
+  };
+
+  const fit = (lineId: string, date: string, skuId: string, qty: number): { state: 'closed' | 'over' | 'fit' | 'rule'; pct: number; over: number; why?: string } => {
+    const rb = ruleBlock(skuId, date);
+    if (rb) return { state: 'rule', pct: 0, over: 0, why: rb };
     const c = cellOf(wLive, lineId, date);
-    const avail = c ? c.availableHours : dayAvailableHours(dataset, wLive.template, lineId, date);
+    const avail = c ? c.availableHours : dayAvailableHours(dsLive, wLive.template, lineId, date);
     if (avail <= 0.01) return { state: 'closed' as const, pct: 0, over: 0 };
     const req = (c?.requiredHours ?? 0) + hoursOf(skuId, qty);
     const pct = (req / avail) * 100;
@@ -275,7 +342,7 @@ export function DeskView() {
     if (!src || src.excessHours <= 0.05 || hpc <= 0) return qty;
     const need = Math.ceil(src.excessHours / hpc);
     const dst = cellOf(wLive, lineId, toDate);
-    const avail = dst ? dst.availableHours : dayAvailableHours(dataset, wLive.template, lineId, toDate);
+    const avail = dst ? dst.availableHours : dayAvailableHours(dsLive, wLive.template, lineId, toDate);
     const slack = avail - (dst?.requiredHours ?? 0);
     const q = slack > 0 ? Math.min(need, Math.floor(slack / hpc)) : need;
     return Math.max(1, Math.min(qty, q));
@@ -286,6 +353,7 @@ export function DeskView() {
   const alertText = (a: (typeof alertsHere)[number]): { text: string; date?: string; lineId?: string } => {
     if (a.code === 'OVER_CAPACITY') return { text: `${dayShort(a.date!)} · ${lineName(a.lineId!)}: faltan ${fmtDec(a.value, 1)} h`, date: a.date, lineId: a.lineId };
     if (a.code === 'CREW_CONFLICT') return { text: `${dayShort(a.date!)}: la tripulación está en ${a.value} líneas a la vez`, date: a.date };
+    if (a.code === 'RULE_VIOLATION') return { text: a.detail ?? 'Regla de planta violada', date: a.date };
     if (a.code === 'NO_PRODUCTION_DAY') return { text: `${skuName(a.skuId!)}: ${fmtInt(a.value)} cajas sin día para producirse (días cerrados)` };
     return { text: `${skuName(a.skuId!)}: ${fmtInt(a.value)} cajas, pero el producto no está en el esquema` };
   };
@@ -300,6 +368,8 @@ export function DeskView() {
   const savedForTpl = templateOverrides.filter((o) => o.templateId === currentTid);
   const weekDates = new Set(w.days.map((d) => d.date));
   const savedAdj = dailyAdjustments.filter((a) => weekDates.has(a.date));
+  const savedCal = calendarEdits.filter((e) => weekDates.has(e.date) && e.lineIds.some((l) => lineIds.includes(l)));
+  const tplSkus = lineIds.flatMap(skusOfLine).map((x) => ({ id: x.id, name: skuName(x.id) }));
   const bestProposal = [...dayProposals, ...schemeProposals][0];
 
   // ---- Paleta de comandos ----------------------------------------------------------------------------------------------
@@ -308,6 +378,7 @@ export function DeskView() {
     ...weeks.map((wk, i) => ({ label: `Ir a la semana del ${weekLabel(wk)}`, hint: redWeek(currentTid, wk) ? 'en rojo' : '', run: () => setWeekIdx(i) })),
     ...templates.map((t) => ({ label: `Ver ${t.name.split(' (')[0]}`, hint: redCount(t.id) > 0 ? `${redCount(t.id)} sem. en rojo` : '', run: () => { setTid(t.id); setSelected(null); } })),
     ...(bestProposal ? [{ label: `Probar: ${bestProposal.title}`, run: () => tryProposal(bestProposal) }] : []),
+    ...(canEdit ? [{ label: 'Registrar parada o festivo', run: () => setCalOpen(true) }, { label: 'Invertir la secuencia de la semana', run: invertWeek }] : []),
     ...(past.length ? [{ label: 'Deshacer el último cambio', hint: 'Ctrl+Z', run: undo }] : []),
     ...(future.length ? [{ label: 'Rehacer', hint: 'Ctrl+Shift+Z', run: redo }] : []),
     ...(hasDraft ? [{ label: 'Aplicar los cambios del borrador al plan', run: () => setConfirming(true) }, { label: 'Descartar el borrador', run: discard }] : []),
@@ -373,7 +444,7 @@ export function DeskView() {
       {hasDraft && (
         <div className="sticky top-[70px] z-10 rounded-2xl bg-slate-950 text-white px-4 py-3 shadow-lg">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="text-xs font-black flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#7AFFA1] animate-pulse" /> Borrador · {draft.moves.length + draft.schemes.length} cambio{draft.moves.length + draft.schemes.length === 1 ? '' : 's'}</span>
+            <span className="text-xs font-black flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#7AFFA1] animate-pulse" /> Borrador · {draft.moves.length + draft.schemes.length + draft.calendar.length} cambio{draft.moves.length + draft.schemes.length + draft.calendar.length === 1 ? '' : 's'}</span>
             <span className="text-xs">
               Horas que faltan en el horizonte: <b className="font-mono">{fmtDec(excessSaved, 1)}</b> → <b className={`font-mono ${excessLive < excessSaved - 0.05 ? 'text-[#7AFFA1]' : excessLive > excessSaved + 0.05 ? 'text-[#FFA27D]' : ''}`}>{fmtDec(excessLive, 1)}</b> h
             </span>
@@ -383,6 +454,13 @@ export function DeskView() {
                 {(['WEEK', 'FROM'] as const).map((s) => (
                   <button key={s} onClick={() => setScope(s)} aria-pressed={scope === s} className={`px-2.5 py-1 rounded-full text-[11px] font-bold cursor-pointer ${scope === s ? 'bg-white text-black' : 'bg-white/10 hover:bg-white/20'}`}>{s === 'WEEK' ? 'solo esta semana' : 'desde esta semana'}</button>
                 ))}
+                {scope === 'FROM' && (
+                  <label className="flex items-center gap-1.5">por
+                    <select value={until ?? ''} onChange={(e) => setUntil(e.target.value ? Number(e.target.value) : null)} aria-label="Vigencia del esquema" className="rounded-full bg-white text-black px-2 py-1 text-[11px] font-bold">
+                      {UNTIL_OPTIONS.map((o) => <option key={String(o.weeks)} value={o.weeks ?? ''}>{o.label}</option>)}
+                    </select>
+                  </label>
+                )}
               </span>
             )}
             <span className="ml-auto flex items-center gap-2">
@@ -394,6 +472,13 @@ export function DeskView() {
           </div>
           {confirming && (
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/15 pt-3">
+              {draft.schemes.length > 0 && (
+                <label className="text-xs font-bold flex items-center gap-1.5">Causa
+                  <select value={cause} onChange={(e) => setCause(e.target.value as ChangeCause)} aria-label="Causa del cambio de esquema" className="rounded-xl bg-white text-black px-2 py-1.5 text-xs font-semibold">
+                    {CAUSES.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                  </select>
+                </label>
+              )}
               <label className="text-xs font-bold" htmlFor="motivo">Motivo del cambio</label>
               <input id="motivo" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') applyDraft(); }} placeholder="Ej.: empaque de Mini llega el jueves" className="flex-1 min-w-[220px] rounded-xl bg-white text-black px-3 py-1.5 text-xs" />
               <button onClick={applyDraft} disabled={!reason.trim()} className="text-[11px] font-black px-4 py-1.5 rounded-full bg-[#7AFFA1] text-black disabled:opacity-40 cursor-pointer">Confirmar · {author}</button>
@@ -411,8 +496,33 @@ export function DeskView() {
               <h2 className="text-sm font-black">{tpl.name}</h2>
               <p className="text-[11px] text-slate-500">Semana del {weekLabel(week)} · {fmtDec(w.requiredHours, 1)} h pedidas de {fmtDec(w.capacityHours, 1)} h del esquema{w.overridden ? ' · esquema modificado' : ''}</p>
             </div>
-            {w.excessHours > 0.05 ? <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#FFA27D]">Faltan {fmtDec(w.excessHours, 1)} h</span> : <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#7AFFA1]">Todo cabe</span>}
+            <div className="flex flex-wrap items-center gap-2">
+              {canEdit && (
+                <>
+                  <button onClick={() => { setSeqOpen(!seqOpen); setCalOpen(false); }} aria-expanded={seqOpen} className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/80 border border-black/10 cursor-pointer">⇄ Secuencia</button>
+                  <button onClick={() => { setCalOpen(!calOpen); setSeqOpen(false); }} aria-expanded={calOpen} className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/80 border border-black/10 cursor-pointer">＋ Parada o festivo</button>
+                </>
+              )}
+              {w.excessHours > 0.05 ? <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#FFA27D]">Faltan {fmtDec(w.excessHours, 1)} h</span> : <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#7AFFA1]">Todo cabe</span>}
+            </div>
           </div>
+
+          {calOpen && (
+            <CalendarForm
+              lines={lineIds.map((l) => ({ id: l, name: lineName(l) }))}
+              days={w.days.filter((d) => d.weekday <= 6 || d.shifts > 0).map((d) => ({ date: d.date, label: dayShort(d.date) }))}
+              defaultDate={sel?.date ?? w.days[0].date}
+              onAdd={addCalendar}
+              onCancel={() => setCalOpen(false)}
+            />
+          )}
+          {seqOpen && <SequenceMenu skus={tplSkus} onInvert={invertWeek} onSwapProducts={swapProducts} onClose={() => setSeqOpen(false)} />}
+          {swapPick !== null && (
+            <div className="mb-3 rounded-xl bg-[#DDCBF5]/55 border border-[#DDCBF5] px-3 py-2 text-xs flex items-center justify-between gap-3">
+              <span>Elige el día con el que quieres intercambiar el <b>{WEEKDAY_LONG[swapPick - 1]}</b> (botón ⇄ del otro día).</span>
+              <button onClick={() => setSwapPick(null)} className="font-bold underline cursor-pointer">Cancelar</button>
+            </div>
+          )}
 
           <div className="overflow-x-auto">
             <div className="grid gap-1.5 min-w-[640px]" style={{ gridTemplateColumns: `130px repeat(${cols.length}, minmax(84px, 1fr))` }}>
@@ -421,12 +531,28 @@ export function DeskView() {
               {cols.map((d) => {
                 const dq = dragging ? smartQty(dragging.lineId, dragging.date, d.date, dragging.skuId, dragging.qty) : 0;
                 const f = dragging ? fit(dragging.lineId, d.date, dragging.skuId, dq) : null;
-                const isDrop = dragging && overDay === d.date && f && f.state !== 'closed' && d.date !== dragging.date;
+                const okDrop = !!f && f.state !== 'closed' && f.state !== 'rule';
+                const isDrop = (dragging && overDay === d.date && okDrop && d.date !== dragging.date) || (dragDay !== null && overDay === d.date && dragDay !== d.weekday);
                 return (
-                  <div key={d.date} onDragOver={(e) => { if (dragging) { e.preventDefault(); setOverDay(d.date); } }} onDragLeave={() => setOverDay(null)}
-                    onDrop={(e) => { e.preventDefault(); if (dragging && f && f.state !== 'closed') addMove(dragging.skuId, dragging.date, d.date, dq); setDragging(null); setOverDay(null); }}
-                    className={`rounded-2xl px-2 py-1.5 text-center transition-all ${isDrop ? 'bg-white ring-2 ring-slate-950' : 'bg-white/50'} ${d.closed ? 'opacity-60' : ''}`}>
-                    <div className="text-[11px] font-black">{LETTERS[d.weekday - 1]} <span className="font-mono font-bold text-slate-500">{dayNum(d.date)}</span></div>
+                  <div key={d.date} draggable={canEdit && !dragging}
+                    onDragStart={(e) => { if (!canEdit || dragging) return; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', 'day'); setDragDay(d.weekday); setSelected(null); }}
+                    onDragEnd={() => { setDragDay(null); setOverDay(null); }}
+                    onDragOver={(e) => { if (dragging || dragDay !== null) { e.preventDefault(); setOverDay(d.date); } }} onDragLeave={() => setOverDay(null)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (dragDay !== null) { if (dragDay !== d.weekday) swapDays(dragDay, d.weekday); }
+                      else if (dragging && okDrop) addMove(dragging.skuId, dragging.date, d.date, dq);
+                      setDragging(null); setDragDay(null); setOverDay(null);
+                    }}
+                    className={`rounded-2xl px-2 py-1.5 text-center transition-all ${isDrop ? 'bg-white ring-2 ring-slate-950' : swapPick === d.weekday ? 'bg-[#DDCBF5]/70 ring-2 ring-[#9b6fe0]' : 'bg-white/50'} ${d.closed ? 'opacity-60' : ''} ${canEdit && !dragging ? 'cursor-grab' : ''}`}>
+                    <div className="text-[11px] font-black flex items-center justify-center gap-1">
+                      <span>{LETTERS[d.weekday - 1]} <span className="font-mono font-bold text-slate-500">{dayNum(d.date)}</span></span>
+                      {canEdit && (
+                        <button aria-label={`Intercambiar el ${WEEKDAY_LONG[d.weekday - 1]} con otro día`} aria-pressed={swapPick === d.weekday} title="Intercambiar lo que se produce este día con otro día"
+                          onClick={() => { if (swapPick === null) setSwapPick(d.weekday); else if (swapPick === d.weekday) setSwapPick(null); else { swapDays(swapPick, d.weekday); setSwapPick(null); } }}
+                          className="w-4 h-4 rounded-full text-[9px] leading-none bg-black/5 hover:bg-black/10 cursor-pointer">⇄</button>
+                      )}
+                    </div>
                     {d.closed ? <div className="text-[10px] font-bold text-slate-500">Cerrado</div> : (
                       <div className="flex items-center justify-center gap-1 text-[10px] text-slate-600 mt-0.5">
                         <button aria-label="Menos turnos" disabled={!canEdit || d.shifts <= 0} onClick={() => setShiftsOf(d.weekday, d.shifts - 1)} className="w-4 h-4 rounded-full bg-black/5 hover:bg-black/10 font-black leading-none disabled:opacity-30 cursor-pointer">−</button>
@@ -435,9 +561,9 @@ export function DeskView() {
                       </div>
                     )}
                     {dragging && f && d.date !== dragging.date && (
-                      <div className={`mt-1 text-[10px] font-black rounded-full px-1.5 py-0.5 ${f.state === 'closed' ? 'bg-slate-200 text-slate-600' : f.state === 'over' ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>
-                        {f.state === 'closed' ? 'cerrado' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `cabe · ${fmtDec(f.pct, 0)} %`}
-                        <div className="font-mono font-bold opacity-70">{f.state !== 'closed' ? `${fmtInt(dq)} cajas` : ''}</div>
+                      <div title={f.why} className={`mt-1 text-[10px] font-black rounded-full px-1.5 py-0.5 ${f.state === 'closed' || f.state === 'rule' ? 'bg-slate-200 text-slate-600' : f.state === 'over' ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>
+                        {f.state === 'closed' ? 'cerrado' : f.state === 'rule' ? 'regla: no permitido' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `cabe · ${fmtDec(f.pct, 0)} %`}
+                        <div className="font-mono font-bold opacity-70">{f.state !== 'closed' && f.state !== 'rule' ? `${fmtInt(dq)} cajas` : ''}</div>
                       </div>
                     )}
                   </div>
@@ -480,7 +606,7 @@ export function DeskView() {
                           return <button key={d.date} onClick={() => canEdit && toggleSku(d.weekday, s.id)} title="Está en el esquema, sin producción esta semana. Clic para quitarlo del día." className="rounded-xl h-12 border border-dashed text-[10px] text-slate-500 cursor-pointer hover:bg-white/60" style={{ borderColor: `${INK[colorIdx(s.id)]}66` }}>en esquema</button>;
                         }
                         return (
-                          <button key={d.date} onClick={() => canEdit && toggleSku(d.weekday, s.id)} disabled={!canEdit || d.closed} title={`Agregar ${skuName(s.id)} al esquema ese día`} aria-label={`Agregar ${skuName(s.id)} el ${dayShort(d.date)}`}
+                          <button key={d.date} onClick={() => canEdit && toggleSku(d.weekday, s.id)} disabled={!canEdit || d.closed || !!ruleBlock(s.id, d.date)} title={ruleBlock(s.id, d.date) ? `Regla de planta: ${ruleBlock(s.id, d.date)}` : `Agregar ${skuName(s.id)} al esquema ese día`} aria-label={`Agregar ${skuName(s.id)} el ${dayShort(d.date)}`}
                             className="rounded-xl h-12 text-slate-300 hover:text-slate-700 hover:bg-white/60 text-lg font-light cursor-pointer disabled:cursor-default disabled:opacity-40">+</button>
                         );
                       })}
@@ -492,7 +618,7 @@ export function DeskView() {
                   {cols.map((d) => {
                     const c = cellOf(w, lid, d.date);
                     const eff = efficiency[lid];
-                    const avail = c ? c.availableHours + c.changeoverHours : dayAvailableHours(dataset, w.template, lid, d.date);
+                    const avail = c ? c.availableHours + c.changeoverHours : dayAvailableHours(dsLive, w.template, lid, d.date);
                     if (!c || (c.requiredHours < 0.01 && c.skuIds.length === 0)) {
                       return <div key={d.date} className="h-12 rounded-xl bg-white/30 text-[10px] text-slate-400 flex items-center justify-center">{avail > 0.01 ? `libre · ${fmtDec(avail, 0)} h` : 'sin turno'}</div>;
                     }
@@ -543,9 +669,9 @@ export function DeskView() {
                       const q = Math.max(1, Math.min(selQty, Number(moveQty) || selQty));
                       const f = fit(sel.lineId, d.date, sel.skuId!, q);
                       return (
-                        <button key={d.date} disabled={f.state === 'closed'} onClick={() => addMove(sel.skuId!, sel.date, d.date, q)}
+                        <button key={d.date} disabled={f.state === 'closed' || f.state === 'rule'} title={f.why} onClick={() => addMove(sel.skuId!, sel.date, d.date, q)}
                           className={`px-3 py-1.5 rounded-full font-bold cursor-pointer disabled:opacity-40 border border-black/5 ${f.state === 'over' ? 'bg-[#FFA27D]/60' : f.state === 'fit' ? 'bg-[#7AFFA1]/60' : 'bg-slate-200'}`}>
-                          {dayShort(d.date)} · {f.state === 'closed' ? 'cerrado' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `cabe ${fmtDec(f.pct, 0)} %`}
+                          {dayShort(d.date)} · {f.state === 'closed' ? 'cerrado' : f.state === 'rule' ? 'regla: no permitido' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `cabe ${fmtDec(f.pct, 0)} %`}
                         </button>
                       );
                     })}
@@ -613,13 +739,19 @@ export function DeskView() {
           </section>
 
           <details className="glass-panel rounded-3xl p-4 text-xs">
-            <summary className="font-black uppercase tracking-wider text-[11px] text-slate-500 cursor-pointer">Cambios vigentes ({savedForTpl.length + savedAdj.length})</summary>
+            <summary className="font-black uppercase tracking-wider text-[11px] text-slate-500 cursor-pointer">Cambios vigentes ({savedForTpl.length + savedAdj.length + savedCal.length})</summary>
             <div className="mt-3 space-y-2">
-              {savedForTpl.length + savedAdj.length === 0 && <p className="text-slate-500">Todavía no hay cambios aplicados en esta línea.</p>}
+              {savedForTpl.length + savedAdj.length + savedCal.length === 0 && <p className="text-slate-500">Todavía no hay cambios aplicados en esta línea.</p>}
               {savedForTpl.map((o) => (
                 <div key={o.id} className="rounded-xl bg-white/70 px-3 py-2 flex items-start justify-between gap-2">
-                  <span><b>Esquema {o.scope === 'WEEK' ? 'solo la semana' : 'desde la semana'} del {weekLabel(o.weekStart)}</b><br /><span className="text-slate-500">{o.reason} · {o.author}</span></span>
+                  <span><b>Esquema {o.scope === 'WEEK' ? `solo la semana del ${weekLabel(o.weekStart)}` : `desde la semana del ${weekLabel(o.weekStart)}${o.untilWeek ? ` hasta la del ${weekLabel(o.untilWeek)}` : ' (sin fin)'}`}</b><br /><span className="text-slate-500">{o.cause && o.cause !== 'OTHER' ? `${causeLabel(o.cause)} · ` : ''}{o.reason} · {o.author}</span></span>
                   {canEdit && <button onClick={() => removeTemplateOverride(o.id)} className="font-bold underline shrink-0 cursor-pointer">Quitar</button>}
+                </div>
+              ))}
+              {savedCal.map((e) => (
+                <div key={e.id} className="rounded-xl bg-white/70 px-3 py-2 flex items-start justify-between gap-2">
+                  <span><b>{CAL_LABEL[e.reason]} · {dayShort(e.date)}</b> · {e.hours === 0 ? 'día cerrado' : `${e.hours} h`}<br /><span className="text-slate-500">{e.lineIds.map(lineName).join(', ')}{e.note ? ` · ${e.note}` : ''} · {e.author}</span></span>
+                  {canEdit && <button onClick={() => removeCalendarEdit(e.id)} className="font-bold underline shrink-0 cursor-pointer">Quitar</button>}
                 </div>
               ))}
               {savedAdj.map((a) => (
@@ -629,6 +761,11 @@ export function DeskView() {
                 </div>
               ))}
             </div>
+          </details>
+
+          <details className="glass-panel rounded-3xl p-4 text-xs">
+            <summary className="font-black uppercase tracking-wider text-[11px] text-slate-500 cursor-pointer">Reglas de planta ({plantRules.length})</summary>
+            <RulesPanel rules={plantRules} skus={dataset.skus.map((x) => ({ id: x.id, name: skuName(x.id) }))} canEdit={canEdit} author={author} skuName={skuName} onAdd={addPlantRule} onRemove={removePlantRule} />
           </details>
 
           <details className="glass-panel rounded-3xl p-4 text-xs">

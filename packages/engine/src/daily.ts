@@ -1,4 +1,4 @@
-import { DailyAdjustment, ProductionTemplate, RamoDataset, TemplateOverride, toProductiveQty } from '@ramo/domain';
+import { DailyAdjustment, PlantRule, ProductionTemplate, RamoDataset, TemplateOverride, toProductiveQty } from '@ramo/domain';
 import { LoadStatus, statusOf } from './crp';
 import { NetPlanRow } from './mps';
 
@@ -21,6 +21,8 @@ export interface DailyOptions {
   overrides?: TemplateOverride[];
   adjustments?: DailyAdjustment[];
   rule?: AllocationRule;
+  /** Reglas de planta: productos que no van juntos, días prohibidos, mínimo de días y tiempos de cambio por par. */
+  rules?: PlantRule[];
 }
 
 export interface DailyCell {
@@ -75,7 +77,7 @@ export interface DailyWeek {
   excessHours: number;
 }
 
-export type DailyAlertCode = 'OVER_CAPACITY' | 'NO_PRODUCTION_DAY' | 'NOT_IN_TEMPLATE' | 'CREW_CONFLICT';
+export type DailyAlertCode = 'OVER_CAPACITY' | 'NO_PRODUCTION_DAY' | 'NOT_IN_TEMPLATE' | 'CREW_CONFLICT' | 'RULE_VIOLATION';
 
 export interface DailyAlert {
   code: DailyAlertCode;
@@ -84,8 +86,10 @@ export interface DailyAlert {
   date?: string;
   lineId?: string;
   skuId?: string;
-  /** OVER_CAPACITY: horas que faltan. Sin día / fuera de plantilla: cajas. CREW_CONFLICT: líneas en conflicto. */
+  /** OVER_CAPACITY: horas que faltan. Sin día / fuera de plantilla: cajas. CREW_CONFLICT: líneas en conflicto. RULE_VIOLATION: 1. */
   value: number;
+  /** RULE_VIOLATION: la regla que se viola, lista para mostrar. */
+  detail?: string;
 }
 
 export interface DailyResult {
@@ -113,7 +117,7 @@ export function effectiveTemplate(base: ProductionTemplate, overrides: TemplateO
   const mine = overrides.filter((o) => o.templateId === base.id);
   const week = mine.filter((o) => o.scope === 'WEEK' && o.weekStart === weekStart).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
   const from = mine
-    .filter((o) => o.scope === 'FROM' && o.weekStart <= weekStart)
+    .filter((o) => o.scope === 'FROM' && o.weekStart <= weekStart && (!o.untilWeek || weekStart <= o.untilWeek))
     .sort((a, b) => b.weekStart.localeCompare(a.weekStart) || b.createdAt.localeCompare(a.createdAt))[0];
   const o = week ?? from;
   if (!o) return { template: base, overridden: false };
@@ -133,12 +137,14 @@ export function dayAvailableHours(ds: RamoDataset, t: ProductionTemplate, lineId
 }
 
 const key = (lineId: string, date: string) => `${lineId}|${date}`;
+const WEEKDAY_NAMES = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
 
 export function buildDailySchedule(ds: RamoDataset, net: NetPlanRow[], options: DailyOptions = {}): DailyResult {
   const templates = ds.templates ?? [];
   const overrides = options.overrides ?? [];
   const adjustments = options.adjustments ?? [];
   const rule = options.rule ?? 'EVEN';
+  const rules = options.rules ?? [];
   const weeks = [...new Set(net.map((r) => r.weekStart))].sort();
   const skuById = new Map(ds.skus.map((s) => [s.id, s]));
   const lineById = new Map(ds.lines.map((l) => [l.id, l]));
@@ -206,17 +212,31 @@ export function buildDailySchedule(ds: RamoDataset, net: NetPlanRow[], options: 
       }
 
       // 3) Cambio de producto: se pierde tiempo cuando el conjunto de productos del día no repite el del día de producción anterior.
-      const setOf = (date: string) => {
+      //    Si hay una regla de cambio para algún par (producto anterior, producto del día), manda la más larga; si no, el tiempo del esquema.
+      const idsOf = (date: string) => {
         const ids = new Set<string>();
-        for (const c of cellMap.values()) if (c.date === date) c.skuIds.forEach((s) => ids.add(s));
-        return [...ids].sort().join(',');
+        for (const c of cellMap.values()) if (c.date === date) c.skuIds.forEach((x) => ids.add(x));
+        return [...ids].sort();
+      };
+      const setOf = (date: string) => idsOf(date).join(',');
+      const changeoverBetween = (prev: string[], cur: string[]) => {
+        let best = -1;
+        for (const r of rules) {
+          if (r.kind !== 'CHANGEOVER') continue;
+          const hit = (prev.includes(r.skuA) && cur.includes(r.skuB)) || (prev.includes(r.skuB) && cur.includes(r.skuA));
+          if (hit) best = Math.max(best, r.hours);
+        }
+        return best >= 0 ? best : t.changeoverHours;
       };
       const prodDates = dates.filter((d) => setOf(d) !== '' && t.lineIds.some((l) => dayAvailableHours(ds, t, l, d) > EPS));
       const changeover = new Map<string, number>();
-      if (t.changeoverHours > 0 && prodDates.length > 1) {
+      if (prodDates.length > 1) {
         prodDates.forEach((d, i) => {
           const prev = prodDates[(i + prodDates.length - 1) % prodDates.length];
-          if (setOf(d) !== setOf(prev)) changeover.set(d, t.changeoverHours);
+          if (setOf(d) !== setOf(prev)) {
+            const h = changeoverBetween(idsOf(prev), idsOf(d));
+            if (h > 0) changeover.set(d, h);
+          }
         });
       }
 
@@ -242,6 +262,26 @@ export function buildDailySchedule(ds: RamoDataset, net: NetPlanRow[], options: 
             active.forEach((c) => { c.crewConflict = true; });
             alerts.push({ code: 'CREW_CONFLICT', weekStart, templateId: t.id, date: d, value: lineSet.size });
           }
+        }
+      }
+
+      // 5b) Reglas de planta: el esquema debe respetarlas aunque la producción de ese día sea 0.
+      const nameOf = (id: string) => skuById.get(id)?.name.replace(' (sint.)', '') ?? id;
+      const inTemplate = (id: string) => templateSkus.some((x) => x.id === id);
+      const dayName = (d: string) => WEEKDAY_NAMES[weekdayOf(d) - 1];
+      for (const r of rules) {
+        if (r.kind === 'NO_TOGETHER' && inTemplate(r.skuA) && inTemplate(r.skuB)) {
+          for (const d of dates) {
+            const ids = idsOf(d);
+            if (ids.includes(r.skuA) && ids.includes(r.skuB)) alerts.push({ code: 'RULE_VIOLATION', weekStart, templateId: t.id, date: d, value: 1, detail: `${nameOf(r.skuA)} y ${nameOf(r.skuB)} no pueden ir el mismo día (${dayName(d)})` });
+          }
+        } else if (r.kind === 'NO_WEEKDAY' && inTemplate(r.skuId)) {
+          for (const d of dates) {
+            if (weekdayOf(d) === r.weekday && idsOf(d).includes(r.skuId)) alerts.push({ code: 'RULE_VIOLATION', weekStart, templateId: t.id, date: d, skuId: r.skuId, value: 1, detail: `${nameOf(r.skuId)} no se puede producir el ${dayName(d)}` });
+          }
+        } else if (r.kind === 'MIN_DAYS' && inTemplate(r.skuId)) {
+          const n = dates.filter((d) => idsOf(d).includes(r.skuId)).length;
+          if (n < r.days) alerts.push({ code: 'RULE_VIOLATION', weekStart, templateId: t.id, skuId: r.skuId, value: 1, detail: `${nameOf(r.skuId)} necesita al menos ${r.days} día${r.days === 1 ? '' : 's'} de producción y tiene ${n}` });
         }
       }
 
@@ -311,6 +351,8 @@ export interface DailyBalanceOptions {
   fillToPct?: number;
   /** Si es false, solo se mueve producción a días en que el producto ya se produce (no se abren días nuevos). Por defecto true. */
   allowNewDays?: boolean;
+  /** Reglas de planta: no se mueve producción a un día que las viole (día prohibido o un producto que no puede ir con otro del día). */
+  rules?: PlantRule[];
 }
 
 /**
@@ -321,6 +363,7 @@ export interface DailyBalanceOptions {
 export function suggestDailyBalance(ds: RamoDataset, result: DailyResult, options: DailyBalanceOptions = {}): DailyBalancePlan {
   const fill = (options.fillToPct ?? 98) / 100;
   const allowNew = options.allowNewDays ?? true;
+  const rules = options.rules ?? [];
   const skuById = new Map(ds.skus.map((s) => [s.id, s]));
   const lineById = new Map(ds.lines.map((l) => [l.id, l]));
   const hpc = (skuId: string) => {
@@ -342,6 +385,18 @@ export function suggestDailyBalance(ds: RamoDataset, result: DailyResult, option
     const hoursOf = (k: string) => Object.entries(work.get(k)?.qty ?? {}).reduce((a, [sid, q]) => a + q * hpc(sid), 0);
     const crewBusy = (lineId: string, date: string) =>
       t.lineIds.some((l) => l !== lineId && Object.values(work.get(key(l, date))?.qty ?? {}).some((q) => q > EPS));
+
+    // ¿Mover este producto a ese día rompe una regla? (día prohibido, o ya hay ese día un producto con el que no puede ir)
+    const forbids = (sid: string, date: string) => {
+      for (const r of rules) {
+        if (r.kind === 'NO_WEEKDAY' && r.skuId === sid && weekdayOf(date) === r.weekday) return true;
+        if (r.kind === 'NO_TOGETHER' && (r.skuA === sid || r.skuB === sid)) {
+          const other = r.skuA === sid ? r.skuB : r.skuA;
+          for (const [k, v] of work) if (k.endsWith(`|${date}`) && (v.qty[other] ?? 0) > EPS) return true;
+        }
+      }
+      return false;
+    };
 
     const over = w.cells.filter((c) => c.excessHours > 0.05).sort((a, b) => a.date.localeCompare(b.date));
     for (const c of over) {
@@ -365,7 +420,7 @@ export function suggestDailyBalance(ds: RamoDataset, result: DailyResult, option
         for (const { d, kind } of candidates) {
           if (excess <= 0.05) break;
           const dayAvail = dayAvailableHours(ds, t, c.lineId, d);
-          if (dayAvail <= EPS || crewBusy(c.lineId, d)) continue;
+          if (dayAvail <= EPS || crewBusy(c.lineId, d) || forbids(sid, d)) continue;
           const tk = key(c.lineId, d);
           const existing = work.get(tk);
           const cap = existing ? existing.avail : Math.max(0, dayAvail - (kind === 'NEW_DAY' ? t.changeoverHours : 0));

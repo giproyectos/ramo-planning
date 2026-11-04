@@ -1,4 +1,4 @@
-import { DailyAdjustment, RamoDataset, TemplateOverride, toProductiveQty } from '@ramo/domain';
+import { DailyAdjustment, PlantRule, RamoDataset, TemplateOverride, toProductiveQty } from '@ramo/domain';
 import { AllocationRule, DailyResult, buildDailySchedule } from './daily';
 import { NetPlanRow } from './mps';
 
@@ -16,6 +16,21 @@ export interface TemplateConstraints {
   blockedWeekdays?: number[];
   /** Mínimo de días de producción por producto en la semana. */
   minDaysPerSku?: number;
+  /** Días en que un producto no se puede producir (1 = lunes … 7 = domingo), por producto. */
+  blockedBySku?: Record<string, number[]>;
+  /** Mínimo de días de producción por producto (manda sobre `minDaysPerSku`). */
+  minDaysBySku?: Record<string, number>;
+}
+
+/** Reglas de planta convertidas en las restricciones que entiende el recomendador. Los tiempos de cambio por par no restringen: cambian el costo. */
+export function rulesToConstraints(rules: PlantRule[]): TemplateConstraints {
+  const out: TemplateConstraints = { forbiddenTogether: [], blockedBySku: {}, minDaysBySku: {} };
+  for (const r of rules) {
+    if (r.kind === 'NO_TOGETHER') out.forbiddenTogether!.push([r.skuA, r.skuB]);
+    else if (r.kind === 'NO_WEEKDAY') out.blockedBySku![r.skuId] = [...(out.blockedBySku![r.skuId] ?? []), r.weekday];
+    else if (r.kind === 'MIN_DAYS') out.minDaysBySku![r.skuId] = Math.max(out.minDaysBySku![r.skuId] ?? 0, r.days);
+  }
+  return out;
 }
 
 export interface TemplateEvaluation {
@@ -32,6 +47,8 @@ export interface TemplateEvaluation {
   crewConflicts: number;
   /** Días-línea sobre el 100 % de su capacidad. */
   overDays: number;
+  /** Reglas de planta que el esquema viola en las semanas evaluadas. */
+  ruleViolations: number;
   /** Cuántos días de la semana cambian de producto frente al esquema vigente. */
   changedDays: number;
   /** Cuántas combinaciones se evaluaron en total para llegar a este ranking. */
@@ -51,6 +68,8 @@ export interface TemplateAdvisorOptions {
   adjustments?: DailyAdjustment[];
   rule?: AllocationRule;
   constraints?: TemplateConstraints;
+  /** Reglas de planta: se aplican al simular cada esquema (los que las violan puntúan peor). */
+  rules?: PlantRule[];
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
@@ -107,6 +126,8 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
   if (!base) return [];
   const c = options.constraints ?? {};
   const blocked = new Set(c.blockedWeekdays ?? []);
+  const blockedBySku = c.blockedBySku ?? {};
+  const minDaysOf = (id: string) => Math.max(1, c.minDaysPerSku ?? 1, c.minDaysBySku?.[id] ?? 0);
   const weeks = [...new Set(net.map((r) => r.weekStart))].sort().filter((w) => w >= options.fromWeek).slice(0, options.weeks ?? 4);
   if (weeks.length === 0) return [];
   const netW = net.filter((r) => weeks.includes(r.weekStart));
@@ -120,7 +141,7 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
   // Esquema vigente en la primera semana (con los cambios ya hechos).
   const priorOverrides = options.overrides ?? [];
   const only = { ...ds, templates: [base] };
-  const current = buildDailySchedule(only, netW.filter((r) => r.weekStart === weeks[0]), { overrides: priorOverrides, rule: options.rule }).weeks[0]?.template ?? base;
+  const current = buildDailySchedule(only, netW.filter((r) => r.weekStart === weeks[0]), { overrides: priorOverrides, rule: options.rule, rules: options.rules }).weeks[0]?.template ?? base;
 
   const skus = ds.skus.filter((s) => base.lineIds.includes(s.lineId));
   const hoursNeed = skus.map((s) => hoursOfQty(s.id, netW.filter((r) => r.skuId === s.id).reduce((a, r) => a + r.netProduction, 0) / weeks.length));
@@ -133,7 +154,7 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
   const add = (id: string, label: string, description: string, days: Record<number, string[]>) => cands.push({ id, label, description, days });
 
   const blocks = (dayset: number[], order: number[]): Record<number, string[]> | null => {
-    const counts = proportionalDays(dayset.length, order.map((i) => hoursNeed[i]), Math.max(1, c.minDaysPerSku ?? 1));
+    const counts = proportionalDays(dayset.length, order.map((i) => hoursNeed[i]), Math.max(1, ...order.map((i) => minDaysOf(skus[i].id))));
     if (counts.length === 0) return null;
     const out: Record<number, string[]> = {};
     let k = 0;
@@ -180,14 +201,13 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
   const optional = worked.filter((d) => !withProducts.includes(d));
   let combos = 0;
   if (skus.length > 1 && worked.length > 0) {
-    const options = worked.map((d) => [...skus.map((s) => s.id), ...(optional.includes(d) ? [''] : [])]);
+    const options = worked.map((d) => [...skus.map((s) => s.id).filter((id) => !(blockedBySku[id] ?? []).includes(d)), ...(optional.includes(d) ? [''] : [])]);
     const total = options.reduce((a, o) => a * o.length, 1);
-    if (total <= MAX_COMBINATIONS) {
-      const minDays = Math.max(1, c.minDaysPerSku ?? 1);
+    if (total > 0 && total <= MAX_COMBINATIONS) {
       const pick: string[] = [];
       const walk = (i: number) => {
         if (i === worked.length) {
-          if (skus.every((s) => pick.filter((p) => p === s.id).length >= minDays)) {
+          if (skus.every((s) => pick.filter((p) => p === s.id).length >= minDaysOf(s.id))) {
             const days: Record<number, string[]> = {};
             worked.forEach((d, k) => { if (pick[k]) days[d] = [pick[k]]; });
             combos += 1;
@@ -203,7 +223,10 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
 
   // Fuera los que rompen restricciones o la regla de una línea por día, y los repetidos.
   const valid = cands.filter((cd) => {
-    for (const list of Object.values(cd.days)) {
+    // El esquema vigente siempre se muestra (aunque viole una regla: así se ve cuánto mejora el recomendado).
+    if (cd.id === 'current') return true;
+    for (const [wd, list] of Object.entries(cd.days)) {
+      if (list.some((id) => (blockedBySku[id] ?? []).includes(Number(wd)))) return false;
       for (const [a, b] of c.forbiddenTogether ?? []) if (list.includes(a) && list.includes(b)) return false;
       if (!singleLine && new Set(list.map((id) => skuById.get(id)?.lineId)).size > 1) return false;
     }
@@ -226,17 +249,18 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
   const evals = unique.map((cd): TemplateEvaluation => {
     const shifts = { ...current.shifts };
     const override: TemplateOverride = { id: `adv-${cd.id}`, templateId, scope: 'FROM', weekStart: weeks[0], days: cd.days, shifts, reason: '', author: '', createdAt: '9999' };
-    const result = buildDailySchedule(only, netW, { overrides: [...priorOverrides, override], adjustments: options.adjustments, rule: options.rule });
+    const result = buildDailySchedule(only, netW, { overrides: [...priorOverrides, override], adjustments: options.adjustments, rule: options.rule, rules: options.rules });
     const cells = result.weeks.flatMap((w) => w.cells);
     const excessHours = cells.reduce((a, x) => a + x.excessHours, 0);
     const unscheduledHours = result.weeks.reduce((a, w) => a + w.unscheduled.reduce((b, u) => b + hoursOfQty(u.skuId, u.qty), 0), 0);
     const changeoverHours = cells.reduce((a, x) => a + x.changeoverHours, 0);
     const crewConflicts = result.alerts.filter((a) => a.code === 'CREW_CONFLICT').length;
     const overDays = cells.filter((x) => x.excessHours > 0.05).length;
-    const score = (excessHours + unscheduledHours) * 10 + changeoverHours * 2 + crewConflicts * 50;
+    const ruleViolations = result.alerts.filter((a) => a.code === 'RULE_VIOLATION').length;
+    const score = (excessHours + unscheduledHours) * 10 + changeoverHours * 2 + crewConflicts * 50 + ruleViolations * 100;
     return {
       id: cd.id, label: cd.label, description: cd.description, days: cd.days, shifts, current: signature(cd.days) === curSig,
-      excessHours: round1(excessHours), unscheduledHours: round1(unscheduledHours), changeoverHours: round1(changeoverHours), crewConflicts, overDays,
+      excessHours: round1(excessHours), unscheduledHours: round1(unscheduledHours), changeoverHours: round1(changeoverHours), crewConflicts, overDays, ruleViolations,
       changedDays: changedFrom(cd.days), evaluated: unique.length, score: round1(score), rank: 0, versusCurrent: [], result,
     };
   });
@@ -263,6 +287,7 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
       if (Math.abs(co) >= 0.1) lines.push(co < 0 ? `${es(-co)} h menos en cambios de producto` : `${es(co)} h más en cambios de producto`);
       const od = e.overDays - cur.overDays;
       if (od !== 0) lines.push(od < 0 ? `${-od} día(s) en rojo menos` : `${od} día(s) en rojo más`);
+      if (e.ruleViolations !== cur.ruleViolations) lines.push(e.ruleViolations < cur.ruleViolations ? 'respeta más reglas de planta' : 'viola reglas de planta');
       if (e.crewConflicts !== cur.crewConflicts) lines.push(e.crewConflicts > cur.crewConflicts ? 'genera choques de tripulación' : 'elimina choques de tripulación');
       if (lines.length === 0) lines.push('mismo resultado en horas; cambia solo la forma del esquema');
       e.versusCurrent = lines;
