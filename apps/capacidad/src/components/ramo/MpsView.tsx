@@ -7,7 +7,7 @@ import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { CycleStepper } from './CycleStepper';
 import { SERIES_COLORS } from './charts';
 import { Card, Disclosure, StackedBars } from './ui';
-import { WeeklyAlternativesCard, ConfidenceCard } from './focus';
+import { WeeklyAlternativesCard } from './focus';
 
 /** Vista de Distribución: MPS final = necesidad neta de todo el negocio + ajustes acordados con el equipo. */
 export function MpsView() {
