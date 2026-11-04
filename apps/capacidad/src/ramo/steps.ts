@@ -5,5 +5,5 @@ export const STEP_TITLES: Record<ProcessStep, string> = {
   summary: 'Resumen',
   crp: 'Capacidad (CRP)',
   mps: 'MPS final',
-  daily: 'Esquemas y programación diaria',
+  daily: 'Mesa de programación',
 };

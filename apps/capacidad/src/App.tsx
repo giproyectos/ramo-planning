@@ -4,7 +4,7 @@ import { Header } from './components/Header';
 import { GlassAtmosphere } from './components/common/GlassAtmosphere';
 import { MpsView } from './components/ramo/MpsView';
 import { CrpView } from './components/ramo/CrpView';
-import { DailyView } from './components/ramo/DailyView';
+import { DeskView } from './components/ramo/DeskView';
 import { FocusSummary } from './components/ramo/FocusSummary';
 import { LoginScreen } from './components/ramo/LoginScreen';
 import { AuthProvider, useAuth } from './ramo/auth';
@@ -46,7 +46,7 @@ function AppContent() {
           {currentStep === 'summary' && <FocusSummary onSelectStep={setCurrentStep} />}
           {currentStep === 'mps' && <MpsView />}
           {currentStep === 'crp' && <CrpView />}
-          {currentStep === 'daily' && <DailyView />}
+          {currentStep === 'daily' && <DeskView />}
         </main>
 
         <footer className="px-6 py-4 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/60 glass-panel">

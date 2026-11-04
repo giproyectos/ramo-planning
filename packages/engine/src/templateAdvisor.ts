@@ -54,6 +54,8 @@ export interface TemplateAdvisorOptions {
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
+/** Número con coma decimal para los textos (es-CO). */
+const es = (n: number) => String(n).replace('.', ',');
 const WD_SHORT = ['', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
 export const weekdayShort = (n: number) => WD_SHORT[n] ?? String(n);
@@ -256,9 +258,9 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
       if (e.current) continue;
       const lines: string[] = [];
       const ex = round1(e.excessHours + e.unscheduledHours - (cur.excessHours + cur.unscheduledHours));
-      if (Math.abs(ex) >= 0.1) lines.push(ex < 0 ? `${-ex} h menos de exceso de capacidad` : `${ex} h más de exceso de capacidad`);
+      if (Math.abs(ex) >= 0.1) lines.push(ex < 0 ? `${es(-ex)} h menos de exceso de capacidad` : `${es(ex)} h más de exceso de capacidad`);
       const co = round1(e.changeoverHours - cur.changeoverHours);
-      if (Math.abs(co) >= 0.1) lines.push(co < 0 ? `${-co} h menos en cambios de producto` : `${co} h más en cambios de producto`);
+      if (Math.abs(co) >= 0.1) lines.push(co < 0 ? `${es(-co)} h menos en cambios de producto` : `${es(co)} h más en cambios de producto`);
       const od = e.overDays - cur.overDays;
       if (od !== 0) lines.push(od < 0 ? `${-od} día(s) en rojo menos` : `${od} día(s) en rojo más`);
       if (e.crewConflicts !== cur.crewConflicts) lines.push(e.crewConflicts > cur.crewConflicts ? 'genera choques de tripulación' : 'elimina choques de tripulación');

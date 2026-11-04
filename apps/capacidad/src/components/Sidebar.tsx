@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) =
     { id: 'summary', code: 'Resumen', name: 'Vista general', icon: LayoutGrid, badge: '', tone: 'info' },
     { id: 'crp', code: 'CRP', name: 'Capacidad por línea', icon: Cpu, badge: overloads > 0 ? `${overloads} en rojo` : 'Factible', tone: overloads > 0 ? 'bad' : 'ok' },
     { id: 'mps', code: 'MPS', name: 'MPS final', icon: CalendarRange, badge: stageBadge, tone: stage === 'DRAFT' ? 'info' : stage === 'SENT_TO_MPS' ? 'warn' : 'ok' },
-    { id: 'daily', code: 'Día a día', name: 'Esquemas y programación', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. en rojo` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
+    { id: 'daily', code: 'Día a día', name: 'Mesa de programación', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. en rojo` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
   ];
 
   return (
