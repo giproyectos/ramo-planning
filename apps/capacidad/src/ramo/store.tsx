@@ -1,0 +1,639 @@
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import type { Permission } from '@ramo/governance';
+import { BuildingBlock, CapacityDecision, DailyAdjustment, DemandHistoryRow, DemandRecord, MpsAdjustment, RamoDataset, TemplateOverride, validateDataset } from '@ramo/domain';
+import {
+  CYCLE_ORDER,
+  Alternative,
+  LineEfficiency,
+  WeekConfidence,
+  CrewWeekConfidence,
+  crpConfidence,
+  fitAllLines,
+  weeklyAlternatives,
+  weeklyConfidence,
+  AllocationRule,
+  CrewMode,
+  DailyBalancePlan,
+  DailyResult,
+  DemandNudge,
+  MaterialSim,
+  RebalancePlan,
+  StockoutRisk,
+  buildDailySchedule,
+  dailyMovesToAdjustments,
+  suggestDailyBalance,
+  movesToAdjustments,
+  simulateSupplyRisk,
+  stockoutRisks,
+  suggestBiasCorrections,
+  suggestRebalance,
+  CycleSnapshot,
+  FC_N1_ID,
+  FC_PBO_ID,
+  DrpResult,
+  ForecastRun,
+  InsightsResult,
+  Recommendation,
+  SafetyPolicy,
+  SupplyRiskResult,
+  CycleStage,
+  NetPlanRow,
+  applyBuildingBlocks,
+  buildInsights,
+  computeNetProduction,
+  demandForHorizon,
+  plantRequirementRecords,
+  runDrp,
+  runForecast,
+  runSupplyRisk,
+  snapshotCycle,
+  withForecastVersions,
+  withLeadTimes,
+} from '@ramo/engine';
+import { Baseline, IngestTexts, ParseResult, applyBaseline, ingestBaseline, parseDemandHistory } from '@ramo/ingest';
+import { SAMPLE_HISTORY_LIMPIO } from './samples';
+import { ApiError, api } from './api';
+import { useAuth } from './auth';
+import raw from '../../../../data/synthetic/dataset.json';
+
+export interface RecDecision {
+  recId: string;
+  title: string;
+  status: 'APPROVED' | 'REJECTED';
+  by: string;
+  reason: string;
+  at: string;
+}
+
+export type SyncState = { state: 'local' | 'loading' | 'saving' | 'saved' | 'conflict' | 'denied' | 'offline'; message?: string };
+
+export interface LogEntry {
+  at: string;
+  actor: string;
+  text: string;
+}
+
+interface RamoPlanState {
+  /** ¿Puede la persona actual hacer esto? (en modo local, todo; en modo servidor, según su rol). El servidor es la barrera real. */
+  can: (permission: Permission) => boolean;
+  /** ¿Puede llevar el ciclo a esa etapa? */
+  canAdvance: (to: CycleStage) => boolean;
+  serverMode: boolean;
+  sync: SyncState;
+  reloadWorkspace: () => Promise<void>;
+  /** Dataset activo: el sintético, o el mismo con el inventario de la línea base SAP si hay una cargada. */
+  dataset: RamoDataset;
+  baseline: Baseline | null;
+  baselineCutAt: string;
+  /** Histórico de demanda leído y validado. */
+  history: ParseResult<DemandHistoryRow>;
+  historyLabel: string;
+  loadHistory: (text: string, label: string) => ParseResult<DemandHistoryRow>;
+  /** Primera semana pronosticada (lunes). */
+  targetStart: string;
+  /** Pronósticos PBO (mensual) y N+1 (semanal); null si el histórico no se pudo usar. */
+  forecast: { pbo: ForecastRun; n1: ForecastRun } | null;
+  /** Dataset con las versiones generadas por el pronóstico (PBO y N+1) y los building blocks. */
+  forecastDs: RamoDataset | null;
+  /** Demanda de consenso: N+1 con los building blocks aplicados. */
+  consensus: DemandRecord[];
+  /** Si es true, el MPS y el CRP usan el plan de demanda generado en vez de la demanda sintética fija. */
+  useForecast: boolean;
+  setUseForecast: (v: boolean) => void;
+  /** Recomendaciones de la capa de asistencia (pedidos, plazos dinámicos, cuota, anomalías, consolidación) y su estado. */
+  insights: InsightsResult | null;
+  pendingRecommendations: Recommendation[];
+  decisions_rec: Record<string, RecDecision>;
+  decideRecommendation: (rec: Recommendation, status: 'APPROVED' | 'REJECTED', by: string, reason: string) => void;
+  undoRecommendation: (recId: string) => void;
+  /** Plazos de entrega aprobados (días por material); sustituyen a los fijos de SAP en el tablero. */
+  leadTimeOverrides: Record<string, number>;
+  consolidationDays: number;
+  setConsolidationDays: (d: number) => void;
+  /** Riesgo de abastecimiento de insumos y empaques a partir del plan de producción final (MPS con los ajustes de Distribución); null si no hay materiales. */
+  supplyRisk: SupplyRiskResult | null;
+  /** DRP de la red (agencias → CEDI → planta); null si el dataset no define red. */
+  drp: DrpResult | null;
+  /** Si es true, la necesidad de producción del DRP es la entrada del MPS (y el inventario ya lo neteó el DRP). */
+  useDrp: boolean;
+  setUseDrp: (v: boolean) => void;
+  drpPolicy: SafetyPolicy;
+  setDrpPolicy: (p: SafetyPolicy) => void;
+  staticDays: number;
+  setStaticDays: (d: number) => void;
+  /** Suponer que el flujo en camino durante el plazo es el de régimen (hasta cargar tránsito y órdenes abiertas reales). */
+  drpPipeline: boolean;
+  setDrpPipeline: (v: boolean) => void;
+  /** Asistentes (estadística, optimización y simulación; no hay LLM): todo es una sugerencia que una persona acepta o descarta. */
+  /** Ajustes de demanda sugeridos por sesgo sistemático del pronóstico (los ya aceptados o descartados no aparecen). */
+  demandNudges: DemandNudge[];
+  acceptNudge: (n: DemandNudge, author: string) => void;
+  dismissNudge: (skuId: string) => void;
+  /** Riesgo de quiebre por punto de la red y producto, dentro del plazo de entrega. */
+  stockoutRiskList: StockoutRisk[];
+  /** Simulación Monte Carlo del riesgo de abastecimiento por material. */
+  supplySim: MaterialSim[];
+  /** Optimizador de capacidad: sugerencia para lo que ve Producción y para lo que ve Distribución. */
+  rebalanceMiguel: RebalancePlan | null;
+  rebalanceDaniel: RebalancePlan | null;
+  /** Alternativas para las semanas sobre capacidad (vista de Producción y de Distribución). */
+  weeklyAltsCapacity: Alternative<RebalancePlan>[];
+  weeklyAltsMps: Alternative<RebalancePlan>[];
+  /** Rendimiento real de cada línea según el historial y confiabilidad de cada semana del plan diario. */
+  efficiency: Record<string, LineEfficiency>;
+  /** Confiabilidad del CRP semanal por tripulación y semana. */
+  crewConfidence: CrewWeekConfidence[];
+  /** Confiabilidad de la programación diaria por esquema y semana. */
+  confidence: WeekConfidence[];
+  /** Aplica la sugerencia del optimizador: movimientos como ajustes del MPS (Distribución) y/o horas extra (área de Producción). */
+  applyRebalanceMoves: (plan: RebalancePlan, author: string) => void;
+  applyRebalanceExtra: (plan: RebalancePlan, author: string) => void;
+  /** Programación diaria: esquemas semanales (qué producto se hace cada día), cambios a esas esquemas y ajustes manuales por día. */
+  daily: DailyResult | null;
+  dailyBalance: DailyBalancePlan | null;
+  allocationRule: AllocationRule;
+  setAllocationRule: (r: AllocationRule) => void;
+  templateOverrides: TemplateOverride[];
+  saveTemplateOverride: (o: Omit<TemplateOverride, 'id' | 'createdAt'>) => void;
+  removeTemplateOverride: (id: string) => void;
+  dailyAdjustments: DailyAdjustment[];
+  /** Mueve cajas de un día a otro (dos ajustes: resta en el origen, suma en el destino). */
+  moveDaily: (m: { skuId: string; fromDate: string; toDate: string; qty: number; reason: string; author: string }) => void;
+  applyDailyBalance: (plan: DailyBalancePlan, author: string) => void;
+  removeDailyAdjustment: (id: string) => void;
+  /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
+  logEvent: (actor: string, text: string) => void;
+  userBlocks: BuildingBlock[];
+  addBlock: (b: Omit<BuildingBlock, 'id' | 'versionId' | 'createdAt'>) => void;
+  removeBlock: (id: string) => void;
+  loadBaseline: (texts: IngestTexts, cutAt: string) => Baseline;
+  clearBaseline: () => void;
+  weeks: string[];
+  baseNet: NetPlanRow[];
+  stage: CycleStage;
+  crewMode: CrewMode;
+  decisions: CapacityDecision[];
+  adjustments: MpsAdjustment[];
+  log: LogEntry[];
+  /** Vista de Producción: sus decisiones y, solo desde el MPS final, los ajustes de Distribución. */
+  miguelView: CycleSnapshot;
+  /** Vista de Distribución: decisiones de Producción más sus propios ajustes en vivo. */
+  danielView: CycleSnapshot;
+  setCrewMode: (m: CrewMode) => void;
+  addDecision: (d: Omit<CapacityDecision, 'id' | 'createdAt'>) => void;
+  removeDecision: (id: string) => void;
+  addAdjustment: (a: Omit<MpsAdjustment, 'id' | 'createdAt'>) => void;
+  removeAdjustment: (id: string) => void;
+  advance: (to: CycleStage, actor: string, text: string) => void;
+  reset: () => void;
+}
+
+const Ctx = createContext<RamoPlanState | null>(null);
+
+const baseDataset = raw as unknown as RamoDataset;
+const issues = validateDataset(baseDataset);
+if (issues.length > 0) console.warn('[ramo] dataset con problemas de integridad', issues);
+
+export const DEFAULT_CUT_AT = '2026-10-05T08:00';
+
+const addDays = (iso: string, n: number) => {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+/** Primer lunes en o después de la fecha (el plan siempre arranca en lunes). */
+const nextMonday = (iso: string) => {
+  const dow = new Date(`${iso}T00:00:00Z`).getUTCDay();
+  return addDays(iso, (8 - (dow === 0 ? 7 : dow)) % 7);
+};
+
+const now = () => new Date().toISOString();
+let seq = 0;
+const nextId = (p: string) => `${p}-${Date.now().toString(36)}-${seq++}`;
+
+export function RamoPlanProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  const serverMode = auth.mode === 'authenticated';
+  const [stage, setStage] = useState<CycleStage>('DRAFT');
+  const [crewMode, setCrewMode] = useState<CrewMode>('POOLED');
+  const [decisions, setDecisions] = useState<CapacityDecision[]>([]);
+  const [adjustments, setAdjustments] = useState<MpsAdjustment[]>([]);
+  const [log, setLog] = useState<LogEntry[]>([]);
+  const [baseline, setBaseline] = useState<Baseline | null>(null);
+  const [baselineCutAt, setBaselineCutAt] = useState(DEFAULT_CUT_AT);
+
+  const [historyText, setHistoryText] = useState(SAMPLE_HISTORY_LIMPIO);
+  const [historyLabel, setHistoryLabel] = useState('ejemplo sintético limpio');
+  const [useForecast, setUseForecast] = useState(true);
+  const [userBlocks, setUserBlocks] = useState<BuildingBlock[]>([]);
+  const [useDrpFlag, setUseDrp] = useState(true);
+  const [drpPolicy, setDrpPolicy] = useState<SafetyPolicy>('DYNAMIC');
+  const [staticDays, setStaticDays] = useState(3);
+  const [drpPipeline, setDrpPipeline] = useState(true);
+
+  const history = useMemo(() => parseDemandHistory(historyText, { dataset: baseDataset, cutAt: baselineCutAt }), [historyText, baselineCutAt]);
+  const targetStart = useMemo(() => nextMonday(baselineCutAt.slice(0, 10)), [baselineCutAt]);
+
+  const forecast = useMemo(() => {
+    if (!history.ok) return null;
+    const n1 = runForecast(baseDataset.skus, history.rows, { targetStart, horizonWeeks: 13 });
+    // El PBO mensual se corrió 4 semanas antes: con menos historia y a mayor distancia.
+    const pbo = runForecast(baseDataset.skus, history.rows, { targetStart, horizonWeeks: 13, trainedBefore: addDays(targetStart, -28) });
+    return n1.skus.length > 0 ? { n1, pbo } : null;
+  }, [history, targetStart]);
+
+  const forecastDs = useMemo(
+    () => (forecast ? withForecastVersions(baseDataset, { n1: forecast.n1, pbo: forecast.pbo, extraBlocks: userBlocks }) : null),
+    [forecast, userBlocks],
+  );
+  const consensus = useMemo(() => (forecastDs ? applyBuildingBlocks(forecastDs, FC_N1_ID) : []), [forecastDs]);
+
+  const usingForecast = useForecast && forecastDs !== null;
+  const source = usingForecast ? forecastDs! : baseDataset;
+  const dataset = useMemo(() => (baseline?.usable ? applyBaseline(source, baseline) : source), [source, baseline]);
+
+  // Demanda del horizonte (N+1 con sus building blocks; el PBO completa si falta): es lo que entra al DRP.
+  const horizonDemand = useMemo(() => {
+    const latest = (kind: 'WEEKLY_N1' | 'PBO_MONTHLY') => baseDataset.versions.filter((v) => v.kind === kind).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0].id;
+    const [n1Id, pboId] = usingForecast ? [FC_N1_ID, FC_PBO_ID] : [latest('WEEKLY_N1'), latest('PBO_MONTHLY')];
+    return demandForHorizon(dataset, n1Id, pboId);
+  }, [dataset, usingForecast]);
+
+  // σ del error de pronóstico a 1 semana por SKU: base del stock de seguridad dinámico (solo si hay pronóstico).
+  const sigmaBySku = useMemo(
+    () => (usingForecast && forecast ? Object.fromEntries(forecast.n1.skus.map((s) => [s.skuId, s.backtest.sd[0]])) : undefined),
+    [usingForecast, forecast],
+  );
+
+  const drp = useMemo(
+    () => (dataset.nodes && dataset.nodes.length > 0 ? runDrp(dataset, horizonDemand, { policy: drpPolicy, staticDays, sigmaBySku, pipeline: drpPipeline ? 'STEADY_STATE' : 'NONE' }) : null),
+    [dataset, horizonDemand, drpPolicy, staticDays, sigmaBySku, drpPipeline],
+  );
+  const usingDrp = useDrpFlag && drp !== null && drp.weeks.length > 0;
+
+  const { baseNet, weeks } = useMemo(() => {
+    if (!usingDrp || !drp) {
+      const net = computeNetProduction(dataset, horizonDemand);
+      return { baseNet: net, weeks: [...new Set(net.map((r) => r.weekStart))].sort() };
+    }
+    // El DRP ya neteó el inventario de la red: el MPS recibe su necesidad de producción (CEDI) más los pedidos bajo pedido,
+    // y solo descuenta las órdenes en curso. Se rellenan con 0 las semanas sin necesidad para no perder columnas del horizonte.
+    const required = plantRequirementRecords(drp);
+    const have = new Set(required.map((r) => `${r.skuId}|${r.weekStart}`));
+    const pad = dataset.skus.flatMap((s) => (drp.rows.some((r) => r.skuId === s.id) ? drp.weeks.filter((w) => !have.has(`${s.id}|${w}`)).map((w) => ({ versionId: 'DRP', skuId: s.id, weekStart: w, flow: 'CEDI' as const, commercialQty: 0 })) : []));
+    const mto = horizonDemand.filter((d) => d.flow !== 'CEDI');
+    const net = computeNetProduction({ ...dataset, inventory: [] }, [...required, ...pad, ...mto]);
+    return { baseNet: net, weeks: [...new Set(net.map((r) => r.weekStart))].sort() };
+  }, [dataset, horizonDemand, drp, usingDrp]);
+
+  const miguelView = useMemo(
+    () =>
+      snapshotCycle(dataset, baseNet, {
+        decisions,
+        adjustments: CYCLE_ORDER.indexOf(stage) >= CYCLE_ORDER.indexOf('MPS_FINAL') ? adjustments : [],
+      }, { crewMode }),
+    [dataset, baseNet, decisions, adjustments, stage, crewMode],
+  );
+  const danielView = useMemo(() => snapshotCycle(dataset, baseNet, { decisions, adjustments }, { crewMode }), [dataset, baseNet, decisions, adjustments, crewMode]);
+
+  const [leadTimeOverrides, setLeadTimeOverrides] = useState<Record<string, number>>({});
+  const [recDecisions, setRecDecisions] = useState<Record<string, RecDecision>>({});
+  const [consolidationDays, setConsolidationDays] = useState(7);
+
+  // Con los plazos dinámicos aprobados, el tablero de abastecimiento ya los usa en lugar de los fijos de SAP.
+  const riskDataset = useMemo(() => withLeadTimes(dataset, leadTimeOverrides), [dataset, leadTimeOverrides]);
+  const supplyRisk = useMemo(
+    () => (riskDataset.materials && riskDataset.materials.length > 0 ? runSupplyRisk(riskDataset, danielView.net) : null),
+    [riskDataset, danielView.net],
+  );
+  const insights = useMemo(
+    () => (supplyRisk ? buildInsights({ ds: riskDataset, net: danielView.net, risk: supplyRisk, sigmaBySku, demandHistory: history.rows, today: targetStart, consolidationDays }) : null),
+    [supplyRisk, riskDataset, danielView.net, sigmaBySku, history.rows, targetStart, consolidationDays],
+  );
+  const [nudgesDismissed, setNudgesDismissed] = useState<Record<string, true>>({});
+  const demandNudges = useMemo(() => {
+    if (!forecast) return [];
+    return suggestBiasCorrections(forecast.n1).filter(
+      (n) => !nudgesDismissed[n.skuId] && !userBlocks.some((b) => b.scope.skuId === n.skuId && b.reason.startsWith('Sugerido por el modelo')),
+    );
+  }, [forecast, nudgesDismissed, userBlocks]);
+
+  const stockoutRiskList = useMemo(() => (drp && sigmaBySku ? stockoutRisks(dataset, drp, sigmaBySku) : []), [dataset, drp, sigmaBySku]);
+  const supplySim = useMemo(() => (supplyRisk ? simulateSupplyRisk(riskDataset, supplyRisk, { sigmaBySku }) : []), [riskDataset, supplyRisk, sigmaBySku]);
+  const rebalanceMiguel = useMemo(() => suggestRebalance(dataset, miguelView.net, { crewMode, decisions }), [dataset, miguelView.net, crewMode, decisions]);
+  const weeklyAltsCapacity = useMemo(() => weeklyAlternatives(dataset, miguelView.net, { crewMode, decisions }), [dataset, miguelView.net, crewMode, decisions]);
+  const weeklyAltsMps = useMemo(() => weeklyAlternatives(dataset, danielView.net, { crewMode, decisions }), [dataset, danielView.net, crewMode, decisions]);
+  const efficiency = useMemo(() => fitAllLines(dataset), [dataset]);
+  const rebalanceDaniel = useMemo(() => suggestRebalance(dataset, danielView.net, { crewMode, decisions }), [dataset, danielView.net, crewMode, decisions]);
+  const [templateOverrides, setTemplateOverrides] = useState<TemplateOverride[]>([]);
+  const [dailyAdjustments, setDailyAdjustments] = useState<DailyAdjustment[]>([]);
+  const [allocationRule, setAllocationRule] = useState<AllocationRule>('EVEN');
+  const daily = useMemo(
+    () => ((dataset.templates?.length ?? 0) > 0 ? buildDailySchedule(dataset, danielView.net, { overrides: templateOverrides, adjustments: dailyAdjustments, rule: allocationRule }) : null),
+    [dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule],
+  );
+  const dailyBalance = useMemo(() => (daily ? suggestDailyBalance(dataset, daily) : null), [dataset, daily]);
+  const crewConfidence = useMemo(() => crpConfidence(miguelView.capacity, efficiency), [miguelView.capacity, efficiency]);
+  const confidence = useMemo(() => (daily ? weeklyConfidence(dataset, daily, efficiency) : []), [dataset, daily, efficiency]);
+  const pendingRecommendations = useMemo(() => (insights?.recommendations ?? []).filter((r) => !recDecisions[r.id]), [insights, recDecisions]);
+
+  const addLog = useCallback((actor: string, text: string) => setLog((l) => [{ at: now(), actor, text }, ...l]), []);
+
+  const addDecision = useCallback<RamoPlanState['addDecision']>(
+    (d) => {
+      setDecisions((prev) => [...prev, { ...d, id: nextId('dec'), createdAt: now() }]);
+      addLog(d.author, `+${d.extraHours} h extra en ${d.crewId} (sem. ${d.weekStart}): ${d.reason}`);
+    },
+    [addLog],
+  );
+  const addAdjustment = useCallback<RamoPlanState['addAdjustment']>(
+    (a) => {
+      setAdjustments((prev) => [...prev, { ...a, id: nextId('adj'), createdAt: now() }]);
+      addLog(a.author, `Ajuste ${a.deltaCommercialQty > 0 ? '+' : ''}${a.deltaCommercialQty} cajas de ${a.skuId} (sem. ${a.weekStart}): ${a.reason}`);
+    },
+    [addLog],
+  );
+
+  const decideRecommendation = useCallback<RamoPlanState['decideRecommendation']>(
+    (rec, status, by, reason) => {
+      setRecDecisions((prev) => ({ ...prev, [rec.id]: { recId: rec.id, title: rec.title, status, by, reason, at: now() } }));
+      const act = rec.action;
+      if (status === 'APPROVED' && act.type === 'SET_LEAD_TIME') setLeadTimeOverrides((prev) => ({ ...prev, [act.materialId]: act.days }));
+      addLog(by, `${status === 'APPROVED' ? 'Aprobó' : 'Rechazó'}: ${rec.title}${reason.trim() ? ` · motivo: ${reason.trim()}` : ''}${status === 'APPROVED' && act.type === 'SET_LEAD_TIME' ? ' · el tablero ya usa el plazo aprobado (el dato maestro de SAP no se modifica)' : ''}`);
+    },
+    [addLog],
+  );
+  const undoRecommendation = useCallback(
+    (recId: string) => {
+      setRecDecisions((prev) => {
+        const { [recId]: gone, ...rest } = prev;
+        if (gone) addLog('Sistema', `Se deshizo la decisión: ${gone.title}`);
+        return rest;
+      });
+      if (recId.startsWith('LEAD_TIME|')) setLeadTimeOverrides((prev) => { const { [recId.slice('LEAD_TIME|'.length)]: _x, ...rest } = prev; return rest; });
+    },
+    [addLog],
+  );
+
+  const saveTemplateOverride = useCallback<RamoPlanState['saveTemplateOverride']>(
+    (o) => {
+      setTemplateOverrides((prev) => [...prev, { ...o, id: nextId('tpl'), createdAt: now() }]);
+      addLog(o.author, `Cambio de esquema ${o.templateId} (${o.scope === 'WEEK' ? `solo la semana del ${o.weekStart}` : `desde la semana del ${o.weekStart}`}): ${o.reason}`);
+    },
+    [addLog],
+  );
+  const moveDaily = useCallback<RamoPlanState['moveDaily']>(
+    (m) => {
+      const at = now();
+      setDailyAdjustments((prev) => [
+        ...prev,
+        { id: nextId('day'), skuId: m.skuId, date: m.fromDate, deltaCommercialQty: -m.qty, reason: m.reason, author: m.author, createdAt: at },
+        { id: nextId('day'), skuId: m.skuId, date: m.toDate, deltaCommercialQty: m.qty, reason: m.reason, author: m.author, createdAt: at },
+      ]);
+      addLog(m.author, `Movió ${m.qty} cajas de ${m.skuId} del ${m.fromDate} al ${m.toDate}: ${m.reason}`);
+    },
+    [addLog],
+  );
+  const applyDailyBalance = useCallback<RamoPlanState['applyDailyBalance']>(
+    (plan, author) => {
+      const at = now();
+      const reason = 'Rebalanceo diario sugerido por el optimizador: pasar producción a días con holgura';
+      setDailyAdjustments((prev) => [...prev, ...dailyMovesToAdjustments(plan.moves).map((a) => ({ id: nextId('day'), ...a, reason, author, createdAt: at }))]);
+      addLog(author, `Aplicó el rebalanceo diario sugerido (${plan.moves.length} movimiento(s))`);
+    },
+    [addLog],
+  );
+  const acceptNudge = useCallback(
+    (n: DemandNudge, author: string) => {
+      addBlock({
+        scope: { skuId: n.skuId },
+        deltaCommercialQty: n.weeklyDelta,
+        reason: `Sugerido por el modelo (sesgo sistemático): ${n.evidence}`,
+        author,
+        role: 'demand',
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  const dismissNudge = useCallback((skuId: string) => setNudgesDismissed((p) => ({ ...p, [skuId]: true })), []);
+
+  const loadHistory = useCallback((text: string, label: string) => {
+    const parsed = parseDemandHistory(text, { dataset: baseDataset, cutAt: baselineCutAt });
+    setHistoryText(text);
+    setHistoryLabel(label);
+    const errors = parsed.issues.filter((i) => i.severity === 'error').length;
+    addLog('Sistema', parsed.ok
+      ? `Histórico de demanda cargado (${label}): ${parsed.rows.length} filas válidas, ${errors} error(es); el pronóstico se recalcula`
+      : `Histórico rechazado (${label}): ${errors} error(es); se mantiene el plan de demanda sintético`);
+    return parsed;
+  }, [addLog, baselineCutAt]);
+
+  const addBlock = useCallback<RamoPlanState['addBlock']>(
+    (b) => {
+      setUserBlocks((prev) => [...prev, { ...b, id: nextId('bb'), versionId: FC_N1_ID, createdAt: now() }]);
+      const scope = b.scope.skuId ?? b.scope.family ?? b.scope.businessUnit ?? 'todos los SKUs';
+      addLog(b.author, `Building block ${b.deltaCommercialQty > 0 ? '+' : ''}${b.deltaCommercialQty} cajas · ${scope}${b.scope.weekStart ? ` (sem. ${b.scope.weekStart})` : ' (todas las semanas)'}: ${b.reason}`);
+    },
+    [addLog],
+  );
+
+  const loadBaseline = useCallback((texts: IngestTexts, cutAt: string) => {
+    const b = ingestBaseline({ dataset: baseDataset, cutAt }, texts);
+    setBaseline(b);
+    setBaselineCutAt(cutAt);
+    const errors = b.issues.filter((i) => i.severity === 'error').length;
+    const warnings = b.issues.filter((i) => i.severity === 'warning').length;
+    addLog('Sistema', b.usable
+      ? `Bases SAP cargadas (corte ${cutAt.replace('T', ' ')}): inventario disponible actualizado; ${errors} error(es), ${warnings} advertencia(s)`
+      : `Bases SAP rechazadas: ${errors} error(es); se mantiene el inventario sintético`);
+    return b;
+  }, [addLog]);
+
+  // ----- Espacio de trabajo compartido (modo servidor): se carga al entrar y se guarda solo, sección por sección autorizada.
+  const [sync, setSync] = useState<SyncState>({ state: 'local' });
+  const [hydrated, setHydrated] = useState(false);
+  const revisionRef = useRef(0);
+  const lastSavedRef = useRef('');
+
+  const shape = (d: Record<string, unknown>) => ({
+    blocks: (d.blocks as BuildingBlock[]) ?? [],
+    decisions: (d.decisions as CapacityDecision[]) ?? [],
+    adjustments: (d.adjustments as MpsAdjustment[]) ?? [],
+    stage: (d.stage as CycleStage) ?? 'DRAFT',
+    recDecisions: (d.recDecisions as Record<string, RecDecision>) ?? {},
+    leadTimeOverrides: (d.leadTimeOverrides as Record<string, number>) ?? {},
+    templateOverrides: (d.templateOverrides as TemplateOverride[]) ?? [],
+    dailyAdjustments: (d.dailyAdjustments as DailyAdjustment[]) ?? [],
+    log: (d.log as LogEntry[]) ?? [],
+  });
+  const snapshot = useMemo(
+    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, log }),
+    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, log],
+  );
+
+  const reloadWorkspace = useCallback(async () => {
+    const ws = await api.workspace();
+    const s = shape(ws.data);
+    revisionRef.current = ws.revision;
+    lastSavedRef.current = JSON.stringify(s);
+    setUserBlocks(s.blocks);
+    setDecisions(s.decisions);
+    setAdjustments(s.adjustments);
+    setStage(s.stage);
+    setRecDecisions(s.recDecisions);
+    setLeadTimeOverrides(s.leadTimeOverrides);
+    setTemplateOverrides(s.templateOverrides);
+    setDailyAdjustments(s.dailyAdjustments);
+    setLog(s.log);
+  }, []);
+
+  useEffect(() => {
+    if (!serverMode) { setHydrated(false); setSync({ state: 'local' }); return; }
+    let cancelled = false;
+    setSync({ state: 'loading' });
+    reloadWorkspace()
+      .then(() => { if (!cancelled) { setHydrated(true); setSync({ state: 'saved' }); } })
+      .catch((e) => { if (!cancelled) setSync({ state: 'offline', message: e instanceof ApiError ? e.message : 'No se pudo cargar el espacio de trabajo.' }); });
+    return () => { cancelled = true; };
+  }, [serverMode, auth.user?.id, reloadWorkspace]);
+
+  useEffect(() => {
+    if (!serverMode || !hydrated) return;
+    const json = JSON.stringify(snapshot);
+    if (json === lastSavedRef.current) return;
+    const timer = setTimeout(async () => {
+      setSync({ state: 'saving' });
+      try {
+        const ws = await api.saveWorkspace(revisionRef.current, snapshot);
+        revisionRef.current = ws.revision;
+        lastSavedRef.current = json;
+        setSync({ state: 'saved' });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 409) setSync({ state: 'conflict', message: e.message });
+        else if (e instanceof ApiError && e.status === 403) {
+          // El servidor no autoriza ese cambio: se descarta lo local y se vuelve a lo guardado.
+          setSync({ state: 'denied', message: e.message });
+          reloadWorkspace().catch(() => undefined);
+        } else setSync({ state: 'offline', message: e instanceof ApiError ? e.message : 'No se pudo guardar.' });
+      }
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [snapshot, serverMode, hydrated, reloadWorkspace]);
+
+  const guarded = <A extends unknown[]>(permission: Permission, fn: (...args: A) => void) => (...args: A) => { if (auth.can(permission)) fn(...args); };
+  const canAdvance = (to: CycleStage) => (to === 'MPS_FINAL' ? auth.can('mps.edit') : to === 'DRAFT' ? auth.can('capacity.edit') || auth.can('mps.edit') : auth.can('capacity.edit'));
+
+  const value: RamoPlanState = {
+    can: auth.can,
+    canAdvance,
+    serverMode,
+    sync,
+    reloadWorkspace,
+    dataset,
+    baseline,
+    baselineCutAt,
+    history,
+    historyLabel,
+    loadHistory,
+    targetStart,
+    forecast,
+    forecastDs,
+    consensus,
+    useForecast: usingForecast,
+    setUseForecast,
+    insights,
+    pendingRecommendations,
+    decisions_rec: recDecisions,
+    decideRecommendation: guarded('procurement.decide', decideRecommendation),
+    undoRecommendation: guarded('procurement.decide', undoRecommendation),
+    leadTimeOverrides,
+    consolidationDays,
+    setConsolidationDays,
+    supplyRisk,
+    drp,
+    useDrp: usingDrp,
+    setUseDrp,
+    drpPolicy,
+    setDrpPolicy,
+    staticDays,
+    setStaticDays,
+    drpPipeline,
+    setDrpPipeline,
+    daily,
+    dailyBalance,
+    allocationRule,
+    setAllocationRule,
+    templateOverrides,
+    saveTemplateOverride: guarded('capacity.edit', (o: Omit<TemplateOverride, 'id' | 'createdAt'>) => saveTemplateOverride(o)),
+    removeTemplateOverride: guarded('capacity.edit', (id: string) => setTemplateOverrides((p) => p.filter((o) => o.id !== id))),
+    dailyAdjustments,
+    moveDaily: guarded('capacity.edit', (m: Parameters<RamoPlanState['moveDaily']>[0]) => moveDaily(m)),
+    applyDailyBalance: guarded('capacity.edit', (plan: DailyBalancePlan, author: string) => applyDailyBalance(plan, author)),
+    removeDailyAdjustment: guarded('capacity.edit', (id: string) => setDailyAdjustments((p) => p.filter((a) => a.id !== id))),
+    demandNudges,
+    acceptNudge: guarded('demand.edit', (n: DemandNudge, author: string) => acceptNudge(n, author)),
+    dismissNudge,
+    stockoutRiskList,
+    supplySim,
+    rebalanceMiguel,
+    rebalanceDaniel,
+    weeklyAltsCapacity,
+    weeklyAltsMps,
+    efficiency,
+    crewConfidence,
+    confidence,
+    applyRebalanceMoves: guarded('mps.edit', (plan: RebalancePlan, author: string) => {
+      const adj = movesToAdjustments(plan.moves);
+      const reason = 'Rebalanceo sugerido por el optimizador de capacidad: adelantar producción a semanas con holgura';
+      for (const a of adj) addAdjustment({ ...a, reason, author });
+    }),
+    applyRebalanceExtra: guarded('capacity.edit', (plan: RebalancePlan, author: string) => {
+      for (const e of plan.extraHours) addDecision({ crewId: e.crewId, weekStart: e.weekStart, extraHours: e.hours, reason: 'Horas extra sugeridas por el optimizador de capacidad (lo que no se pudo adelantar)', author });
+    }),
+    logEvent: addLog,
+    userBlocks,
+    addBlock: guarded('demand.edit', addBlock),
+    removeBlock: guarded('demand.edit', (id: string) => setUserBlocks((p) => p.filter((b) => b.id !== id))),
+    loadBaseline,
+    clearBaseline: () => {
+      setBaseline(null);
+      addLog('Sistema', 'Bases SAP retiradas: se vuelve al inventario sintético');
+    },
+    weeks,
+    baseNet,
+    stage,
+    crewMode,
+    decisions,
+    adjustments,
+    log,
+    miguelView,
+    danielView,
+    setCrewMode,
+    addDecision: guarded('capacity.edit', addDecision),
+    removeDecision: guarded('capacity.edit', (id: string) => setDecisions((p) => p.filter((d) => d.id !== id))),
+    addAdjustment: guarded('mps.edit', addAdjustment),
+    removeAdjustment: guarded('mps.edit', (id: string) => setAdjustments((p) => p.filter((a) => a.id !== id))),
+    advance: (to, actor, text) => {
+      if (!canAdvance(to)) return;
+      setStage(to);
+      addLog(actor, text);
+    },
+    // El registro es de solo añadir: reiniciar el ciclo no lo borra, deja constancia.
+    reset: () => {
+      if (!canAdvance('DRAFT')) return;
+      setStage('DRAFT');
+      setDecisions([]);
+      setAdjustments([]);
+      addLog('Sistema', 'Ciclo reiniciado');
+    },
+  };
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+export function useRamoPlan(): RamoPlanState {
+  const v = useContext(Ctx);
+  if (!v) throw new Error('useRamoPlan debe usarse dentro de RamoPlanProvider');
+  return v;
+}

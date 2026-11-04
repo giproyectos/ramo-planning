@@ -15,3 +15,6 @@ export * from './stockoutRisk';
 export * from './demandNudges';
 export * from './supplySim';
 export * from './daily';
+export * from './realCapacity';
+export * from './alternatives';
+export * from './templateAdvisor';

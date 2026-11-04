@@ -12,7 +12,9 @@
     "synthetic": "node scripts/generate-synthetic.mjs && node scripts/generate-synthetic-sap.mjs",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "dev:server": "npm run dev -w @ramo/server"
+    "dev:server": "npm run dev -w @ramo/server",
+    "dev:capacidad": "npm run dev -w @ramo/capacidad",
+    "build:capacidad": "npm run build -w @ramo/capacidad"
   },
   "devDependencies": {
     "tsx": "^4.23.15",

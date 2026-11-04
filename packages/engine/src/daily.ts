@@ -309,6 +309,8 @@ export interface DailyBalancePlan {
 export interface DailyBalanceOptions {
   /** Se llena cada día receptor hasta este % de su capacidad (por defecto 98 %). */
   fillToPct?: number;
+  /** Si es false, solo se mueve producción a días en que el producto ya se produce (no se abren días nuevos). Por defecto true. */
+  allowNewDays?: boolean;
 }
 
 /**
@@ -318,6 +320,7 @@ export interface DailyBalanceOptions {
  */
 export function suggestDailyBalance(ds: RamoDataset, result: DailyResult, options: DailyBalanceOptions = {}): DailyBalancePlan {
   const fill = (options.fillToPct ?? 98) / 100;
+  const allowNew = options.allowNewDays ?? true;
   const skuById = new Map(ds.skus.map((s) => [s.id, s]));
   const lineById = new Map(ds.lines.map((l) => [l.id, l]));
   const hpc = (skuId: string) => {
@@ -357,7 +360,7 @@ export function suggestDailyBalance(ds: RamoDataset, result: DailyResult, option
         const productionDays = days.filter((d) => (t.days[weekdayOf(d)] ?? []).includes(sid));
         const freeDays = days.filter((d) => !productionDays.includes(d));
         const order = (list: string[]) => [...list].sort((a, b) => earlier(a) - earlier(b) || dist(a) - dist(b));
-        const candidates = [...order(productionDays).map((d) => ({ d, kind: 'PRODUCTION_DAY' as const })), ...order(freeDays).map((d) => ({ d, kind: 'NEW_DAY' as const }))];
+        const candidates = [...order(productionDays).map((d) => ({ d, kind: 'PRODUCTION_DAY' as const })), ...(allowNew ? order(freeDays).map((d) => ({ d, kind: 'NEW_DAY' as const })) : [])];
 
         for (const { d, kind } of candidates) {
           if (excess <= 0.05) break;

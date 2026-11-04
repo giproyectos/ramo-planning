@@ -4814,5 +4814,6559 @@
       "hoursPerShift": 8,
       "changeoverHours": 1.5
     }
+  ],
+  "lineHistory": [
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-06",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-08",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-09",
+      "scheduledHours": 16,
+      "effectiveHours": 12.6,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-10",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-11",
+      "scheduledHours": 8,
+      "effectiveHours": 7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-13",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-14",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-15",
+      "scheduledHours": 16,
+      "effectiveHours": 15.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-16",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-17",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-18",
+      "scheduledHours": 8,
+      "effectiveHours": 7.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-20",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-21",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-23",
+      "scheduledHours": 16,
+      "effectiveHours": 15.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-24",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-25",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-28",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-29",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-04-30",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-01",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-02",
+      "scheduledHours": 8,
+      "effectiveHours": 6.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-04",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-05",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-06",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-08",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-09",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-11",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-12",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-13",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-14",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-16",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-18",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-19",
+      "scheduledHours": 16,
+      "effectiveHours": 11.7,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-21",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-23",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-25",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-26",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-27",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-28",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-29",
+      "scheduledHours": 16,
+      "effectiveHours": 10.7,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-05-30",
+      "scheduledHours": 8,
+      "effectiveHours": 7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-01",
+      "scheduledHours": 16,
+      "effectiveHours": 9.7,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-02",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-03",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-04",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-05",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-06",
+      "scheduledHours": 8,
+      "effectiveHours": 6.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-09",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-10",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-11",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-12",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-13",
+      "scheduledHours": 8,
+      "effectiveHours": 7.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-15",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-17",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-18",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-19",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-20",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-22",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-23",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-24",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-25",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-26",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-27",
+      "scheduledHours": 8,
+      "effectiveHours": 6.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-29",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-06-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-01",
+      "scheduledHours": 16,
+      "effectiveHours": 11.5,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-02",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-03",
+      "scheduledHours": 16,
+      "effectiveHours": 12,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-04",
+      "scheduledHours": 8,
+      "effectiveHours": 6.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-06",
+      "scheduledHours": 16,
+      "effectiveHours": 11.2,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-08",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-09",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-10",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-11",
+      "scheduledHours": 8,
+      "effectiveHours": 4.1,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-13",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-14",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-15",
+      "scheduledHours": 16,
+      "effectiveHours": 11.6,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-16",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-17",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-18",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-21",
+      "scheduledHours": 16,
+      "effectiveHours": 11.5,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-22",
+      "scheduledHours": 16,
+      "effectiveHours": 10.6,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-23",
+      "scheduledHours": 16,
+      "effectiveHours": 10.7,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-24",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-25",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-27",
+      "scheduledHours": 16,
+      "effectiveHours": 9.8,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-28",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-29",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-30",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-07-31",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-01",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-03",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-04",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-05",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-06",
+      "scheduledHours": 16,
+      "effectiveHours": 15.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-08",
+      "scheduledHours": 8,
+      "effectiveHours": 7.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-10",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-11",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-12",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-13",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-14",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-15",
+      "scheduledHours": 8,
+      "effectiveHours": 6.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-17",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-18",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-19",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-20",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-22",
+      "scheduledHours": 8,
+      "effectiveHours": 6.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-24",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-25",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-26",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-27",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-28",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-29",
+      "scheduledHours": 8,
+      "effectiveHours": 6.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-08-31",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-01",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-02",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-03",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-04",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-05",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-08",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-09",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-10",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-11",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-12",
+      "scheduledHours": 8,
+      "effectiveHours": 7.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-14",
+      "scheduledHours": 16,
+      "effectiveHours": 11,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-16",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-17",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-18",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-19",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-23",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-24",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-25",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-26",
+      "scheduledHours": 8,
+      "effectiveHours": 7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-28",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-29",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-09-30",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-10-01",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-10-02",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-PONQ",
+      "date": "2026-10-03",
+      "scheduledHours": 8,
+      "effectiveHours": 7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-06",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-07",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-08",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-09",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-10",
+      "scheduledHours": 24,
+      "effectiveHours": 21.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-11",
+      "scheduledHours": 24,
+      "effectiveHours": 19.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-13",
+      "scheduledHours": 24,
+      "effectiveHours": 16,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-14",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-15",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-16",
+      "scheduledHours": 24,
+      "effectiveHours": 18.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-17",
+      "scheduledHours": 24,
+      "effectiveHours": 19,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-18",
+      "scheduledHours": 24,
+      "effectiveHours": 18.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-20",
+      "scheduledHours": 24,
+      "effectiveHours": 16.8,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-21",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-23",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-24",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-25",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-27",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-28",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-04-30",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-01",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-02",
+      "scheduledHours": 24,
+      "effectiveHours": 18.1,
+      "stoppageHours": 1
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-04",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-05",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-06",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-07",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-09",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-11",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-12",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-13",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-14",
+      "scheduledHours": 24,
+      "effectiveHours": 21.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-15",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-16",
+      "scheduledHours": 24,
+      "effectiveHours": 16.9,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-18",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-19",
+      "scheduledHours": 24,
+      "effectiveHours": 18.5,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-20",
+      "scheduledHours": 24,
+      "effectiveHours": 19.3,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-21",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-22",
+      "scheduledHours": 24,
+      "effectiveHours": 18,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-23",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-25",
+      "scheduledHours": 24,
+      "effectiveHours": 18,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-26",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-27",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-28",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-05-30",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-01",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-02",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-03",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-04",
+      "scheduledHours": 24,
+      "effectiveHours": 22.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-05",
+      "scheduledHours": 24,
+      "effectiveHours": 21.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-06",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-08",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-09",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-10",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-11",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-12",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-13",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-15",
+      "scheduledHours": 24,
+      "effectiveHours": 18.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-16",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-17",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-18",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-19",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-20",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-22",
+      "scheduledHours": 24,
+      "effectiveHours": 18.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-23",
+      "scheduledHours": 24,
+      "effectiveHours": 19.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-24",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-25",
+      "scheduledHours": 24,
+      "effectiveHours": 22.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-26",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-27",
+      "scheduledHours": 24,
+      "effectiveHours": 18.4,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-29",
+      "scheduledHours": 24,
+      "effectiveHours": 18.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-06-30",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-01",
+      "scheduledHours": 24,
+      "effectiveHours": 18.5,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-02",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-03",
+      "scheduledHours": 24,
+      "effectiveHours": 17.5,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-04",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-06",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-07",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-09",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-10",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-11",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-13",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-14",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-15",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-16",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-17",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-18",
+      "scheduledHours": 24,
+      "effectiveHours": 16.7,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-20",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-21",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-23",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-24",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-25",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-27",
+      "scheduledHours": 24,
+      "effectiveHours": 19.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-28",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-30",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-07-31",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-01",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-03",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-04",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-05",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-06",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-07",
+      "scheduledHours": 24,
+      "effectiveHours": 21.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-08",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-10",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-11",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-12",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-13",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-14",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-15",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-17",
+      "scheduledHours": 24,
+      "effectiveHours": 18.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-18",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-19",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-20",
+      "scheduledHours": 24,
+      "effectiveHours": 22.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-21",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-22",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-24",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-25",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-26",
+      "scheduledHours": 24,
+      "effectiveHours": 21.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-27",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-28",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-08-31",
+      "scheduledHours": 24,
+      "effectiveHours": 19.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-01",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-02",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-03",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-04",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-05",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-07",
+      "scheduledHours": 24,
+      "effectiveHours": 16.9,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-09",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-10",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-11",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-12",
+      "scheduledHours": 24,
+      "effectiveHours": 19.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-14",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-15",
+      "scheduledHours": 24,
+      "effectiveHours": 18.4,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-16",
+      "scheduledHours": 24,
+      "effectiveHours": 18.5,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-17",
+      "scheduledHours": 24,
+      "effectiveHours": 22.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-18",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-19",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 1
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-21",
+      "scheduledHours": 24,
+      "effectiveHours": 18.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-22",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-23",
+      "scheduledHours": 24,
+      "effectiveHours": 19.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-24",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-25",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-26",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-28",
+      "scheduledHours": 24,
+      "effectiveHours": 18.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-29",
+      "scheduledHours": 24,
+      "effectiveHours": 21.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-09-30",
+      "scheduledHours": 24,
+      "effectiveHours": 17.5,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-10-01",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-10-02",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-BARR",
+      "date": "2026-10-03",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-06",
+      "scheduledHours": 24,
+      "effectiveHours": 18.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-07",
+      "scheduledHours": 24,
+      "effectiveHours": 23.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-09",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-10",
+      "scheduledHours": 24,
+      "effectiveHours": 19.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-11",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-13",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-14",
+      "scheduledHours": 24,
+      "effectiveHours": 21.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-15",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-16",
+      "scheduledHours": 24,
+      "effectiveHours": 22.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-17",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-18",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-20",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-21",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-23",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-24",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-25",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-27",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-28",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-04-30",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-01",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-02",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-04",
+      "scheduledHours": 24,
+      "effectiveHours": 18,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-05",
+      "scheduledHours": 24,
+      "effectiveHours": 18.9,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-06",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-07",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-09",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-11",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-12",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-13",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-14",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-15",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-16",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-18",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-19",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-20",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-21",
+      "scheduledHours": 24,
+      "effectiveHours": 22.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-22",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-23",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-25",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-26",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-27",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-28",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-29",
+      "scheduledHours": 24,
+      "effectiveHours": 17.5,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-05-30",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-01",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-02",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-03",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-04",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-05",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-06",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-08",
+      "scheduledHours": 24,
+      "effectiveHours": 19.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-09",
+      "scheduledHours": 24,
+      "effectiveHours": 22.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-10",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 1
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-11",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-12",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-13",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-15",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-16",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-17",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-18",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-19",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-20",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-23",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-24",
+      "scheduledHours": 24,
+      "effectiveHours": 21.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-25",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-26",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-27",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-29",
+      "scheduledHours": 24,
+      "effectiveHours": 18.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-06-30",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-01",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-02",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-03",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-04",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-06",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-07",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-09",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-10",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-11",
+      "scheduledHours": 24,
+      "effectiveHours": 17.9,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-13",
+      "scheduledHours": 24,
+      "effectiveHours": 18.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-14",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-15",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-16",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-17",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-18",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-20",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-21",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-23",
+      "scheduledHours": 24,
+      "effectiveHours": 19.1,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-24",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-25",
+      "scheduledHours": 24,
+      "effectiveHours": 22.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-27",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-28",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-30",
+      "scheduledHours": 24,
+      "effectiveHours": 22.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-07-31",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-01",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-03",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-04",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-05",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-06",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-07",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-08",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-10",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-11",
+      "scheduledHours": 24,
+      "effectiveHours": 21.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-12",
+      "scheduledHours": 24,
+      "effectiveHours": 21.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-13",
+      "scheduledHours": 24,
+      "effectiveHours": 21.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-14",
+      "scheduledHours": 24,
+      "effectiveHours": 21.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-15",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-17",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-18",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-19",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-20",
+      "scheduledHours": 24,
+      "effectiveHours": 22,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-21",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-24",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-25",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-26",
+      "scheduledHours": 24,
+      "effectiveHours": 22.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-27",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-28",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-29",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-08-31",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-01",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-02",
+      "scheduledHours": 24,
+      "effectiveHours": 19.1,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-03",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-04",
+      "scheduledHours": 24,
+      "effectiveHours": 21.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-05",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-07",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-08",
+      "scheduledHours": 24,
+      "effectiveHours": 21.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-09",
+      "scheduledHours": 24,
+      "effectiveHours": 22.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-10",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-11",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-12",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-14",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-15",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-16",
+      "scheduledHours": 24,
+      "effectiveHours": 21.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-17",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-18",
+      "scheduledHours": 24,
+      "effectiveHours": 21,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-19",
+      "scheduledHours": 24,
+      "effectiveHours": 21.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-21",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-23",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-24",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-25",
+      "scheduledHours": 24,
+      "effectiveHours": 19.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-26",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-28",
+      "scheduledHours": 24,
+      "effectiveHours": 20,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-29",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-09-30",
+      "scheduledHours": 24,
+      "effectiveHours": 17.7,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-10-01",
+      "scheduledHours": 24,
+      "effectiveHours": 22.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-10-02",
+      "scheduledHours": 24,
+      "effectiveHours": 22.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MINI",
+      "date": "2026-10-03",
+      "scheduledHours": 24,
+      "effectiveHours": 21.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-06",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-07",
+      "scheduledHours": 16,
+      "effectiveHours": 15.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-08",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-09",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-10",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-11",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-13",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-14",
+      "scheduledHours": 16,
+      "effectiveHours": 10.8,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-16",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-17",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-18",
+      "scheduledHours": 8,
+      "effectiveHours": 6.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-21",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-23",
+      "scheduledHours": 16,
+      "effectiveHours": 15.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-24",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-25",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-27",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-28",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-29",
+      "scheduledHours": 16,
+      "effectiveHours": 15.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-04-30",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-01",
+      "scheduledHours": 16,
+      "effectiveHours": 15.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-02",
+      "scheduledHours": 8,
+      "effectiveHours": 7.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-04",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-05",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-06",
+      "scheduledHours": 16,
+      "effectiveHours": 11,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-08",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-09",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-11",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-12",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-13",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-14",
+      "scheduledHours": 16,
+      "effectiveHours": 11.9,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-16",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-18",
+      "scheduledHours": 16,
+      "effectiveHours": 10.8,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-19",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-20",
+      "scheduledHours": 16,
+      "effectiveHours": 12,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-21",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-23",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-25",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-26",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-27",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-28",
+      "scheduledHours": 16,
+      "effectiveHours": 15.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-29",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-05-30",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-01",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-02",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-03",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-04",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-05",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-06",
+      "scheduledHours": 8,
+      "effectiveHours": 6.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-09",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-10",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-11",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-12",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-13",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-16",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-17",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-18",
+      "scheduledHours": 16,
+      "effectiveHours": 15.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-19",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-20",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-22",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-23",
+      "scheduledHours": 16,
+      "effectiveHours": 15.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-24",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-25",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-26",
+      "scheduledHours": 16,
+      "effectiveHours": 15.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-27",
+      "scheduledHours": 8,
+      "effectiveHours": 4.4,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-29",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-06-30",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-01",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-02",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-03",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-04",
+      "scheduledHours": 8,
+      "effectiveHours": 7.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-06",
+      "scheduledHours": 16,
+      "effectiveHours": 11.6,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-08",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-09",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-10",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-11",
+      "scheduledHours": 8,
+      "effectiveHours": 7.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-13",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-14",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-15",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-16",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-17",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-18",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-21",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-22",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-23",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-24",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-25",
+      "scheduledHours": 8,
+      "effectiveHours": 7.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-28",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-29",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-30",
+      "scheduledHours": 16,
+      "effectiveHours": 15.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-07-31",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-01",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-03",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-04",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-05",
+      "scheduledHours": 16,
+      "effectiveHours": 16,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-06",
+      "scheduledHours": 16,
+      "effectiveHours": 15,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-08",
+      "scheduledHours": 8,
+      "effectiveHours": 7.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-10",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-11",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-12",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-13",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-14",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-15",
+      "scheduledHours": 8,
+      "effectiveHours": 7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-17",
+      "scheduledHours": 16,
+      "effectiveHours": 14.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-18",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-19",
+      "scheduledHours": 16,
+      "effectiveHours": 15.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-20",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-21",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-22",
+      "scheduledHours": 8,
+      "effectiveHours": 7.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-24",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-25",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-26",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-27",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-28",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-29",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-08-31",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-01",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-02",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-03",
+      "scheduledHours": 16,
+      "effectiveHours": 15.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-04",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-05",
+      "scheduledHours": 8,
+      "effectiveHours": 7.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-07",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-08",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-09",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-10",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-11",
+      "scheduledHours": 16,
+      "effectiveHours": 15.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-12",
+      "scheduledHours": 8,
+      "effectiveHours": 7.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-14",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-16",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-17",
+      "scheduledHours": 16,
+      "effectiveHours": 14.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-18",
+      "scheduledHours": 16,
+      "effectiveHours": 14.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-19",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-21",
+      "scheduledHours": 16,
+      "effectiveHours": 14.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-23",
+      "scheduledHours": 16,
+      "effectiveHours": 11.7,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-24",
+      "scheduledHours": 16,
+      "effectiveHours": 15.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-25",
+      "scheduledHours": 16,
+      "effectiveHours": 15.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-26",
+      "scheduledHours": 8,
+      "effectiveHours": 7.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-28",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-29",
+      "scheduledHours": 16,
+      "effectiveHours": 12.2,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-09-30",
+      "scheduledHours": 16,
+      "effectiveHours": 15.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-10-01",
+      "scheduledHours": 16,
+      "effectiveHours": 15.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-10-02",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-CRISP",
+      "date": "2026-10-03",
+      "scheduledHours": 8,
+      "effectiveHours": 7.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-06",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-07",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-09",
+      "scheduledHours": 16,
+      "effectiveHours": 14.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-10",
+      "scheduledHours": 24,
+      "effectiveHours": 16.8,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-11",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-13",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-14",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-15",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-17",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-18",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-20",
+      "scheduledHours": 16,
+      "effectiveHours": 11.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-22",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-23",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-24",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-25",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-28",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-29",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-04-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-01",
+      "scheduledHours": 24,
+      "effectiveHours": 21.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-02",
+      "scheduledHours": 24,
+      "effectiveHours": 19.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-04",
+      "scheduledHours": 16,
+      "effectiveHours": 12,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-05",
+      "scheduledHours": 16,
+      "effectiveHours": 12.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-06",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-07",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-08",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-09",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-11",
+      "scheduledHours": 16,
+      "effectiveHours": 12.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-12",
+      "scheduledHours": 16,
+      "effectiveHours": 11.4,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-13",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-14",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-15",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-16",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-18",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-19",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-22",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-23",
+      "scheduledHours": 24,
+      "effectiveHours": 17.5,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-25",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-26",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-28",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-29",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-05-30",
+      "scheduledHours": 24,
+      "effectiveHours": 19.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-01",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-02",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-03",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-04",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-05",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-06",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-08",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-09",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-10",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-11",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-12",
+      "scheduledHours": 24,
+      "effectiveHours": 19,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-13",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-15",
+      "scheduledHours": 16,
+      "effectiveHours": 12.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-17",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-18",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-19",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-20",
+      "scheduledHours": 24,
+      "effectiveHours": 17.7,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-22",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-23",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-24",
+      "scheduledHours": 16,
+      "effectiveHours": 14.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-25",
+      "scheduledHours": 16,
+      "effectiveHours": 14.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-26",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-27",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-29",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-06-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-01",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-02",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-03",
+      "scheduledHours": 24,
+      "effectiveHours": 20.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-04",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-06",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-07",
+      "scheduledHours": 16,
+      "effectiveHours": 10.8,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-09",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-10",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-11",
+      "scheduledHours": 24,
+      "effectiveHours": 19.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-13",
+      "scheduledHours": 16,
+      "effectiveHours": 11.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-14",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-15",
+      "scheduledHours": 16,
+      "effectiveHours": 10.8,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-17",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-18",
+      "scheduledHours": 24,
+      "effectiveHours": 19,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-22",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-23",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-24",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-25",
+      "scheduledHours": 24,
+      "effectiveHours": 20.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-28",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-29",
+      "scheduledHours": 16,
+      "effectiveHours": 14,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-07-31",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-01",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-03",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-04",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-05",
+      "scheduledHours": 16,
+      "effectiveHours": 14.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-06",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-07",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-08",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-10",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-11",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-12",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-13",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-14",
+      "scheduledHours": 24,
+      "effectiveHours": 16,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-15",
+      "scheduledHours": 24,
+      "effectiveHours": 18,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-17",
+      "scheduledHours": 16,
+      "effectiveHours": 11.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-18",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-19",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-20",
+      "scheduledHours": 16,
+      "effectiveHours": 12.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-21",
+      "scheduledHours": 24,
+      "effectiveHours": 19.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-22",
+      "scheduledHours": 24,
+      "effectiveHours": 19,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-24",
+      "scheduledHours": 16,
+      "effectiveHours": 9.5,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-25",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-26",
+      "scheduledHours": 16,
+      "effectiveHours": 13.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-28",
+      "scheduledHours": 24,
+      "effectiveHours": 18.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-29",
+      "scheduledHours": 24,
+      "effectiveHours": 18.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-08-31",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-01",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-02",
+      "scheduledHours": 16,
+      "effectiveHours": 10.5,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-03",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-04",
+      "scheduledHours": 24,
+      "effectiveHours": 20.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-05",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-07",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-09",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-10",
+      "scheduledHours": 16,
+      "effectiveHours": 11.6,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-11",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-12",
+      "scheduledHours": 24,
+      "effectiveHours": 18.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-14",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-15",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-17",
+      "scheduledHours": 16,
+      "effectiveHours": 10.9,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-18",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-19",
+      "scheduledHours": 24,
+      "effectiveHours": 20.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-21",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-22",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-23",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-24",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-25",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-26",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-28",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-29",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-09-30",
+      "scheduledHours": 16,
+      "effectiveHours": 10,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-10-01",
+      "scheduledHours": 16,
+      "effectiveHours": 14.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-10-02",
+      "scheduledHours": 24,
+      "effectiveHours": 15.7,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-MAIZ",
+      "date": "2026-10-03",
+      "scheduledHours": 24,
+      "effectiveHours": 16.8,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-06",
+      "scheduledHours": 16,
+      "effectiveHours": 11.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-07",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-08",
+      "scheduledHours": 16,
+      "effectiveHours": 10.1,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-09",
+      "scheduledHours": 16,
+      "effectiveHours": 12.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-10",
+      "scheduledHours": 24,
+      "effectiveHours": 16.1,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-11",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-13",
+      "scheduledHours": 16,
+      "effectiveHours": 11.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-14",
+      "scheduledHours": 16,
+      "effectiveHours": 12.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-15",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-17",
+      "scheduledHours": 24,
+      "effectiveHours": 18.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-18",
+      "scheduledHours": 24,
+      "effectiveHours": 18.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-20",
+      "scheduledHours": 16,
+      "effectiveHours": 11.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-22",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-23",
+      "scheduledHours": 16,
+      "effectiveHours": 12.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-24",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-25",
+      "scheduledHours": 24,
+      "effectiveHours": 19.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-27",
+      "scheduledHours": 16,
+      "effectiveHours": 11.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-28",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-29",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-04-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-01",
+      "scheduledHours": 24,
+      "effectiveHours": 20.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-02",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-04",
+      "scheduledHours": 16,
+      "effectiveHours": 10.1,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-05",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-06",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-07",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-08",
+      "scheduledHours": 24,
+      "effectiveHours": 17.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-09",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-11",
+      "scheduledHours": 16,
+      "effectiveHours": 11.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-12",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-13",
+      "scheduledHours": 16,
+      "effectiveHours": 11,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-14",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-15",
+      "scheduledHours": 24,
+      "effectiveHours": 17.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-16",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-18",
+      "scheduledHours": 16,
+      "effectiveHours": 11.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-19",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-20",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-21",
+      "scheduledHours": 16,
+      "effectiveHours": 10.4,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-22",
+      "scheduledHours": 24,
+      "effectiveHours": 17.6,
+      "stoppageHours": 2
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-23",
+      "scheduledHours": 24,
+      "effectiveHours": 18.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-25",
+      "scheduledHours": 16,
+      "effectiveHours": 11.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-26",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-28",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-29",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-05-30",
+      "scheduledHours": 24,
+      "effectiveHours": 18.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-01",
+      "scheduledHours": 16,
+      "effectiveHours": 12.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-02",
+      "scheduledHours": 16,
+      "effectiveHours": 12.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-03",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-04",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-05",
+      "scheduledHours": 24,
+      "effectiveHours": 20.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-06",
+      "scheduledHours": 24,
+      "effectiveHours": 16.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-08",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-09",
+      "scheduledHours": 16,
+      "effectiveHours": 11.3,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-10",
+      "scheduledHours": 16,
+      "effectiveHours": 12.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-11",
+      "scheduledHours": 16,
+      "effectiveHours": 12.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-12",
+      "scheduledHours": 24,
+      "effectiveHours": 20.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-13",
+      "scheduledHours": 24,
+      "effectiveHours": 18.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-15",
+      "scheduledHours": 16,
+      "effectiveHours": 11.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-16",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-17",
+      "scheduledHours": 16,
+      "effectiveHours": 12.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-18",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-19",
+      "scheduledHours": 24,
+      "effectiveHours": 20.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-20",
+      "scheduledHours": 24,
+      "effectiveHours": 18.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-22",
+      "scheduledHours": 16,
+      "effectiveHours": 12.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-23",
+      "scheduledHours": 16,
+      "effectiveHours": 11.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-24",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-25",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-26",
+      "scheduledHours": 24,
+      "effectiveHours": 18.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-27",
+      "scheduledHours": 24,
+      "effectiveHours": 19.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-29",
+      "scheduledHours": 16,
+      "effectiveHours": 9.3,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-06-30",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-01",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-02",
+      "scheduledHours": 16,
+      "effectiveHours": 12.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-03",
+      "scheduledHours": 24,
+      "effectiveHours": 18.1,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-04",
+      "scheduledHours": 24,
+      "effectiveHours": 18.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-06",
+      "scheduledHours": 16,
+      "effectiveHours": 11.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-07",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-09",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-10",
+      "scheduledHours": 24,
+      "effectiveHours": 19,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-11",
+      "scheduledHours": 24,
+      "effectiveHours": 17,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-13",
+      "scheduledHours": 16,
+      "effectiveHours": 10.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-14",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-15",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-16",
+      "scheduledHours": 16,
+      "effectiveHours": 13,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-17",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-18",
+      "scheduledHours": 24,
+      "effectiveHours": 17.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-20",
+      "scheduledHours": 16,
+      "effectiveHours": 12.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-21",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-22",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-23",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-24",
+      "scheduledHours": 24,
+      "effectiveHours": 19.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-25",
+      "scheduledHours": 24,
+      "effectiveHours": 19.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-27",
+      "scheduledHours": 16,
+      "effectiveHours": 11.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-28",
+      "scheduledHours": 16,
+      "effectiveHours": 12.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-29",
+      "scheduledHours": 16,
+      "effectiveHours": 12.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-07-31",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-01",
+      "scheduledHours": 24,
+      "effectiveHours": 18,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-03",
+      "scheduledHours": 16,
+      "effectiveHours": 11.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-04",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-05",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-06",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-07",
+      "scheduledHours": 24,
+      "effectiveHours": 16.2,
+      "stoppageHours": 3
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-08",
+      "scheduledHours": 24,
+      "effectiveHours": 19.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-10",
+      "scheduledHours": 16,
+      "effectiveHours": 10.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-11",
+      "scheduledHours": 16,
+      "effectiveHours": 9.8,
+      "stoppageHours": 4
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-12",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-13",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-14",
+      "scheduledHours": 24,
+      "effectiveHours": 18.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-15",
+      "scheduledHours": 24,
+      "effectiveHours": 16.2,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-17",
+      "scheduledHours": 16,
+      "effectiveHours": 11.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-18",
+      "scheduledHours": 16,
+      "effectiveHours": 10.3,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-19",
+      "scheduledHours": 16,
+      "effectiveHours": 13.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-20",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-21",
+      "scheduledHours": 24,
+      "effectiveHours": 17.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-22",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-24",
+      "scheduledHours": 16,
+      "effectiveHours": 11.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-25",
+      "scheduledHours": 16,
+      "effectiveHours": 11.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-26",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-27",
+      "scheduledHours": 16,
+      "effectiveHours": 13.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-28",
+      "scheduledHours": 24,
+      "effectiveHours": 19.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-29",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-08-31",
+      "scheduledHours": 16,
+      "effectiveHours": 12.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-01",
+      "scheduledHours": 16,
+      "effectiveHours": 13.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-02",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-03",
+      "scheduledHours": 16,
+      "effectiveHours": 12.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-04",
+      "scheduledHours": 24,
+      "effectiveHours": 17.6,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-05",
+      "scheduledHours": 24,
+      "effectiveHours": 19.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-07",
+      "scheduledHours": 16,
+      "effectiveHours": 11.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-08",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-09",
+      "scheduledHours": 16,
+      "effectiveHours": 13.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-10",
+      "scheduledHours": 16,
+      "effectiveHours": 13.5,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-11",
+      "scheduledHours": 24,
+      "effectiveHours": 19.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-12",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-14",
+      "scheduledHours": 16,
+      "effectiveHours": 12.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-15",
+      "scheduledHours": 16,
+      "effectiveHours": 12.1,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-16",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-17",
+      "scheduledHours": 16,
+      "effectiveHours": 12.8,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-18",
+      "scheduledHours": 24,
+      "effectiveHours": 16.9,
+      "stoppageHours": 3.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-19",
+      "scheduledHours": 24,
+      "effectiveHours": 17.9,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-21",
+      "scheduledHours": 16,
+      "effectiveHours": 11.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-22",
+      "scheduledHours": 16,
+      "effectiveHours": 12.2,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-23",
+      "scheduledHours": 16,
+      "effectiveHours": 11.6,
+      "stoppageHours": 1.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-24",
+      "scheduledHours": 16,
+      "effectiveHours": 12.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-25",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-26",
+      "scheduledHours": 24,
+      "effectiveHours": 18.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-28",
+      "scheduledHours": 16,
+      "effectiveHours": 12,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-29",
+      "scheduledHours": 16,
+      "effectiveHours": 13.4,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-09-30",
+      "scheduledHours": 16,
+      "effectiveHours": 13.7,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-10-01",
+      "scheduledHours": 16,
+      "effectiveHours": 11.3,
+      "stoppageHours": 2.5
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-10-02",
+      "scheduledHours": 24,
+      "effectiveHours": 18.3,
+      "stoppageHours": 0
+    },
+    {
+      "lineId": "L-TOST",
+      "date": "2026-10-03",
+      "scheduledHours": 24,
+      "effectiveHours": 19,
+      "stoppageHours": 0
+    }
   ]
 }

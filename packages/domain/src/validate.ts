@@ -126,6 +126,12 @@ export function validateDataset(ds: RamoDataset): ValidationIssue[] {
   validateMaterials(ds, add);
   validateOrderHistory(ds, add);
 
+  (ds.lineHistory ?? []).forEach((h, i) => {
+    const p = `lineHistory[${i}]`;
+    if (!lines.has(h.lineId)) add('UNKNOWN_LINE', p, `línea inexistente: ${h.lineId}`);
+    if (!(h.scheduledHours > 0) || h.effectiveHours < 0 || h.stoppageHours < 0) add('BAD_HISTORY_HOURS', p, 'horas del historial inválidas');
+  });
+
   for (const t of ds.templates ?? []) {
     const p = `templates.${t.id}`;
     const crew = crews.get(t.crewId);

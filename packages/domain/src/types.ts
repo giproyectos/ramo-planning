@@ -288,6 +288,16 @@ export interface DailyAdjustment {
   createdAt: string;
 }
 
+/** Historial de un día de una línea: horas programadas, horas productivas logradas (a ritmo nominal) y horas perdidas por paradas. */
+export interface LineDayHistory {
+  lineId: string;
+  date: string;
+  scheduledHours: number;
+  /** Producción lograda expresada en horas a ritmo nominal. */
+  effectiveHours: number;
+  stoppageHours: number;
+}
+
 export interface RamoDataset {
   synthetic: boolean;
   plants: Plant[];
@@ -311,4 +321,6 @@ export interface RamoDataset {
   requisitions?: PurchaseRequisition[];
   /** Plantillas semanales de programación diaria; opcionales para datasets que no usan la programación diaria. */
   templates?: ProductionTemplate[];
+  /** Historial de producción por línea y día (para estimar la capacidad real); opcional. */
+  lineHistory?: LineDayHistory[];
 }

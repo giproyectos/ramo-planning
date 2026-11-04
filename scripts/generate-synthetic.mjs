@@ -269,7 +269,30 @@ const templates = [
     days: { 1: ['SK-007'], 2: ['SK-007'], 3: ['SK-007'], 4: ['SK-007'], 5: ['SK-008'], 6: ['SK-008'] }, shifts: { 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3 }, hoursPerShift: 8, changeoverHours: 1.5 },
 ];
 
-const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders, orderHistory, requisitions, templates };
+// Historial de producción por línea y día (26 semanas antes del corte). Sintético: cada línea rinde por debajo de su ritmo nominal,
+// el lunes rinde menos y hay paradas no programadas al azar. Con datos reales de Ramo esto sale del registro de producción.
+const rndHist = mulberry32(314);
+const gaussH = () => (rndHist() + rndHist() + rndHist() - 1.5) * 2;
+const baseEff = { 'L-PONQ': 0.9, 'L-BARR': 0.86, 'L-MINI': 0.88, 'L-CRISP': 0.93, 'L-MAIZ': 0.84, 'L-TOST': 0.8 };
+const weekdayEff = { 1: -0.05, 2: 0, 3: 0.01, 4: 0.01, 5: -0.01, 6: -0.02 };
+const lineHistory = [];
+for (const l of lines) {
+  const t = templates.find((x) => x.lineIds.includes(l.id));
+  for (let i = -182; i < 0; i++) {
+    const date = addDays(CUT, i);
+    const wd = ((new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7) + 1;
+    const shifts = t.shifts[wd] ?? 0;
+    if (shifts <= 0) continue;
+    const scheduledHours = shifts * t.hoursPerShift;
+    const stopped = rndHist() < 0.12;
+    const stoppageHours = stopped ? Math.min(scheduledHours * 0.5, Math.round((1 + rndHist() * 3) * 2) / 2) : 0;
+    const eff = Math.max(0.4, Math.min(1.02, baseEff[l.id] + weekdayEff[wd] + gaussH() * 0.03));
+    const effectiveHours = Math.round(Math.max(0, (scheduledHours - stoppageHours) * eff) * 10) / 10;
+    lineHistory.push({ lineId: l.id, date, scheduledHours, effectiveHours, stoppageHours });
+  }
+}
+
+const dataset = { synthetic: true, plants, crews, lines, calendars, skus, versions, demand, buildingBlocks, inventory, openOrders, nodes, materials, bom, purchaseOrders, orderHistory, requisitions, templates, lineHistory };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(dataset, null, 2) + '\n');
 console.log(`dataset.json: ${skus.length} SKUs, ${lines.length} líneas, ${demand.length} filas de demanda`);
