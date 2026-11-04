@@ -32,3 +32,11 @@ Ningún punto usa un modelo de lenguaje. Todos sugieren y una persona decide.
 - Historial real de producción por línea y día (y registro de paradas) para validar la confiabilidad.
 - Vigencia del esquema (1, 3 o 6 meses) como dato del esquema.
 - Confirmación de plantas con trazabilidad y que la capacidad semanal del CRP salga del cálculo diario.
+
+## Rediseño de la interfaz (2026-11-04)
+Las tres pantallas siguen el mismo patrón: un mapa interactivo a la izquierda, un panel a la derecha con la selección, los pendientes y lo que propone el asistente, y todo el detalle plegado. Los cambios se prueban antes de aplicarse.
+- **Mesa de programación (Día a día):** borrador con deshacer y rehacer, arrastrar y soltar con aviso de capacidad mientras se arrastra, vista previa de cada propuesta al pasar el cursor y paleta de comandos (Ctrl K).
+- **CRP:** mapa con dos vistas (sobre el papel y con rendimiento real) y vista previa de las alternativas sobre el mapa.
+- **MPS:** mapa producto por semana con el efecto de un ajuste en la tripulación antes de registrarlo, la misma vista previa de alternativas y la lista de verificación del cierre.
+- **Franja del ciclo** (`CycleBar`) con el paso actual y el botón que lo hace avanzar, compartida por CRP y MPS.
+Referencias de práctica: arrastrar y soltar sobre el tablero, trabajar en una copia antes de aplicar, avisar si algo cabe durante el arrastre y mostrar la carga contra la capacidad en la misma línea de tiempo (herramientas de programación como PlanetTogether, Dynamics 365 y Oracle), y divulgación progresiva con un solo nivel de detalle.

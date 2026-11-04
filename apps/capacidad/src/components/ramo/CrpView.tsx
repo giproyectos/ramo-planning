@@ -1,19 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CapacityDecision, toProductiveQty } from '@ramo/domain';
-import { Alternative, CYCLE_ORDER, CycleStage, RebalancePlan, computeCrp, crpConfidence, movesToAdjustments, weekExceptions } from '@ramo/engine';
+import { Alternative, CYCLE_ORDER, RebalancePlan, computeCrp, crpConfidence, movesToAdjustments, weekExceptions } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { EXCEPTION_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { LineChart, SERIES_COLORS } from './charts';
 import { Card, Disclosure, ProgressBar } from './ui';
 import { ConfidenceChip } from './focus';
-
-const STEPS: Record<CycleStage, { title: string; owner: string }> = {
-  DRAFT: { title: 'Capacidad en borrador', owner: 'Producción' },
-  SENT_TO_MPS: { title: 'Enviado al MPS', owner: 'Distribución' },
-  MPS_FINAL: { title: 'MPS final cerrado', owner: 'Distribución' },
-  FINAL_ALERTS: { title: 'Alertas finales', owner: 'Producción' },
-};
+import { CycleBar } from './CycleBar';
+import { AltPicker } from './AltPicker';
 
 const paperColor = (pct: number) => (pct > 110 ? '#FFA27D' : pct > 100 ? '#FFF87C' : pct === 0 ? 'rgba(255,255,255,0.45)' : 'rgba(122,255,161,0.65)');
 
@@ -21,7 +16,7 @@ const paperColor = (pct: number) => (pct > 110 ? '#FFA27D' : pct > 100 ? '#FFF87
 export function CrpView() {
   const {
     dataset, weeks, stage, crewMode, setCrewMode, miguelView, decisions, addDecision, removeDecision, advance, can, canAdvance, weeklyAltsCapacity, crewConfidence, efficiency,
-    applyRebalanceExtra, log, reset,
+    applyRebalanceExtra,
   } = useRamoPlan();
   const { user } = useAuth();
   const author = user?.name ?? 'Producción';
@@ -132,43 +127,15 @@ export function CrpView() {
         </div>
       </div>
 
-      {/* Paso del ciclo */}
-      <section className="glass-panel rounded-3xl px-4 py-3">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <ol className="flex flex-wrap items-center gap-1.5" aria-label="Pasos del ciclo semanal">
-            {CYCLE_ORDER.map((s, i) => (
-              <li key={s} className={`rounded-full px-3 py-1.5 text-[11px] font-bold border ${i === stageIdx ? 'bg-slate-950 text-white border-slate-950' : i < stageIdx ? 'bg-[#7AFFA1]/40 border-[#7AFFA1] text-black' : 'bg-white/60 border-white/80 text-slate-500'}`} title={`Paso ${i + 1} · ${STEPS[s].owner}`}>
-                {i < stageIdx ? '✓ ' : `${i + 1}. `}{STEPS[s].title}
-              </li>
-            ))}
-          </ol>
-          <div className="ml-auto flex flex-wrap items-center gap-3">
-            {stageIdx === 1 && <span className="text-xs text-slate-500">En manos de Distribución: se ajusta en la pantalla MPS.</span>}
-            {cta && (
-              <>
-                <span className="text-[11px] text-slate-500 hidden lg:inline">{cta.hint}</span>
-                <button disabled={!canAdvance(cta.to)} title={canAdvance(cta.to) ? undefined : 'Tu rol no puede avanzar este paso'} onClick={() => advance(cta.to, cta.actor, cta.text)} className="px-5 py-2 text-xs font-black text-black bg-[#7AFFA1] rounded-full cursor-pointer disabled:opacity-40">{cta.label}</button>
-              </>
-            )}
-          </div>
-        </div>
-        {stage === 'FINAL_ALERTS' && (
+      <CycleBar
+        note={stageIdx === 1 ? 'En manos de Distribución: se ajusta en la pantalla MPS.' : undefined}
+        cta={cta ? { label: cta.label, hint: cta.hint, disabled: !canAdvance(cta.to), title: canAdvance(cta.to) ? undefined : 'Tu rol no puede avanzar este paso', onClick: () => advance(cta.to, cta.actor, cta.text) } : null}
+        banner={stage === 'FINAL_ALERTS' ? (
           <div className={`mt-3 rounded-2xl px-4 py-2.5 text-xs font-bold border ${alerts.length ? 'bg-[#FFA27D]/30 border-[#FFA27D]' : 'bg-[#7AFFA1]/40 border-[#7AFFA1]'}`}>
             {alerts.length ? `Alertas finales: ${alerts.length} tripulación(es)-semana siguen sobre capacidad con el MPS final — ${alerts.map((a) => `${crewName(a.crewId)} ${weekLabel(a.weekStart)} (${fmtDec(a.excessHours)} h)`).join(' · ')}` : 'Alertas finales: la capacidad quedó resuelta en todo el horizonte con el MPS final.'}
           </div>
-        )}
-        <details className="mt-2 text-xs">
-          <summary className="cursor-pointer font-bold text-slate-500">Registro del ciclo ({log.length})</summary>
-          <div className="mt-2">
-            {log.length === 0 ? <p className="text-slate-400">Aún no hay movimientos en este ciclo.</p> : (
-              <ul className="space-y-1 max-h-40 overflow-auto pr-1">
-                {log.map((e, i) => <li key={i}><span className="font-mono text-[10px] text-slate-400 mr-2">{e.at.slice(11, 19)}</span><span className="font-extrabold">{e.actor}</span> — {e.text}</li>)}
-              </ul>
-            )}
-            <button onClick={reset} className="mt-2 text-[11px] font-bold text-slate-500 hover:text-black underline cursor-pointer">Reiniciar ciclo</button>
-          </div>
-        </details>
-      </section>
+        ) : undefined}
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-4 items-start">
         <div className="space-y-4 min-w-0">
@@ -324,54 +291,25 @@ export function CrpView() {
             </section>
           )}
 
-          {/* Qué propone el asistente */}
-          <section className="glass-panel rounded-3xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-500">Cómo resolver lo que está en rojo</h2>
-              <span className="text-[10px] font-black rounded-full px-2 py-0.5 bg-[#DDCBF5]" title="Optimización con restricciones; no usa un modelo de lenguaje. Sugiere: una persona decide.">✦ Asistente</span>
-            </div>
-            {alts.length === 0 || alts[0].plan.overloaded === 0 ? (
-              <p className="text-xs font-bold text-emerald-800">No hay semanas sobre capacidad: no hay nada que resolver.</p>
-            ) : (
-              <div className="space-y-2">
-                <p className="text-[11px] text-slate-600">{alts[0].plan.overloaded} tripulación-semana(s), {fmtDec(alts[0].plan.excessBefore, 1)} h por resolver. Pasa el cursor para verlo en el mapa.</p>
-                {alts.map((a) => {
-                  const on = chosen?.id === a.id;
-                  return (
-                    <div key={a.id} onMouseEnter={() => setHoverAlt(a.id)} onMouseLeave={() => setHoverAlt(null)} onFocus={() => setHoverAlt(a.id)} onBlur={() => setHoverAlt(null)}>
-                      <button onClick={() => setPicked(a.id)} aria-pressed={on} className={`w-full text-left rounded-2xl p-3 border cursor-pointer transition-all ${on ? 'bg-slate-950 text-white border-slate-950' : 'bg-white/70 border-white hover:bg-white'}`}>
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="text-xs font-black">{a.label}</span>
-                          {a.recommended && <span className="text-[9px] font-black rounded-full px-2 py-0.5 bg-[#7AFFA1] text-black shrink-0">Recomendada</span>}
-                        </div>
-                        <div className={`mt-1 text-[11px] ${on ? 'text-slate-300' : 'text-slate-600'}`}>
-                          Adelanta {fmtDec(a.metrics.movedHours, 1)} h · {a.metrics.unmetHours > 0 ? `${fmtDec(a.metrics.unmetHours, 1)} h sin cubrir` : `${fmtDec(a.metrics.extraHours, 1)} h extra`}
-                        </div>
-                      </button>
-                    </div>
-                  );
-                })}
-                {chosen && (
-                  <div className="rounded-2xl bg-white/60 border border-white p-3 text-xs space-y-2">
-                    <p className="text-slate-600">{chosen.description}</p>
-                    {chosen.plan.moves.length > 0 && (
-                      <p><b>{new Set(chosen.plan.moves.map((m) => `${m.skuId}|${m.fromWeek}|${m.toWeek}`)).size} movimientos</b> de producción a semanas anteriores: los aplica Distribución en la pantalla MPS.</p>
-                    )}
-                    {chosen.plan.extraHours.length > 0 ? (
-                      <>
-                        <div className="flex flex-wrap gap-1.5">{chosen.plan.extraHours.map((e) => <span key={`${e.crewId}${e.weekStart}`} className="text-[10px] font-bold rounded-full px-2 py-0.5 bg-[#FFF87C]">{crewName(e.crewId)} · {weekLabel(e.weekStart)} · {fmtDec(e.hours, 1)} h</span>)}</div>
-                        <button onClick={() => applyRebalanceExtra(chosen.plan, author)} disabled={!editable} className="px-3.5 py-1.5 text-[11px] font-black rounded-full bg-slate-950 text-white disabled:opacity-40 cursor-pointer">Registrar estas horas extra</button>
-                        {!editable && <p className="text-[11px] text-slate-500">{!can('capacity.edit') ? 'Tu rol no puede decidir horas extra.' : 'El plan está en manos de Distribución.'}</p>}
-                      </>
-                    ) : chosen.metrics.unmetHours > 0 ? (
-                      <p className="font-bold text-[#c2410c]">Quedan {fmtDec(chosen.metrics.unmetHours, 1)} h sin cubrir: hay que decidir qué hacer con ellas.</p>
-                    ) : <p className="text-emerald-800 font-bold">No necesita horas extra.</p>}
-                    <button onClick={() => setPinned(pinned === chosen.id ? null : chosen.id)} className="text-[11px] font-bold underline cursor-pointer">{pinned === chosen.id ? 'Quitar vista previa del mapa' : 'Dejar fija la vista previa en el mapa'}</button>
-                  </div>
+          <AltPicker alts={alts} chosenId={chosen?.id} onPick={setPicked} onHover={setHoverAlt}>
+            {chosen && (
+              <>
+                {chosen.plan.moves.length > 0 && (
+                  <p><b>{new Set(chosen.plan.moves.map((m) => `${m.skuId}|${m.fromWeek}|${m.toWeek}`)).size} movimientos</b> de producción a semanas anteriores: los aplica Distribución en la pantalla MPS.</p>
                 )}
-              </div>
+                {chosen.plan.extraHours.length > 0 ? (
+                  <>
+                    <div className="flex flex-wrap gap-1.5">{chosen.plan.extraHours.map((e) => <span key={`${e.crewId}${e.weekStart}`} className="text-[10px] font-bold rounded-full px-2 py-0.5 bg-[#FFF87C]">{crewName(e.crewId)} · {weekLabel(e.weekStart)} · {fmtDec(e.hours, 1)} h</span>)}</div>
+                    <button onClick={() => applyRebalanceExtra(chosen.plan, author)} disabled={!editable} className="px-3.5 py-1.5 text-[11px] font-black rounded-full bg-slate-950 text-white disabled:opacity-40 cursor-pointer">Registrar estas horas extra</button>
+                    {!editable && <p className="text-[11px] text-slate-500">{!can('capacity.edit') ? 'Tu rol no puede decidir horas extra.' : 'El plan está en manos de Distribución.'}</p>}
+                  </>
+                ) : chosen.metrics.unmetHours > 0 ? (
+                  <p className="font-bold text-[#c2410c]">Quedan {fmtDec(chosen.metrics.unmetHours, 1)} h sin cubrir: hay que decidir qué hacer con ellas.</p>
+                ) : <p className="text-emerald-800 font-bold">No necesita horas extra.</p>}
+                <button onClick={() => setPinned(pinned === chosen.id ? null : chosen.id)} className="text-[11px] font-bold underline cursor-pointer">{pinned === chosen.id ? 'Quitar vista previa del mapa' : 'Dejar fija la vista previa en el mapa'}</button>
+              </>
             )}
-          </section>
+          </AltPicker>
 
           {/* Decisión manual */}
           <section className="glass-panel rounded-3xl p-4 space-y-2">
