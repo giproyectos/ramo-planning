@@ -1,4 +1,4 @@
-import { DemandRecord, MAKE_TO_ORDER_FLOWS, MpsAdjustment, RamoDataset } from '@ramo/domain';
+import { DemandFlow, DemandRecord, MAKE_TO_ORDER_FLOWS, MpsAdjustment, RamoDataset } from '@ramo/domain';
 
 export interface NetPlanRow {
   skuId: string;
@@ -46,4 +46,43 @@ export function applyMpsAdjustments(net: NetPlanRow[], adjustments: MpsAdjustmen
     else out.push({ skuId: a.skuId, weekStart: a.weekStart, grossCedi: 0, grossMto: 0, netProduction: Math.max(0, a.deltaCommercialQty) });
   }
   return out;
+}
+
+export interface NetExplanation {
+  skuId: string;
+  weekStart: string;
+  /** Demanda CEDI de la semana (lo que pide el DRP a la planta) y make-to-order por flujo. */
+  grossCedi: number;
+  mtoByFlow: Partial<Record<DemandFlow, number>>;
+  grossMto: number;
+  /** Inventario al empezar la semana y órdenes en curso que llegan en ella. */
+  startInventory: number;
+  openOrders: number;
+  /** Lo que falta producir de la demanda CEDI después de usar inventario y órdenes en curso. */
+  netCedi: number;
+  netProduction: number;
+  /** Inventario con el que termina la semana (puede ser > 0 si se produce de más). */
+  endInventory: number;
+}
+
+/** Cómo se llegó a la cifra del MPS de un producto y una semana: la misma cuenta de `computeNetProduction`, paso por paso. */
+export function explainNet(ds: RamoDataset, demand: DemandRecord[], skuId: string, weekStart: string): NetExplanation | null {
+  const sku = ds.skus.find((x) => x.id === skuId);
+  if (!sku) return null;
+  const weeks = [...new Set(demand.map((d) => d.weekStart))].sort();
+  if (!weeks.includes(weekStart)) return null;
+  let carry = ds.inventory.find((i) => i.skuId === sku.id)?.onHandCommercial ?? 0;
+  for (const week of weeks) {
+    const rows = demand.filter((d) => d.skuId === sku.id && d.weekStart === week);
+    const grossCedi = rows.filter((r) => !MAKE_TO_ORDER_FLOWS.has(r.flow)).reduce((a, r) => a + r.commercialQty, 0);
+    const mtoByFlow: Partial<Record<DemandFlow, number>> = {};
+    for (const r of rows) if (MAKE_TO_ORDER_FLOWS.has(r.flow)) mtoByFlow[r.flow] = (mtoByFlow[r.flow] ?? 0) + r.commercialQty;
+    const grossMto = Object.values(mtoByFlow).reduce((a, b) => a + (b ?? 0), 0);
+    const open = ds.openOrders.filter((o) => o.skuId === sku.id && o.weekStart === week).reduce((a, o) => a + o.commercialQty, 0);
+    const netCedi = Math.max(0, grossCedi - (carry + open));
+    const end = carry + open + netCedi - grossCedi;
+    if (week === weekStart) return { skuId, weekStart, grossCedi, mtoByFlow, grossMto, startInventory: carry, openOrders: open, netCedi, netProduction: netCedi + grossMto, endInventory: end };
+    carry = end;
+  }
+  return null;
 }

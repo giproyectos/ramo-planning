@@ -18,7 +18,7 @@ const heatColor = (pct: number) => (pct > 110 ? '#FFA27D' : pct > 100 ? '#FFCB7D
 /** Resumen: qué toca hacer ahora, cómo está el plan semana a semana y qué conviene mirar primero. */
 export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) => void }) {
   const {
-    dataset, stage, danielView, miguelView, weeks, daily, weeklyAltsCapacity, crewConfidence, templateOverrides, dailyAdjustments, allocationRule, adjustments, decisions, plantRows, plantRules,
+    dataset, stage, danielView, miguelView, weeks, daily, weeklyAltsCapacity, crewConfidence, templateOverrides, dailyAdjustments, allocationRule, adjustments, decisions, plantRows, plantRules, releases,
   } = useRamoPlan();
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const crewName = (id: string) => dataset.crews.find((c) => c.id === id)?.name.replace('Tripulación ', '') ?? id;
@@ -68,6 +68,10 @@ export function FocusSummary({ onSelectStep }: { onSelectStep: (s: ProcessStep) 
       who: 'Producción', go: 'crp', button: 'Ir a Capacidad →',
       title: 'Recarga el MPS final y emite las alertas de producción',
       detail: 'El MPS ya está cerrado: Producción revisa si queda algo en rojo.',
+    } : releases.length === 0 && plantSum.pending === 0 && alerts.length === 0 ? {
+      who: 'Producción', go: 'release', button: 'Ir al plan oficial →',
+      title: 'Todo está confirmado: libera el plan oficial',
+      detail: 'Se generan los archivos por planta y la versión queda guardada con su autor.',
     } : {
       who: 'Producción', go: 'daily', button: 'Ir a la mesa de programación →',
       title: alerts.length ? `Quedan ${alerts.length} semanas en rojo: revísalas en la mesa de programación` : 'Baja el plan a los días en la mesa de programación',

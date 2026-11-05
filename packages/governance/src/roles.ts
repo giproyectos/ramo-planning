@@ -66,6 +66,9 @@ export const SECTION_PERMISSIONS: Record<string, Permission[] | 'any'> = {
   plantDeliveries: ['capacity.edit'],
   calendarEdits: ['capacity.edit'],
   plantRules: ['capacity.edit'],
+  // Escenarios de programación (de Producción) y plan oficial liberado (lo libera quien tenga permiso de publicar).
+  scenarios: ['capacity.edit'],
+  releases: ['release.publish'],
   log: 'any',
 };
 

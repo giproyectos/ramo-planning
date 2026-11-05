@@ -1,6 +1,6 @@
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { Permission } from '@ramo/governance';
-import { BuildingBlock, CalendarEdit, CapacityDecision, DailyAdjustment, DemandHistoryRow, DemandRecord, MpsAdjustment, PlantConfirmation, PlantDelivery, PlantRule, PlantRuleSpec, RamoDataset, TemplateOverride, validateDataset } from '@ramo/domain';
+import { BuildingBlock, CalendarEdit, CapacityDecision, DailyAdjustment, DemandHistoryRow, DemandRecord, MpsAdjustment, PlantConfirmation, PlantDelivery, PlantRule, PlantRuleSpec, RamoDataset, ReleaseRecord, ScenarioRecord, TemplateOverride, validateDataset } from '@ramo/domain';
 import {
   CYCLE_ORDER,
   Alternative,
@@ -180,6 +180,16 @@ interface RamoPlanState {
   confirmPlantMany: (list: Omit<PlantConfirmation, 'id' | 'createdAt'>[]) => void;
   recordDelivery: (d: Omit<PlantDelivery, 'id' | 'createdAt'>) => void;
   removeDelivery: (id: string) => void;
+  /** Demanda que alimenta el MPS (para explicar de dónde sale cada cifra) y riesgo de quiebre máximo por producto (para priorizar). */
+  horizonDemand: DemandRecord[];
+  riskBySku: Record<string, number>;
+  /** Escenarios de programación guardados (los cambios de un borrador de la mesa, con nombre). */
+  scenarios: ScenarioRecord[];
+  saveScenario: (s: Omit<ScenarioRecord, 'id' | 'createdAt'>) => void;
+  removeScenario: (id: string) => void;
+  /** Plan oficial liberado: versiones numeradas con sus archivos. */
+  releases: ReleaseRecord[];
+  publishRelease: (r: Omit<ReleaseRecord, 'id' | 'version' | 'createdAt'>) => void;
   /** Registra una decisión en el registro del ciclo (p. ej. el reparto de escasez aprobado). */
   logEvent: (actor: string, text: string) => void;
   userBlocks: BuildingBlock[];
@@ -242,6 +252,8 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const [plantRules, setPlantRules] = useState<PlantRule[]>([]);
   const [plantConfirmations, setPlantConfirmations] = useState<PlantConfirmation[]>([]);
   const [plantDeliveries, setPlantDeliveries] = useState<PlantDelivery[]>([]);
+  const [scenarios, setScenarios] = useState<ScenarioRecord[]>([]);
+  const [releases, setReleases] = useState<ReleaseRecord[]>([]);
   const [baseline, setBaseline] = useState<Baseline | null>(null);
   const [baselineCutAt, setBaselineCutAt] = useState(DEFAULT_CUT_AT);
 
@@ -460,6 +472,25 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     },
     [addLog],
   );
+  const saveScenario = useCallback<RamoPlanState['saveScenario']>(
+    (sc) => {
+      setScenarios((prev) => [...prev, { ...sc, id: nextId('esc'), createdAt: now() }]);
+      addLog(sc.author, `Guardó el escenario «${sc.name}»`);
+    },
+    [addLog],
+  );
+  const publishRelease = useCallback<RamoPlanState['publishRelease']>(
+    (r) => {
+      setReleases((prev) => [...prev, { ...r, id: nextId('rel'), version: prev.length + 1, createdAt: now() }]);
+      addLog(r.author, `Liberó el plan oficial (versión ${releases.length + 1})${r.justified ? ' con pendientes justificados' : ''}${r.note ? `: ${r.note}` : ''}`);
+    },
+    [addLog, releases.length],
+  );
+  const riskBySku = useMemo(() => {
+    const out: Record<string, number> = {};
+    for (const r of stockoutRiskList) out[r.skuId] = Math.max(out[r.skuId] ?? 0, r.probability);
+    return out;
+  }, [stockoutRiskList]);
   const acceptNudge = useCallback(
     (n: DemandNudge, author: string) => {
       addBlock({
@@ -526,11 +557,13 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     plantRules: (d.plantRules as PlantRule[]) ?? [],
     plantConfirmations: (d.plantConfirmations as PlantConfirmation[]) ?? [],
     plantDeliveries: (d.plantDeliveries as PlantDelivery[]) ?? [],
+    scenarios: (d.scenarios as ScenarioRecord[]) ?? [],
+    releases: (d.releases as ReleaseRecord[]) ?? [],
     log: (d.log as LogEntry[]) ?? [],
   });
   const snapshot = useMemo(
-    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, calendarEdits, plantRules, plantConfirmations, plantDeliveries, log }),
-    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, calendarEdits, plantRules, plantConfirmations, plantDeliveries, log],
+    () => shape({ blocks: userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, calendarEdits, plantRules, plantConfirmations, plantDeliveries, scenarios, releases, log }),
+    [userBlocks, decisions, adjustments, stage, recDecisions, leadTimeOverrides, templateOverrides, dailyAdjustments, calendarEdits, plantRules, plantConfirmations, plantDeliveries, scenarios, releases, log],
   );
 
   const reloadWorkspace = useCallback(async () => {
@@ -550,6 +583,8 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     setPlantRules(s.plantRules);
     setPlantConfirmations(s.plantConfirmations);
     setPlantDeliveries(s.plantDeliveries);
+    setScenarios(s.scenarios);
+    setReleases(s.releases);
     setLog(s.log);
   }, []);
 
@@ -632,6 +667,13 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
     templateOverrides,
     saveTemplateOverride: guarded('capacity.edit', (o: Omit<TemplateOverride, 'id' | 'createdAt'>) => saveTemplateOverride(o)),
     removeTemplateOverride: guarded('capacity.edit', (id: string) => setTemplateOverrides((p) => p.filter((o) => o.id !== id))),
+    horizonDemand,
+    riskBySku,
+    scenarios,
+    saveScenario: guarded('capacity.edit', saveScenario),
+    removeScenario: guarded('capacity.edit', (id: string) => setScenarios((p) => p.filter((x) => x.id !== id))),
+    releases,
+    publishRelease: guarded('release.publish', publishRelease),
     plantRules,
     addPlantRule: guarded('capacity.edit', addPlantRule),
     removePlantRule: guarded('capacity.edit', (id: string) => setPlantRules((p) => p.filter((r) => r.id !== id))),

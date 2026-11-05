@@ -1,4 +1,4 @@
-export type ProcessStep = 'summary' | 'mps' | 'crp' | 'plants' | 'daily';
+export type ProcessStep = 'summary' | 'mps' | 'crp' | 'plants' | 'daily' | 'release' | 'data';
 
 /** Título de cada pantalla (migas de pan del encabezado). */
 export const STEP_TITLES: Record<ProcessStep, string> = {
@@ -7,4 +7,6 @@ export const STEP_TITLES: Record<ProcessStep, string> = {
   mps: 'MPS final',
   plants: 'Confirmación de plantas',
   daily: 'Mesa de programación',
+  release: 'Plan oficial',
+  data: 'Datos y esquemas',
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, CalendarRange, CalendarClock, Cpu, Factory } from 'lucide-react';
+import { LayoutGrid, CalendarRange, CalendarClock, Cpu, Factory, Send, Database } from 'lucide-react';
 import { ROLE_LABELS } from '@ramo/governance';
 import { useAuth } from '../ramo/auth';
 import { useRamoPlan } from '../ramo/store';
@@ -19,7 +19,7 @@ type Tone = keyof typeof TONE;
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) => {
   const { mode, user, logout } = useAuth();
-  const { sync, dataset, stage, miguelView, daily, plantRows } = useRamoPlan();
+  const { sync, dataset, stage, miguelView, daily, plantRows, releases, baseline } = useRamoPlan();
   const plantPending = plantRows.filter((r) => r.status === 'PENDING').length;
   const plantShort = plantRows.filter((r) => r.shortfall > 0 || r.planChanged).length;
 
@@ -34,6 +34,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) =
     { id: 'mps', code: 'MPS', name: 'MPS final', icon: CalendarRange, badge: stageBadge, tone: stage === 'DRAFT' ? 'info' : stage === 'SENT_TO_MPS' ? 'warn' : 'ok' },
     { id: 'plants', code: 'Plantas', name: 'Confirmación de plantas', icon: Factory, badge: plantRows.length === 0 ? '—' : plantPending > 0 ? `${plantPending} por confirmar` : plantShort > 0 ? `${plantShort} bajo el plan` : 'Al día', tone: plantRows.length === 0 ? 'info' : plantPending > 0 ? 'info' : plantShort > 0 ? 'warn' : 'ok' },
     { id: 'daily', code: 'Día a día', name: 'Mesa de programación', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. en rojo` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
+    { id: 'release', code: 'Plan oficial', name: 'Liberar y descargar', icon: Send, badge: releases.length === 0 ? 'Sin liberar' : `Versión ${releases.length}`, tone: releases.length === 0 ? 'info' : 'ok' },
+    { id: 'data', code: 'Datos', name: 'Bases SAP y esquemas', icon: Database, badge: baseline?.usable ? 'SAP' : 'Ejemplo', tone: baseline?.usable ? 'ok' : 'warn' },
   ];
 
   return (

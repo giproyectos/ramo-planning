@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { MeasureView, convertCommercialQty, toProductiveQty } from '@ramo/domain';
-import { CYCLE_ORDER, computeCrp, movesToAdjustments } from '@ramo/engine';
+import { CYCLE_ORDER, PriorityRule, computeCrp, explainNet, movesToAdjustments, prioritizeCuts } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { MEASURE_LABELS, fmtDec, fmtInt, weekLabel } from '../../ramo/format';
@@ -9,12 +9,19 @@ import { StackedBars } from './ui';
 import { CycleBar } from './CycleBar';
 import { AltPicker } from './AltPicker';
 
+const RULES: { id: PriorityRule; label: string; hint: string }[] = [
+  { id: 'RISK', label: 'Proteger lo que más riesgo de quiebre tiene', hint: 'Se deja de producir primero lo que menos riesgo de agotarse tiene en la red.' },
+  { id: 'VALUE', label: 'Proteger lo de mayor valor', hint: 'Se deja de producir primero lo de menor valor (costo por caja × cajas).' },
+  { id: 'EVEN', label: 'Recortar parejo', hint: 'Cada producto cede en proporción a las horas que pide.' },
+];
+type Flow = 'all' | 'cedi' | 'mto';
+
 const QUICK = [-5000, -1000, -500, 500, 1000, 5000];
 
 /** MPS final: lo que hay que producir de cada producto cada semana; se ajusta, se resuelve lo que está en rojo y se cierra el plan. */
 export function MpsView() {
   const {
-    dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance, drp, weeklyAltsMps, applyRebalanceMoves, crewMode,
+    dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance, drp, weeklyAltsMps, applyRebalanceMoves, crewMode, horizonDemand, riskBySku,
   } = useRamoPlan();
   const { user } = useAuth();
   const author = user?.name ?? 'Distribución';
@@ -27,6 +34,9 @@ export function MpsView() {
   const [hoverAlt, setHoverAlt] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
+  const [flow, setFlow] = useState<Flow>('all');
+  const [rule, setRule] = useState<PriorityRule>('RISK');
+  const [hoverCuts, setHoverCuts] = useState(false);
 
   const stageIdx = CYCLE_ORDER.indexOf(stage);
   const received = stageIdx >= CYCLE_ORDER.indexOf('SENT_TO_MPS');
@@ -42,21 +52,30 @@ export function MpsView() {
   const recommended = alts.find((a) => a.recommended)?.id ?? alts[0]?.id ?? '';
   const chosen = alts.find((a) => a.id === (picked ?? recommended));
   const previewAlt = alts.find((a) => a.id === (hoverAlt ?? pinned));
+  const priority = useMemo(() => prioritizeCuts(dataset, danielView.net, { rule, riskBySku, crewMode, decisions }), [dataset, danielView.net, rule, riskBySku, crewMode, decisions]);
+  const previewCuts = hoverCuts && priority.cuts.length > 0 ? priority : null;
   const preview = useMemo(() => {
-    if (!previewAlt) return null;
+    if (!previewAlt && !previewCuts) return null;
     const net = danielView.net.map((r) => ({ ...r }));
-    for (const a of movesToAdjustments(previewAlt.plan.moves)) {
+    const deltas = previewAlt ? movesToAdjustments(previewAlt.plan.moves) : previewCuts!.cuts.map((c) => ({ skuId: c.skuId, weekStart: c.weekStart, deltaCommercialQty: -c.qty }));
+    for (const a of deltas) {
       const row = net.find((r) => r.skuId === a.skuId && r.weekStart === a.weekStart);
       if (row) row.netProduction = Math.max(0, row.netProduction + a.deltaCommercialQty);
     }
     const cap = computeCrp(dataset, net, { crewMode, decisions });
     return { net, alerts: cap.flatMap((w) => w.crews.filter((c) => c.excessHours > 0.05).map((c) => ({ crewId: c.crewId, weekStart: w.weekStart, excessHours: c.excessHours }))) };
-  }, [previewAlt, danielView.net, dataset, crewMode, decisions]);
+  }, [previewAlt, previewCuts, danielView.net, dataset, crewMode, decisions]);
 
   const baseNet = danielView.net;
   const shownNet = preview?.net ?? baseNet;
   const shownAlerts = preview?.alerts ?? danielView.alerts;
-  const qtyOf = (net: typeof baseNet, sku: string, w: string) => net.find((r) => r.skuId === sku && r.weekStart === w)?.netProduction ?? 0;
+  const rawQty = (net: typeof baseNet, sku: string, w: string) => net.find((r) => r.skuId === sku && r.weekStart === w)?.netProduction ?? 0;
+  /** Cajas del MPS según el flujo que se mira: todo, solo CEDI (lo que pide el DRP a la planta) o solo lo bajo pedido (Hard Discount y Exportaciones). */
+  const qtyOf = (net: typeof baseNet, sku: string, w: string) => {
+    const r = net.find((x) => x.skuId === sku && x.weekStart === w);
+    if (!r) return 0;
+    return flow === 'all' ? r.netProduction : flow === 'mto' ? r.grossMto : Math.max(0, r.netProduction - r.grossMto);
+  };
   const adjusted = (sku: string, w: string) => adjustments.some((a) => a.skuId === sku && a.weekStart === w);
   const redIn = (list: typeof shownAlerts, w: string) => list.filter((a) => a.weekStart === w);
   const totals = weeks.map((w) => dataset.skus.reduce((acc, s) => acc + convertCommercialQty(s, qtyOf(shownNet, s.id, w), measure), 0));
@@ -96,7 +115,10 @@ export function MpsView() {
   const pctNow = crewLoad && availH > 0 ? (crewLoad.requiredHours / availH) * 100 : 0;
   const pctAfter = crewLoad && availH > 0 ? ((crewLoad.requiredHours + d * hpc) / availH) * 100 : 0;
   const cellAdj = adjustments.filter((a) => a.skuId === sel.skuId && a.weekStart === sel.week);
-  const cellNet = qtyOf(baseNet, sel.skuId, sel.week);
+  const cellNet = rawQty(baseNet, sel.skuId, sel.week);
+  const explain = useMemo(() => explainNet(dataset, horizonDemand, sel.skuId, sel.week), [dataset, horizonDemand, sel.skuId, sel.week]);
+  const cellAdjSum = adjustments.filter((a) => a.skuId === sel.skuId && a.weekStart === sel.week).reduce((a, x) => a + x.deltaCommercialQty, 0);
+  const plantOf = dataset.plants.find((x) => x.id === line.plantId);
   const row = baseNet.find((r) => r.skuId === sel.skuId && r.weekStart === sel.week);
 
   const submit = () => {
@@ -142,6 +164,14 @@ export function MpsView() {
           <span className={`rounded-full px-3 py-1.5 ${reds.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{reds.length ? `${reds.length} en rojo` : 'Capacidad resuelta'}</span>
           <span className="rounded-full px-3 py-1.5 bg-[#DDCBF5]">{adjustments.length} ajuste(s)</span>
           <label className="font-bold text-slate-600 flex items-center gap-1.5">
+            Flujo
+            <select value={flow} onChange={(e) => setFlow(e.target.value as Flow)} className="rounded-xl border border-black/10 bg-white/80 px-2 py-1.5 text-[11px] font-bold" aria-label="Flujo de demanda que se muestra">
+              <option value="all">Todo</option>
+              <option value="cedi">Solo CEDI (lo que pide el DRP)</option>
+              <option value="mto">Solo bajo pedido (Hard Discount y Exportaciones)</option>
+            </select>
+          </label>
+          <label className="font-bold text-slate-600 flex items-center gap-1.5">
             Medida
             <select value={measure} onChange={(e) => setMeasure(e.target.value as MeasureView)} className="rounded-xl border border-black/10 bg-white/80 px-2 py-1.5 text-[11px] font-bold">
               {(Object.keys(MEASURE_LABELS) as MeasureView[]).map((m) => <option key={m} value={m}>{MEASURE_LABELS[m]}</option>)}
@@ -173,6 +203,14 @@ export function MpsView() {
               </div>
             </div>
 
+            {flow !== 'all' && (
+              <div className="mb-3 rounded-2xl bg-white/70 border border-white px-4 py-2 text-[11px]">
+                Mostrando <b>{flow === 'cedi' ? 'solo CEDI' : 'solo lo bajo pedido'}</b>. {flow === 'cedi' ? 'Es la necesidad que el DRP pide a la planta, ya descontados inventario y órdenes en curso.' : 'Hard Discount y Exportaciones entran completos: no se netean contra inventario ni pasan por el DRP.'} Los totales y la capacidad usan siempre todo.
+              </div>
+            )}
+            {previewCuts && !previewAlt && (
+              <div className="mb-3 rounded-2xl bg-[#DDCBF5]/55 border border-[#DDCBF5] px-4 py-2 text-xs"><b>Vista previa de la priorización:</b> así quedaría el MPS si se dejan de producir esas cajas. Todavía no se ha aplicado.</div>
+            )}
             {previewAlt && (
               <div className="mb-3 rounded-2xl bg-[#DDCBF5]/55 border border-[#DDCBF5] px-4 py-2 text-xs flex items-center justify-between gap-3">
                 <span><b>Vista previa de «{previewAlt.label}»:</b> así quedaría el MPS. Todavía no se ha aplicado. Las celdas con borde morado cambian.</span>
@@ -320,6 +358,31 @@ export function MpsView() {
             )}
           </section>
 
+          <details open className="glass-panel rounded-3xl p-4 text-xs">
+            <summary className="font-black uppercase tracking-wider text-[11px] text-slate-500 cursor-pointer">¿De dónde sale esta cifra?</summary>
+            {explain ? (
+              <div className="mt-3 space-y-1.5">
+                <p className="text-[11px] text-slate-500">{skuName(sel.skuId)} · semana del {weekLabel(sel.week)} · {plantOf?.name.replace(' (sint.)', '')}, línea {line.name.replace('Línea ', '')}</p>
+                {([
+                  ['Demanda CEDI (lo que pide el DRP)', explain.grossCedi, ''],
+                  ['− Inventario al empezar la semana', -explain.startInventory, ''],
+                  ['− Órdenes en curso que llegan', -explain.openOrders, ''],
+                  ['= Falta producir para CEDI', explain.netCedi, 'sum'],
+                  ['+ Hard Discount (bajo pedido)', explain.mtoByFlow.HARD_DISCOUNT ?? 0, ''],
+                  ['+ Exportaciones (bajo pedido)', explain.mtoByFlow.EXPORT ?? 0, ''],
+                  ['= Producción neta', explain.netProduction, 'sum'],
+                  ['± Ajustes de Distribución', cellAdjSum, ''],
+                  ['= MPS final de esta celda', cellNet, 'total'],
+                ] as [string, number, string][]).map(([label, v, kind]) => (
+                  <div key={label} className={`flex justify-between gap-3 ${kind === 'total' ? 'border-t border-black/10 pt-1.5 font-black text-sm' : kind === 'sum' ? 'font-black' : 'text-slate-700'}`}>
+                    <span>{label}</span><span className="font-mono">{v > 0 && label.startsWith('±') ? '+' : ''}{fmtInt(v || 0)}</span>
+                  </div>
+                ))}
+                <p className="text-[10px] text-slate-500 pt-1">Cifras en cajas. El inventario que sobra al terminar la semana ({fmtInt(explain.endInventory)} cajas) pasa a la siguiente.</p>
+              </div>
+            ) : <p className="mt-3 text-slate-500">Esta semana no tiene demanda para explicar.</p>}
+          </details>
+
           <AltPicker alts={alts} chosenId={chosen?.id} onPick={setPicked} onHover={setHoverAlt}>
             {chosen && (
               <>
@@ -336,6 +399,40 @@ export function MpsView() {
               </>
             )}
           </AltPicker>
+
+          <section className="glass-panel rounded-3xl p-4 text-xs" onMouseEnter={() => setHoverCuts(true)} onMouseLeave={() => setHoverCuts(false)}>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-500">Si no alcanza: priorizar</h2>
+              <span className="text-[10px] font-black rounded-full px-2 py-0.5 bg-[#DDCBF5]" title="Regla explicable: no usa un modelo de lenguaje. Sugiere: una persona decide.">✦ Asistente</span>
+            </div>
+            <p className="text-[11px] text-slate-600 mb-2">Cuando ni las horas extra ni adelantar producción resuelven una semana, hay que decidir qué se deja de producir. Lo bajo pedido nunca se recorta.</p>
+            <div className="space-y-1" role="radiogroup" aria-label="Regla de prioridad">
+              {RULES.map((r) => (
+                <label key={r.id} className="flex items-start gap-2 cursor-pointer" title={r.hint}>
+                  <input type="radio" name="priority-rule" checked={rule === r.id} onChange={() => setRule(r.id)} className="mt-0.5" />
+                  <span><b>{r.label}</b><span className="block text-[10px] text-slate-500">{r.hint}</span></span>
+                </label>
+              ))}
+            </div>
+            {priority.overloaded === 0 ? (
+              <p className="mt-3 font-bold text-emerald-800">No hace falta priorizar: todo cabe en la capacidad.</p>
+            ) : (
+              <div className="mt-3 space-y-2">
+                <p><b>{fmtInt(priority.qtyCut)} cajas</b> ({fmtDec(priority.hoursCut, 1)} h) se dejarían de producir en {new Set(priority.cuts.map((c) => c.weekStart)).size} semana(s) para que todo quepa sin horas extra.</p>
+                <ul className="space-y-1">
+                  {priority.bySku.map((b) => (
+                    <li key={b.skuId} className="flex justify-between gap-2"><span className="font-bold truncate">{skuName(b.skuId)}</span><span className="font-mono text-slate-600">−{fmtInt(b.qty)} · {fmtDec(b.hours, 1)} h{rule === 'RISK' ? ` · riesgo ${fmtDec((riskBySku[b.skuId] ?? 0) * 100, 0)} %` : ''}</span></li>
+                  ))}
+                </ul>
+                {priority.unresolvedHours > 0 && <p className="font-bold text-[#c2410c]">Siguen faltando {fmtDec(priority.unresolvedHours, 1)} h porque lo que queda es bajo pedido.</p>}
+                <button
+                  onClick={() => { for (const c of priority.cuts) addAdjustment({ skuId: c.skuId, weekStart: c.weekStart, deltaCommercialQty: -c.qty, reason: `Priorización (${RULES.find((r) => r.id === rule)!.label.toLowerCase()})`, author }); setHoverCuts(false); }}
+                  disabled={!canMoves} className="px-3.5 py-1.5 text-[11px] font-black rounded-full bg-slate-950 text-white disabled:opacity-40 cursor-pointer">Aplicar como ajustes al MPS</button>
+                {!canMoves && <p className="text-[11px] text-slate-500">{movesReason}</p>}
+                <p className="text-[10px] text-slate-500">Pasa el cursor por esta tarjeta para ver cómo quedaría el mapa. Es el último recurso: antes conviene revisar las alternativas de arriba.</p>
+              </div>
+            )}
+          </section>
 
           <details className="glass-panel rounded-3xl p-4 text-xs">
             <summary className="font-black uppercase tracking-wider text-[11px] text-slate-500 cursor-pointer">Todos los ajustes ({adjustments.length})</summary>

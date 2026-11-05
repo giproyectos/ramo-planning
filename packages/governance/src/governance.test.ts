@@ -68,6 +68,13 @@ describe('cambios del espacio de trabajo', () => {
       expect(checkWorkspaceChange('distribution', base, { ...base, [section]: [1] })).toMatchObject({ ok: false });
       expect(checkWorkspaceChange('demand', base, { ...base, blocks: [1], [section]: [] }).ok).toBe(true);
     }
+    expect(checkWorkspaceChange('production', base, { ...base, scenarios: [1] }).ok).toBe(true);
+    expect(checkWorkspaceChange('distribution', base, { ...base, scenarios: [1] })).toMatchObject({ ok: false });
+    // el plan oficial lo liberan Producción y Distribución (permiso de publicar); Demanda y Consulta no
+    expect(checkWorkspaceChange('production', base, { ...base, releases: [1] }).ok).toBe(true);
+    expect(checkWorkspaceChange('distribution', base, { ...base, releases: [1] }).ok).toBe(true);
+    expect(checkWorkspaceChange('demand', base, { ...base, releases: [1] })).toMatchObject({ ok: false });
+    expect(checkWorkspaceChange('viewer', base, { ...base, releases: [1] })).toMatchObject({ ok: false });
     expect(checkWorkspaceChange('distribution', base, { ...base, decisions: [1] }).ok).toBe(false);
     expect(checkWorkspaceChange('distribution', base, { ...base, adjustments: [1] }).ok).toBe(true);
     expect(checkWorkspaceChange('purchasing', base, { ...base, recDecisions: { a: 1 }, leadTimeOverrides: { m: 3 } }).ok).toBe(true);

@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CalendarEdit, CalendarExceptionReason, ChangeCause, DailyAdjustment, TemplateOverride, toProductiveQty } from '@ramo/domain';
+import { CalendarEdit, CalendarExceptionReason, ChangeCause, DailyAdjustment, ScenarioRecord, TemplateOverride, toProductiveQty } from '@ramo/domain';
 import {
-  DailyCell, DailyWeek, TemplateEvaluation, applyCalendarEdits, buildDailySchedule, dailyAlternatives, dayAvailableHours, dayConfidence, recommendTemplates, rulesToConstraints, weekdayOf, weekdayShort,
+  DailyCell, DailyWeek, TemplateEvaluation, applyCalendarEdits, buildDailySchedule, dailyAlternatives, dayAvailableHours, dayConfidence, recommendTemplates, rulesToConstraints, scheduleMetrics, weekdayOf, weekdayShort,
 } from '@ramo/engine';
 import { useRamoPlan } from '../../ramo/store';
 import { useAuth } from '../../ramo/auth';
 import { fmtDec, fmtInt, weekLabel } from '../../ramo/format';
 import { ConfidenceChip } from './focus';
 import { CAUSES, CalendarForm, RulesPanel, SequenceMenu, causeLabel } from './DeskTools';
+import { ScenarioCompare, ScenarioList, ScenarioColumn } from './DeskScenarios';
 
 /**
  * Mesa de programación: el tablero de la semana de una línea, con cambios en borrador (se prueban antes de aplicarse),
@@ -62,7 +63,7 @@ const sameDays = (a: Days, b: Days) => JSON.stringify(Object.entries(a).filter((
 export function DeskView() {
   const {
     dataset, daily, danielView, templateOverrides, dailyAdjustments, allocationRule, setAllocationRule, saveTemplateOverride, removeTemplateOverride, moveDaily,
-    removeDailyAdjustment, efficiency, can, plantRules, addPlantRule, removePlantRule, calendarEdits, addCalendarEdit, removeCalendarEdit,
+    removeDailyAdjustment, efficiency, can, plantRules, addPlantRule, removePlantRule, calendarEdits, addCalendarEdit, removeCalendarEdit, scenarios, saveScenario, removeScenario,
   } = useRamoPlan();
   const { user } = useAuth();
   const templates = dataset.templates ?? [];
@@ -81,6 +82,10 @@ export function DeskView() {
   const [dragDay, setDragDay] = useState<number | null>(null);
   const [calOpen, setCalOpen] = useState(false);
   const [seqOpen, setSeqOpen] = useState(false);
+  const [savingScenario, setSavingScenario] = useState(false);
+  const [scName, setScName] = useState('');
+  const [comparePicked, setComparePicked] = useState<string[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
   const [selected, setSelected] = useState<{ date: string; lineId: string; skuId?: string } | null>(null);
   const [hover, setHover] = useState<Proposal | null>(null);
   const [dragging, setDragging] = useState<{ skuId: string; date: string; qty: number; lineId: string } | null>(null);
@@ -109,8 +114,8 @@ export function DeskView() {
       { id: `${m.id}a`, skuId: m.skuId, date: m.fromDate, deltaCommercialQty: -m.qty, reason: '', author: '', createdAt: '' },
       { id: `${m.id}b`, skuId: m.skuId, date: m.toDate, deltaCommercialQty: m.qty, reason: '', author: '', createdAt: '' },
     ]);
-  const schemesToOverrides = (schemes: DraftScheme[]): TemplateOverride[] =>
-    schemes.map((s, i) => ({ id: `draft-${i}`, templateId: s.templateId, scope, weekStart: s.weekStart, untilWeek: scope === 'FROM' && until ? addDaysIso(s.weekStart, 7 * (until - 1)) : undefined, days: s.days, shifts: s.shifts, reason: '', author: '', createdAt: '9999' }));
+  const schemesToOverrides = (schemes: DraftScheme[], sc: 'WEEK' | 'FROM' = scope, un: number | null = until): TemplateOverride[] =>
+    schemes.map((s, i) => ({ id: `draft-${i}`, templateId: s.templateId, scope: sc, weekStart: s.weekStart, untilWeek: sc === 'FROM' && un ? addDaysIso(s.weekStart, 7 * (un - 1)) : undefined, days: s.days, shifts: s.shifts, reason: '', author: '', createdAt: '9999' }));
 
   const hasDraft = draft.moves.length > 0 || draft.schemes.length > 0 || draft.calendar.length > 0;
   // Conjunto de datos con las paradas y festivos del borrador (además de los ya aplicados, que vienen en `dataset`).
@@ -122,6 +127,19 @@ export function DeskView() {
     const dsx = d.calendar.length ? applyCalendarEdits(dataset, calToEdits(d.calendar)) : dataset;
     return buildDailySchedule(dsx, danielView.net, { overrides: ov, adjustments: adj, rule: allocationRule, rules: plantRules });
   };
+
+  // Cifras para comparar: el plan vigente, el borrador y cada escenario guardado (cada uno simulado completo, 13 semanas).
+  const metricsFor = (d: Draft, sc: 'WEEK' | 'FROM', un: number | null) => {
+    const ov = [...templateOverrides, ...schemesToOverrides(d.schemes, sc, un)];
+    const adj = [...dailyAdjustments, ...movesToAdj(d.moves)];
+    const dsx = d.calendar.length ? applyCalendarEdits(dataset, calToEdits(d.calendar)) : dataset;
+    return scheduleMetrics(dsx, buildDailySchedule(dsx, danielView.net, { overrides: ov, adjustments: adj, rule: allocationRule, rules: plantRules }));
+  };
+  const draftOf = (sc: ScenarioRecord): Draft => ({ moves: sc.moves, schemes: sc.schemes, calendar: sc.calendar });
+  const scenarioMetrics = useMemo(
+    () => Object.fromEntries(scenarios.map((sc) => [sc.id, metricsFor(draftOf(sc), sc.scope, sc.until)])),
+    [scenarios, dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule, plantRules], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const live = useMemo(() => (hasDraft ? schedule(draft, null) : daily), [hasDraft, draft, scope, until, daily, dataset, danielView.net, templateOverrides, dailyAdjustments, allocationRule, plantRules]); // eslint-disable-line react-hooks/exhaustive-deps
   const weeks = useMemo(() => [...new Set((live?.weeks ?? []).map((w) => w.weekStart))].sort(), [live]);
@@ -144,9 +162,10 @@ export function DeskView() {
   const wLive: DailyWeek | undefined = live?.weeks.find((x) => x.weekStart === week && x.templateId === currentTid);
 
   // ---- Totales para la barra del borrador ---------------------------------------------------------------------------------
-  const sumExcess = (r: typeof daily) => (r ? r.weeks.reduce((a, x) => a + x.excessHours, 0) : 0);
-  const excessSaved = sumExcess(daily);
-  const excessLive = sumExcess(live);
+  const baseMetrics = useMemo(() => (daily ? scheduleMetrics(dataset, daily) : null), [daily, dataset]);
+  const liveMetrics = useMemo(() => (live ? scheduleMetrics(dsLive, live) : null), [live, dsLive]);
+  const excessSaved = baseMetrics?.excessHours ?? 0;
+  const excessLive = liveMetrics?.excessHours ?? 0;
 
   // ---- Historial (deshacer / rehacer) ----------------------------------------------------------------------------------
   const push = useCallback((next: Draft) => {
@@ -221,6 +240,17 @@ export function DeskView() {
   const swapProducts = (x: string, y: string) => editScheme((d) => {
     for (const k of Object.keys(d).map(Number)) d[k] = d[k].map((id) => (id === x ? y : id === y ? x : id));
   });
+
+  const saveCurrentScenario = () => {
+    if (!scName.trim() || !hasDraft || !canEdit) return;
+    saveScenario({ name: scName.trim(), author, scope, until, moves: draft.moves, schemes: draft.schemes, calendar: draft.calendar });
+    setScName(''); setSavingScenario(false);
+  };
+  const loadScenario = (sc: ScenarioRecord) => {
+    setScope(sc.scope);
+    setUntil(sc.until);
+    push(draftOf(sc));
+  };
 
   const applyDraft = () => {
     if (!reason.trim() || !canEdit) return;
@@ -379,6 +409,8 @@ export function DeskView() {
     ...templates.map((t) => ({ label: `Ver ${t.name.split(' (')[0]}`, hint: redCount(t.id) > 0 ? `${redCount(t.id)} sem. en rojo` : '', run: () => { setTid(t.id); setSelected(null); } })),
     ...(bestProposal ? [{ label: `Probar: ${bestProposal.title}`, run: () => tryProposal(bestProposal) }] : []),
     ...(canEdit ? [{ label: 'Registrar parada o festivo', run: () => setCalOpen(true) }, { label: 'Invertir la secuencia de la semana', run: invertWeek }] : []),
+    ...(hasDraft && canEdit ? [{ label: 'Guardar el borrador como escenario', run: () => setSavingScenario(true) }] : []),
+    ...(scenarios.length ? [{ label: 'Comparar escenarios', run: () => { setComparePicked(scenarios.map((x) => x.id).slice(0, 3)); setCompareOpen(true); } }] : []),
     ...(past.length ? [{ label: 'Deshacer el último cambio', hint: 'Ctrl+Z', run: undo }] : []),
     ...(future.length ? [{ label: 'Rehacer', hint: 'Ctrl+Shift+Z', run: redo }] : []),
     ...(hasDraft ? [{ label: 'Aplicar los cambios del borrador al plan', run: () => setConfirming(true) }, { label: 'Descartar el borrador', run: discard }] : []),
@@ -467,9 +499,18 @@ export function DeskView() {
               <button onClick={undo} disabled={past.length === 0} className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 cursor-pointer">Deshacer</button>
               <button onClick={redo} disabled={future.length === 0} className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 cursor-pointer">Rehacer</button>
               <button onClick={discard} className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer">Descartar</button>
+              {canEdit && <button onClick={() => { setSavingScenario(!savingScenario); setConfirming(false); }} className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer">Guardar escenario</button>}
               <button onClick={() => setConfirming(!confirming)} disabled={!canEdit} className="text-[11px] font-black px-4 py-1.5 rounded-full bg-[#7AFFA1] text-black disabled:opacity-40 cursor-pointer">Aplicar al plan</button>
             </span>
           </div>
+          {savingScenario && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/15 pt-3">
+              <label className="text-xs font-bold" htmlFor="esc-nombre">Nombre del escenario</label>
+              <input id="esc-nombre" autoFocus value={scName} onChange={(e) => setScName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') saveCurrentScenario(); }} placeholder="Ej.: primero barras y después mini" className="flex-1 min-w-[220px] rounded-xl bg-white text-black px-3 py-1.5 text-xs" />
+              <button onClick={saveCurrentScenario} disabled={!scName.trim()} className="text-[11px] font-black px-4 py-1.5 rounded-full bg-[#7AFFA1] text-black disabled:opacity-40 cursor-pointer">Guardar · {author}</button>
+              <span className="text-[11px] text-slate-300">Se guarda sin aplicarlo al plan: sirve para compararlo.</span>
+            </div>
+          )}
           {confirming && (
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/15 pt-3">
               {draft.schemes.length > 0 && (
@@ -490,6 +531,7 @@ export function DeskView() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_330px] gap-4 items-start">
         {/* Tablero */}
+        <div className="space-y-4 min-w-0">
         <section className="glass-panel rounded-3xl p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div>
@@ -687,6 +729,17 @@ export function DeskView() {
             </div>
           )}
         </section>
+        {compareOpen && baseMetrics && (
+          <ScenarioCompare
+            onClose={() => setCompareOpen(false)}
+            columns={[
+              { key: 'base', title: 'Plan vigente', subtitle: 'lo que rige hoy', metrics: baseMetrics, changes: 0 },
+              ...(hasDraft ? [{ key: 'draft', title: 'Borrador actual', subtitle: 'sin guardar', metrics: scheduleMetrics(dsLive, live!), changes: draft.moves.length + draft.schemes.length + draft.calendar.length, highlight: true } as ScenarioColumn] : []),
+              ...scenarios.filter((sc) => comparePicked.includes(sc.id)).map((sc) => ({ key: sc.id, title: sc.name, subtitle: sc.author, metrics: scenarioMetrics[sc.id], changes: sc.moves.length + sc.schemes.length + sc.calendar.length })),
+            ]}
+          />
+        )}
+        </div>
 
         {/* Panel del asistente */}
         <aside className="space-y-3 xl:sticky xl:top-[150px]">
@@ -761,6 +814,21 @@ export function DeskView() {
                 </div>
               ))}
             </div>
+          </details>
+
+          <details className="glass-panel rounded-3xl p-4 text-xs">
+            <summary className="font-black uppercase tracking-wider text-[11px] text-slate-500 cursor-pointer">Escenarios guardados ({scenarios.length})</summary>
+            <ScenarioList
+              scenarios={scenarios}
+              metricsOf={(sc) => scenarioMetrics[sc.id]}
+              picked={comparePicked}
+              onPick={(id, on) => setComparePicked(on ? [...comparePicked, id] : comparePicked.filter((x) => x !== id))}
+              onLoad={loadScenario}
+              onRemove={(id) => { removeScenario(id); setComparePicked(comparePicked.filter((x) => x !== id)); }}
+              onCompare={() => setCompareOpen(true)}
+              canEdit={canEdit}
+              hasDraft={hasDraft}
+            />
           </details>
 
           <details className="glass-panel rounded-3xl p-4 text-xs">

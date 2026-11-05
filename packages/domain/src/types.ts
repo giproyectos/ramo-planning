@@ -351,6 +351,43 @@ export type PlantRuleSpec =
 
 export type PlantRule = PlantRuleSpec & { id: string; reason: string; author: string; createdAt: string };
 
+/** Escenario de programación guardado: los cambios de un borrador de la mesa con nombre, para compararlos con el plan vigente y con otros. */
+export interface ScenarioRecord {
+  id: string;
+  name: string;
+  author: string;
+  createdAt: string;
+  scope: 'WEEK' | 'FROM';
+  /** Semanas de vigencia de los cambios de esquema «desde» (null = sin fin). */
+  until: number | null;
+  moves: { id: string; skuId: string; fromDate: string; toDate: string; qty: number }[];
+  schemes: { templateId: string; weekStart: string; days: Record<number, string[]>; shifts: Record<number, number>; source: string }[];
+  calendar: { id: string; lineIds: string[]; date: string; hours: number; reason: CalendarExceptionReason; note: string }[];
+}
+
+export interface ReleaseFile {
+  name: string;
+  kind: 'DAILY_PLAN' | 'CONFIRMATIONS' | 'PROVISIONAL_ORDERS' | 'ORDER_DELETIONS';
+  plantId?: string;
+  csv: string;
+}
+
+/** Plan oficial liberado: una versión numerada con los archivos tal como salieron, quién lo liberó y cómo estaba el plan en ese momento. */
+export interface ReleaseRecord {
+  id: string;
+  version: number;
+  author: string;
+  note: string;
+  createdAt: string;
+  weekFrom: string;
+  weekTo: string;
+  /** Cómo estaba el plan al liberarlo. */
+  summary: { mpsQty: number; pendingPlants: number; shortfall: number; redWeeks: number; dailyRedWeeks: number; ruleViolations: number; adjustments: number };
+  /** Se liberó con pendientes y se justificó. */
+  justified: boolean;
+  files: ReleaseFile[];
+}
+
 export interface RamoDataset {
   synthetic: boolean;
   plants: Plant[];

@@ -19,3 +19,6 @@ export * from './realCapacity';
 export * from './alternatives';
 export * from './templateAdvisor';
 export * from './plants';
+export * from './priority';
+export * from './scenarios';
+export * from './schemeCsv';
