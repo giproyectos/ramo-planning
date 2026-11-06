@@ -109,7 +109,7 @@ interface RamoPlanState {
   decisions_rec: Record<string, RecDecision>;
   decideRecommendation: (rec: Recommendation, status: 'APPROVED' | 'REJECTED', by: string, reason: string) => void;
   undoRecommendation: (recId: string) => void;
-  /** Plazos de entrega aprobados (días por material); sustituyen a los fijos de SAP en el tablero. */
+  /** Plazos de entrega aprobados (días por material); sustituyen a los fijos de SAP en la programación diaria. */
   leadTimeOverrides: Record<string, number>;
   consolidationDays: number;
   setConsolidationDays: (d: number) => void;
@@ -183,7 +183,7 @@ interface RamoPlanState {
   /** Demanda que alimenta el MPS (para explicar de dónde sale cada cifra) y riesgo de quiebre máximo por producto (para priorizar). */
   horizonDemand: DemandRecord[];
   riskBySku: Record<string, number>;
-  /** Escenarios de programación guardados (los cambios de un borrador de la mesa, con nombre). */
+  /** Escenarios de programación guardados (los cambios de un borrador de la programación diaria, con nombre). */
   scenarios: ScenarioRecord[];
   saveScenario: (s: Omit<ScenarioRecord, 'id' | 'createdAt'>) => void;
   removeScenario: (id: string) => void;
@@ -337,7 +337,7 @@ export function RamoPlanProvider({ children }: { children: ReactNode }) {
   const [recDecisions, setRecDecisions] = useState<Record<string, RecDecision>>({});
   const [consolidationDays, setConsolidationDays] = useState(7);
 
-  // Con los plazos dinámicos aprobados, el tablero de abastecimiento ya los usa en lugar de los fijos de SAP.
+  // Con los plazos dinámicos aprobados, la vista de abastecimiento ya los usa en lugar de los fijos de SAP.
   const riskDataset = useMemo(() => withLeadTimes(dataset, leadTimeOverrides), [dataset, leadTimeOverrides]);
   const supplyRisk = useMemo(
     () => (riskDataset.materials && riskDataset.materials.length > 0 ? runSupplyRisk(riskDataset, danielView.net) : null),

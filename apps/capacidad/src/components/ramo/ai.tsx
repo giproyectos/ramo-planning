@@ -121,7 +121,7 @@ export function RebalanceCard({ view }: { view: 'capacity' | 'mps' }) {
       </div>
       <div className="mb-3">
         <ProgressBar value={plan.movedHours} max={Math.max(plan.excessBefore, 0.1)} color={SERIES_COLORS[2]} height={10} />
-        <p className="text-[10px] text-slate-500 mt-1">La barra es la parte de las horas faltantes que se resuelve sin horas extra.</p>
+        <p className="text-[10px] text-slate-500 mt-1">La barra es la parte de las horas en déficit que se resuelve sin horas extra.</p>
       </div>
 
       {list.length > 0 && (
@@ -259,10 +259,10 @@ export function BriefingCard() {
   const lines: string[] = [];
 
   const alerts = danielView.alerts;
-  if (alerts.length === 0) lines.push('La capacidad alcanza en todo el horizonte con las horas extra decididas.');
+  if (alerts.length === 0) lines.push('La capacidad es suficiente en todo el horizonte con las horas extra decididas.');
   else {
     const worst = [...alerts].sort((a, b) => b.excessHours - a.excessHours)[0];
-    lines.push(`Hay ${alerts.length} combinación(es) tripulación-semana con capacidad insuficiente; la peor es ${crew(worst.crewId)} la semana del ${weekLabel(worst.weekStart)} (faltan ${fmtDec(worst.excessHours, 1)} h).`);
+    lines.push(`Hay ${alerts.length} combinación(es) tripulación-semana con capacidad insuficiente; la peor es ${crew(worst.crewId)} la semana del ${weekLabel(worst.weekStart)} (déficit de ${fmtDec(worst.excessHours, 1)} h).`);
     if (rebalanceDaniel && rebalanceDaniel.movedHours > 0) lines.push(`El optimizador resolvería ${fmtDec(rebalanceDaniel.movedHours, 1)} h adelantando producción y dejaría ${fmtDec(rebalanceDaniel.extraTotal, 1)} h como horas extra.`);
   }
   const stockouts = drp?.alerts.filter((a) => a.code === 'STOCKOUT') ?? [];

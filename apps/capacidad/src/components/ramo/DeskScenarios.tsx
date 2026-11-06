@@ -13,8 +13,8 @@ export interface ScenarioColumn {
 }
 
 const ROWS: { key: keyof ScheduleMetrics | 'changes'; label: string; unit: string; hint: string }[] = [
-  { key: 'excessHours', label: 'Horas que faltan en el horizonte', unit: 'h', hint: 'Suma de los días sobre su capacidad: las horas extra que habría que pedir.' },
-  { key: 'overDays', label: 'Días en rojo', unit: '', hint: 'Días-línea sobre el 100 % de su capacidad.' },
+  { key: 'excessHours', label: 'Déficit de horas en el horizonte', unit: 'h', hint: 'Suma de los días sobre su capacidad: las horas extra que habría que pedir.' },
+  { key: 'overDays', label: 'Días con sobrecarga', unit: '', hint: 'Días-línea sobre el 100 % de su capacidad.' },
   { key: 'unscheduledHours', label: 'Horas sin día de producción', unit: 'h', hint: 'Producción que no tiene en qué día hacerse (producto fuera del esquema o con todos sus días cerrados).' },
   { key: 'changeoverHours', label: 'Horas de cambio de producto', unit: 'h', hint: 'Tiempo perdido en aseos y cambios de sabor.' },
   { key: 'crewConflicts', label: 'Choques de tripulación', unit: '', hint: 'Días en que la misma tripulación queda en dos líneas.' },
@@ -75,7 +75,7 @@ export function ScenarioCompare({ columns, onClose }: { columns: ScenarioColumn[
           </tbody>
         </table>
       </div>
-      {base && <p className="text-[10px] text-slate-500 mt-3">«{base.title}» es lo que rige hoy. Un escenario se puede cargar al borrador para revisarlo en el tablero y aplicarlo al plan.</p>}
+      {base && <p className="text-[10px] text-slate-500 mt-3">«{base.title}» es lo que rige hoy. Un escenario se puede cargar al borrador para revisarlo en la programación diaria y aplicarlo al plan.</p>}
     </section>
   );
 }
@@ -110,7 +110,7 @@ export function ScenarioList({
               </label>
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className={`text-[10px] font-black rounded-full px-2 py-0.5 ${m.excessHours > 0.05 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>faltan {fmtDec(m.excessHours, 1)} h</span>
+              <span className={`text-[10px] font-black rounded-full px-2 py-0.5 ${m.excessHours > 0.05 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>déficit de {fmtDec(m.excessHours, 1)} h</span>
               {m.ruleViolations > 0 && <span className="text-[10px] font-black rounded-full px-2 py-0.5 bg-[#FFF87C]">{m.ruleViolations} regla(s)</span>}
               <span className="ml-auto flex items-center gap-2">
                 <button onClick={() => (hasDraft && confirm !== s.id ? setConfirm(s.id) : (onLoad(s), setConfirm(null)))} className="font-bold underline cursor-pointer">{confirm === s.id ? 'Reemplazar el borrador' : 'Cargar al borrador'}</button>

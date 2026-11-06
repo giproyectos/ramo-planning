@@ -18,7 +18,7 @@ type Flow = 'all' | 'cedi' | 'mto';
 
 const QUICK = [-5000, -1000, -500, 500, 1000, 5000];
 
-/** MPS final: lo que hay que producir de cada producto cada semana; se ajusta, se resuelve lo que está en rojo y se cierra el plan. */
+/** MPS final: lo que hay que producir de cada producto cada semana; se ajusta, se resuelve la sobrecarga y se cierra el plan. */
 export function MpsView() {
   const {
     dataset, weeks, stage, decisions, adjustments, danielView, addAdjustment, removeAdjustment, advance, can, canAdvance, drp, weeklyAltsMps, applyRebalanceMoves, crewMode, horizonDemand, riskBySku,
@@ -141,7 +141,7 @@ export function MpsView() {
   const checks: { tone: 'ok' | 'warn' | 'info'; title: string; detail: string }[] = [
     reds.length === 0
       ? { tone: 'ok', title: 'Capacidad', detail: 'Con los ajustes actuales ninguna tripulación pasa de su capacidad.' }
-      : { tone: 'warn', title: `Capacidad: ${reds.length} pendiente(s)`, detail: [...reds].sort((x, y) => y.excessHours - x.excessHours).slice(0, 3).map((x) => `${crewName(x.crewId)} ${weekLabel(x.weekStart)} (faltan ${fmtDec(x.excessHours)} h)`).join(' · ') + (reds.length > 3 ? ` · y ${reds.length - 3} más` : '') },
+      : { tone: 'warn', title: `Capacidad: ${reds.length} pendiente(s)`, detail: [...reds].sort((x, y) => y.excessHours - x.excessHours).slice(0, 3).map((x) => `${crewName(x.crewId)} ${weekLabel(x.weekStart)} (déficit de ${fmtDec(x.excessHours)} h)`).join(' · ') + (reds.length > 3 ? ` · y ${reds.length - 3} más` : '') },
     adjustments.length === 0
       ? { tone: 'info', title: 'Ajustes de Distribución', detail: 'Todavía no hay ajustes: el MPS final sería igual al plan que envió Producción.' }
       : { tone: 'ok', title: `Ajustes: ${adjustments.length}`, detail: `Suman ${fmtInt(plus)} cajas y restan ${fmtInt(-minus)}; cada uno con su motivo y autor.` },
@@ -158,10 +158,10 @@ export function MpsView() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black tracking-tight">MPS final</h1>
-          <p className="text-sm text-slate-600">Lo que hay que producir de cada producto cada semana. Ajusta una celda, resuelve lo que está en rojo y cierra el plan.</p>
+          <p className="text-sm text-slate-600">Lo que hay que producir de cada producto cada semana. Ajusta una celda, resuelve la sobrecarga y cierra el plan.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-black">
-          <span className={`rounded-full px-3 py-1.5 ${reds.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{reds.length ? `${reds.length} en rojo` : 'Capacidad resuelta'}</span>
+          <span className={`rounded-full px-3 py-1.5 ${reds.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{reds.length ? `${reds.length} con sobrecarga` : 'Capacidad resuelta'}</span>
           <span className="rounded-full px-3 py-1.5 bg-[#DDCBF5]">{adjustments.length} ajuste(s)</span>
           <label className="font-bold text-slate-600 flex items-center gap-1.5">
             Flujo
@@ -186,8 +186,8 @@ export function MpsView() {
           label: 'Cerrar el MPS final y devolver a Producción →',
           disabled: !editable || !canAdvance('MPS_FINAL'),
           title: why || undefined,
-          hint: reds.length ? `Se cierra con ${reds.length} pendiente(s) de capacidad.` : 'Todo cabe en la capacidad.',
-          onClick: () => advance('MPS_FINAL', 'Distribución', `MPS final cerrado con ${adjustments.length} ajuste(s); ${reds.length} rojo(s) pendiente(s)`),
+          hint: reds.length ? `Se cierra con ${reds.length} pendiente(s) de capacidad.` : 'La carga está dentro de la capacidad.',
+          onClick: () => advance('MPS_FINAL', 'Distribución', `MPS final cerrado con ${adjustments.length} ajuste(s); ${reds.length} sobrecarga(s) pendiente(s)`),
         } : null}
       />
 
@@ -205,7 +205,7 @@ export function MpsView() {
 
             {flow !== 'all' && (
               <div className="mb-3 rounded-2xl bg-white/70 border border-white px-4 py-2 text-[11px]">
-                Mostrando <b>{flow === 'cedi' ? 'solo CEDI' : 'solo lo bajo pedido'}</b>. {flow === 'cedi' ? 'Es la necesidad que el DRP pide a la planta, ya descontados inventario y órdenes en curso.' : 'Hard Discount y Exportaciones entran completos: no se netean contra inventario ni pasan por el DRP.'} Los totales y la capacidad usan siempre todo.
+                Mostrando <b>{flow === 'cedi' ? 'solo CEDI' : 'solo bajo pedido (MTO)'}</b>. {flow === 'cedi' ? 'Es la necesidad que el DRP pide a la planta, ya descontados inventario y órdenes en curso.' : 'Hard Discount y Exportaciones entran completos: no se netean contra inventario ni pasan por el DRP.'} Los totales y la capacidad usan siempre todo.
               </div>
             )}
             {previewCuts && !previewAlt && (
@@ -225,9 +225,9 @@ export function MpsView() {
                   {weeks.map((w) => {
                     const r = redIn(shownAlerts, w);
                     return (
-                      <div key={w} title={r.length ? r.map((a) => `${crewName(a.crewId)}: faltan ${fmtDec(a.excessHours)} h`).join('\n') : 'La capacidad alcanza'} className={`text-center rounded-lg py-1 ${w === sel.week ? 'bg-white' : ''}`}>
+                      <div key={w} title={r.length ? r.map((a) => `${crewName(a.crewId)}: déficit de ${fmtDec(a.excessHours)} h`).join('\n') : 'Capacidad suficiente'} className={`text-center rounded-lg py-1 ${w === sel.week ? 'bg-white' : ''}`}>
                         <div className="text-[10px] font-bold text-slate-500">{weekLabel(w)}</div>
-                        <span className={`inline-block mt-0.5 rounded-full text-[9px] font-black px-1.5 py-0.5 text-black ${r.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]/70'}`}>{r.length ? `${r.length} rojo${r.length > 1 ? 's' : ''}` : '✓'}</span>
+                        <span className={`inline-block mt-0.5 rounded-full text-[9px] font-black px-1.5 py-0.5 text-black ${r.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]/70'}`}>{r.length ? `${r.length} sobrecarga${r.length > 1 ? 's' : ''}` : '✓'}</span>
                       </div>
                     );
                   })}
@@ -283,14 +283,14 @@ export function MpsView() {
                   {weeks.map((w) => {
                     const r = redIn(shownAlerts, w);
                     return r.length > 0
-                      ? <span key={w} className="text-center rounded-full bg-[#FFA27D] text-black font-black text-[9px] py-0.5">{r.length} rojo{r.length > 1 ? 's' : ''}</span>
+                      ? <span key={w} className="text-center rounded-full bg-[#FFA27D] text-black font-black text-[9px] py-0.5">{r.length} sobrecarga{r.length > 1 ? 's' : ''}</span>
                       : <span key={w} className="text-center rounded-full bg-[#7AFFA1]/60 text-black font-black text-[9px] py-0.5">✓</span>;
                   })}
                 </div>
               </div>
             )}
             <p className="text-[10px] text-slate-500 mt-3">
-              Cifras en {MEASURE_LABELS[measure].toLowerCase()}{measure === 'commercial_units' ? ' (miles con «k»)' : ''}. Morado: celda ajustada por Distribución. La fila «Capacidad» dice si las líneas alcanzan (✓) o cuántas tripulaciones quedan en rojo.{decisions.length > 0 ? ` Incluye ${decisions.length} decisión(es) de horas extra de Producción.` : ''} Flechas del teclado para moverte.
+              Cifras en {MEASURE_LABELS[measure].toLowerCase()}{measure === 'commercial_units' ? ' (miles con «k»)' : ''}. Morado: celda ajustada por Distribución. La fila «Capacidad» dice si las líneas tienen capacidad suficiente (✓) o cuántas tripulaciones quedan con sobrecarga.{decisions.length > 0 ? ` Incluye ${decisions.length} decisión(es) de horas extra de Producción.` : ''} Flechas del teclado para moverte.
             </p>
           </section>
 
@@ -303,7 +303,7 @@ export function MpsView() {
             <div className="mb-3">
               <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1.5"><span>Capacidad semana a semana</span><span className="font-bold text-slate-700">{weeks.length - redWeeks.size} de {weeks.length} semanas resueltas</span></div>
               <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }}>
-                {weeks.map((w) => <span key={w} title={`${weekLabel(w)}: ${redWeeks.has(w) ? 'hay rojos' : 'alcanza'}`} className={`h-2.5 rounded-full ${redWeeks.has(w) ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`} />)}
+                {weeks.map((w) => <span key={w} title={`${weekLabel(w)}: ${redWeeks.has(w) ? 'hay sobrecarga' : 'dentro de capacidad'}`} className={`h-2.5 rounded-full ${redWeeks.has(w) ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`} />)}
               </div>
             </div>
             <ul className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -333,7 +333,7 @@ export function MpsView() {
                 <div className="mt-0.5 flex items-center gap-2">
                   <span className={`font-mono font-black ${pctNow > 100 ? 'text-[#c2410c]' : ''}`}>{fmtDec(pctNow, 0)} %</span>
                   {d !== 0 && <><span className="text-slate-400">→</span><span className={`font-mono font-black ${pctAfter > 100 ? 'text-[#c2410c]' : 'text-emerald-800'}`}>{fmtDec(pctAfter, 0)} %</span><span className="text-[11px] text-slate-500">con el ajuste de abajo</span></>}
-                  <span className={`ml-auto text-[10px] font-black rounded-full px-2 py-0.5 ${crewLoad.excessHours > 0 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{crewLoad.excessHours > 0 ? `faltan ${fmtDec(crewLoad.excessHours, 1)} h` : 'cabe'}</span>
+                  <span className={`ml-auto text-[10px] font-black rounded-full px-2 py-0.5 ${crewLoad.excessHours > 0 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{crewLoad.excessHours > 0 ? `déficit de ${fmtDec(crewLoad.excessHours, 1)} h` : 'cabe'}</span>
                 </div>
               </div>
             )}
@@ -395,17 +395,17 @@ export function MpsView() {
                 ) : <p>Esta alternativa no mueve producción entre semanas.</p>}
                 {chosen.plan.extraHours.length > 0 && <p className="text-slate-600">Quedan {fmtDec(chosen.metrics.extraHours, 1)} h para horas extra: las decide Producción en Capacidad.</p>}
                 {chosen.metrics.unmetHours > 0 && <p className="font-bold text-[#c2410c]">Quedan {fmtDec(chosen.metrics.unmetHours, 1)} h sin cubrir.</p>}
-                <button onClick={() => setPinned(pinned === chosen.id ? null : chosen.id)} className="text-[11px] font-bold underline cursor-pointer">{pinned === chosen.id ? 'Quitar vista previa del mapa' : 'Dejar fija la vista previa en el mapa'}</button>
+                <button onClick={() => setPinned(pinned === chosen.id ? null : chosen.id)} className="text-[11px] font-bold underline cursor-pointer">{pinned === chosen.id ? 'Quitar vista previa del mapa' : 'Fijar la vista previa en el mapa'}</button>
               </>
             )}
           </AltPicker>
 
           <section className="glass-panel rounded-3xl p-4 text-xs" onMouseEnter={() => setHoverCuts(true)} onMouseLeave={() => setHoverCuts(false)}>
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-500">Si no alcanza: priorizar</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-500">Capacidad insuficiente: priorizar</h2>
               <span className="text-[10px] font-black rounded-full px-2 py-0.5 bg-[#DDCBF5]" title="Regla explicable: no usa un modelo de lenguaje. Sugiere: una persona decide.">✦ Asistente</span>
             </div>
-            <p className="text-[11px] text-slate-600 mb-2">Cuando ni las horas extra ni adelantar producción resuelven una semana, hay que decidir qué se deja de producir. Lo bajo pedido nunca se recorta.</p>
+            <p className="text-[11px] text-slate-600 mb-2">Cuando ni las horas extra ni adelantar producción resuelven una semana, hay que decidir qué se deja de producir. Los productos bajo pedido (MTO) nunca se recortan.</p>
             <div className="space-y-1" role="radiogroup" aria-label="Regla de prioridad">
               {RULES.map((r) => (
                 <label key={r.id} className="flex items-start gap-2 cursor-pointer" title={r.hint}>
@@ -415,7 +415,7 @@ export function MpsView() {
               ))}
             </div>
             {priority.overloaded === 0 ? (
-              <p className="mt-3 font-bold text-emerald-800">No hace falta priorizar: todo cabe en la capacidad.</p>
+              <p className="mt-3 font-bold text-emerald-800">No hace falta priorizar: la carga está dentro de la capacidad.</p>
             ) : (
               <div className="mt-3 space-y-2">
                 <p><b>{fmtInt(priority.qtyCut)} cajas</b> ({fmtDec(priority.hoursCut, 1)} h) se dejarían de producir en {new Set(priority.cuts.map((c) => c.weekStart)).size} semana(s) para que todo quepa sin horas extra.</p>
@@ -429,7 +429,7 @@ export function MpsView() {
                   onClick={() => { for (const c of priority.cuts) addAdjustment({ skuId: c.skuId, weekStart: c.weekStart, deltaCommercialQty: -c.qty, reason: `Priorización (${RULES.find((r) => r.id === rule)!.label.toLowerCase()})`, author }); setHoverCuts(false); }}
                   disabled={!canMoves} className="px-3.5 py-1.5 text-[11px] font-black rounded-full bg-slate-950 text-white disabled:opacity-40 cursor-pointer">Aplicar como ajustes al MPS</button>
                 {!canMoves && <p className="text-[11px] text-slate-500">{movesReason}</p>}
-                <p className="text-[10px] text-slate-500">Pasa el cursor por esta tarjeta para ver cómo quedaría el mapa. Es el último recurso: antes conviene revisar las alternativas de arriba.</p>
+                <p className="text-[10px] text-slate-500">Coloca el cursor por esta tarjeta para ver cómo quedaría el mapa. Es el último recurso: antes conviene revisar las alternativas de arriba.</p>
               </div>
             )}
           </section>

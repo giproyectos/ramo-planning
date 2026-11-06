@@ -286,7 +286,7 @@ export function recommendTemplates(ds: RamoDataset, net: NetPlanRow[], templateI
       const co = round1(e.changeoverHours - cur.changeoverHours);
       if (Math.abs(co) >= 0.1) lines.push(co < 0 ? `${es(-co)} h menos en cambios de producto` : `${es(co)} h más en cambios de producto`);
       const od = e.overDays - cur.overDays;
-      if (od !== 0) lines.push(od < 0 ? `${-od} día(s) en rojo menos` : `${od} día(s) en rojo más`);
+      if (od !== 0) lines.push(od < 0 ? `${-od} día(s) menos con sobrecarga` : `${od} día(s) más con sobrecarga`);
       if (e.ruleViolations !== cur.ruleViolations) lines.push(e.ruleViolations < cur.ruleViolations ? 'respeta más reglas de planta' : 'viola reglas de planta');
       if (e.crewConflicts !== cur.crewConflicts) lines.push(e.crewConflicts > cur.crewConflicts ? 'genera choques de tripulación' : 'elimina choques de tripulación');
       if (lines.length === 0) lines.push('mismo resultado en horas; cambia solo la forma del esquema');

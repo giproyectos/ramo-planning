@@ -19,7 +19,7 @@ export const Header: React.FC<{ currentStep: ProcessStep }> = ({ currentStep }) 
         {weeks[0] && (
           <span className="hidden md:inline glass-pill rounded-full px-3 py-1.5">Plan desde el {weekLabel(weeks[0])} · {weeks.length} sem.</span>
         )}
-        <span className={`rounded-full px-3 py-1.5 text-black ${overloads > 0 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]/70'}`} title="Tripulaciones con horas faltantes en el plan actual">
+        <span className={`rounded-full px-3 py-1.5 text-black ${overloads > 0 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]/70'}`} title="Tripulaciones con déficit de horas en el plan actual">
           {overloads > 0 ? `${overloads} alerta(s) de capacidad` : 'Capacidad factible'}
         </span>
         {serverMode && syncText && <span className="glass-pill rounded-full px-3 py-1.5">{syncText}</span>}

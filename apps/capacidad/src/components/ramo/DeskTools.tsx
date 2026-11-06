@@ -44,7 +44,7 @@ export function CalendarForm({
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-black">Registrar parada o festivo</div>
-          <p className="text-slate-500 mt-0.5">{info.hint} El cambio va al borrador: se ve en el tablero y se aplica con el resto.</p>
+          <p className="text-slate-500 mt-0.5">{info.hint} El cambio va al borrador: se ve en la programación diaria y se aplica con el resto.</p>
         </div>
         <button onClick={onCancel} aria-label="Cerrar" className="text-slate-500 hover:text-black font-black cursor-pointer">✕</button>
       </div>
@@ -82,7 +82,7 @@ export function CalendarForm({
   );
 }
 
-/** Cambiar el orden de la semana de un golpe: invertirlo o intercambiar los días de dos productos. */
+/** Cambiar el orden de la semana en bloque: invertirlo o intercambiar los días de dos productos. */
 export function SequenceMenu({
   skus, onInvert, onSwapProducts, onClose,
 }: {
@@ -135,7 +135,7 @@ const KINDS: { id: Kind; label: string }[] = [
   { id: 'CHANGEOVER', label: 'Tiempo de cambio entre dos productos' },
 ];
 
-/** Reglas de planta: lo que el esquema debe respetar. El tablero avisa si se violan y las propuestas las respetan. */
+/** Reglas de planta: lo que el esquema debe respetar. La programación diaria avisa si se violan y las propuestas las respetan. */
 export function RulesPanel({
   rules, skus, canEdit, author, skuName, onAdd, onRemove,
 }: {

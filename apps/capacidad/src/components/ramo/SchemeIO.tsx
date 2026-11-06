@@ -117,7 +117,7 @@ export function SchemeIO() {
         {/* 3 · Revisión */}
         <aside className="glass-panel rounded-3xl p-4 sm:p-5 space-y-3 xl:sticky xl:top-[88px]">
           <h2 className="text-sm font-black">3 · Revisa y aplica</h2>
-          {done !== null && <p className="rounded-xl bg-[#7AFFA1]/50 px-3 py-2 text-xs font-bold">Se aplicaron {done} cambio(s) de esquema. Míralos en la mesa de programación, en «Cambios vigentes».</p>}
+          {done !== null && <p className="rounded-xl bg-[#7AFFA1]/50 px-3 py-2 text-xs font-bold">Se aplicaron {done} cambio(s) de esquema. Míralos en la programación diaria, en «Cambios vigentes».</p>}
 
           {!parsed ? (
             <div className="space-y-2 text-xs">

@@ -2,7 +2,7 @@ import React from 'react';
 import { Alternative, RebalancePlan } from '@ramo/engine';
 import { fmtDec } from '../../ramo/format';
 
-/** Lista de alternativas para resolver lo que está en rojo: se elige una, y al pasar el cursor el mapa muestra cómo quedaría. */
+/** Lista de alternativas para resolver la sobrecarga: se elige una, y al pasar el cursor el mapa muestra cómo quedaría. */
 export function AltPicker({
   alts, chosenId, onPick, onHover, children,
 }: {
@@ -16,14 +16,14 @@ export function AltPicker({
   return (
     <section className="glass-panel rounded-3xl p-4">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-500">Cómo resolver lo que está en rojo</h2>
+        <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-500">Cómo resolver la sobrecarga</h2>
         <span className="text-[10px] font-black rounded-full px-2 py-0.5 bg-[#DDCBF5]" title="Optimización con restricciones; no usa un modelo de lenguaje. Sugiere: una persona decide.">✦ Asistente</span>
       </div>
       {alts.length === 0 || alts[0].plan.overloaded === 0 ? (
         <p className="text-xs font-bold text-emerald-800">No hay semanas sobre capacidad: no hay nada que resolver.</p>
       ) : (
         <div className="space-y-2">
-          <p className="text-[11px] text-slate-600">{alts[0].plan.overloaded} tripulación-semana(s), {fmtDec(alts[0].plan.excessBefore, 1)} h por resolver. Pasa el cursor para verlo en el mapa.</p>
+          <p className="text-[11px] text-slate-600">{alts[0].plan.overloaded} tripulación-semana(s), {fmtDec(alts[0].plan.excessBefore, 1)} h por cubrir. Coloca el cursor para verlo en el mapa.</p>
           {alts.map((a) => {
             const on = chosen?.id === a.id;
             return (

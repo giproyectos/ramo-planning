@@ -60,7 +60,9 @@ export function CrpView() {
   // ---- Cifras de cabecera -----------------------------------------------------------------------------------------------
   const alerts = miguelView.alerts;
   const hoursToSolve = alerts.reduce((a, x) => a + x.excessHours, 0);
-  const risky = crewConfidence.filter((c) => c.requiredHours > 1e-6 && c.requiredHours <= c.nominalHours + 0.05 && c.pCovers < 0.9).length;
+  const riskyList = crewConfidence.filter((c) => c.requiredHours > 1e-6 && c.requiredHours <= c.nominalHours + 0.05 && c.pCovers < 0.9);
+  const risky = riskyList.length;
+  const riskyWeekCount = new Set(riskyList.map((c) => c.weekStart)).size;
 
   // ---- Selección y teclado ----------------------------------------------------------------------------------------------
   useEffect(() => {
@@ -109,8 +111,8 @@ export function CrpView() {
   };
 
   const cta =
-    stage === 'DRAFT' ? { label: 'Enviar el plan de capacidades al MPS →', to: 'SENT_TO_MPS' as const, actor: 'Producción', text: `Plan de capacidades enviado a Distribución (${decisions.length} decisión(es), ${miguelView.alerts.length} alerta(s) abiertas)`, hint: `${alerts.length} semana(s) en rojo se envían con el plan; Distribución puede adelantar producción.` }
-    : stage === 'MPS_FINAL' ? { label: 'Recargar el MPS final y emitir alertas →', to: 'FINAL_ALERTS' as const, actor: 'Producción', text: 'Recarga el MPS final, recalcula la explosión y emite las alertas de producción finales', hint: 'El MPS ya está cerrado: revisa si queda algo en rojo.' }
+    stage === 'DRAFT' ? { label: 'Enviar el plan de capacidades al MPS →', to: 'SENT_TO_MPS' as const, actor: 'Producción', text: `Plan de capacidades enviado a Distribución (${decisions.length} decisión(es), ${miguelView.alerts.length} alerta(s) abiertas)`, hint: `${alerts.length} semana(s) con sobrecarga se envían con el plan; Distribución puede adelantar producción.` }
+    : stage === 'MPS_FINAL' ? { label: 'Recargar el MPS final y emitir alertas →', to: 'FINAL_ALERTS' as const, actor: 'Producción', text: 'Recarga el MPS final, recalcula la explosión y emite las alertas de producción finales', hint: 'El MPS ya está cerrado: revisa si queda sobrecarga.' }
     : null;
 
   return (
@@ -122,8 +124,8 @@ export function CrpView() {
           <p className="text-sm text-slate-600">¿Cabe el plan en las horas de cada tripulación? Elige una semana en el mapa para ver por qué y qué hacer.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-black">
-          <span className={`rounded-full px-3 py-1.5 ${alerts.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{alerts.length ? `${alerts.length} en rojo · faltan ${fmtDec(hoursToSolve, 1)} h` : 'Todo cabe'}</span>
-          <span className={`rounded-full px-3 py-1.5 ${risky ? 'bg-[#FFF87C]' : 'bg-[#7AFFA1]/70'}`} title="Semanas que caben en el papel pero tienen menos de 90 % de probabilidad de cumplirse con el rendimiento real">{risky ? `${risky} con riesgo real` : 'Sin riesgo real'}</span>
+          <span className={`rounded-full px-3 py-1.5 ${alerts.length ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{alerts.length ? `${alerts.length} con sobrecarga · déficit ${fmtDec(hoursToSolve, 1)} h` : 'Sin sobrecarga'}</span>
+          <span className={`rounded-full px-3 py-1.5 ${risky ? 'bg-[#FFF87C]' : 'bg-[#7AFFA1]/70'}`} title="Semanas dentro de la capacidad nominal pero con menos de 90 % de probabilidad de cumplirse con la capacidad efectiva">{risky ? `${risky} tripulación-semanas con riesgo de cumplimiento (${riskyWeekCount} semanas)` : 'Sin riesgo de cumplimiento'}</span>
         </div>
       </div>
 
@@ -144,7 +146,7 @@ export function CrpView() {
             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
               <h2 className="text-sm font-black">Mapa de capacidad por tripulación y semana</h2>
               <div className="inline-flex rounded-full bg-white/70 border border-white/80 p-0.5 text-[11px] font-bold" role="group" aria-label="Qué mostrar en el mapa">
-                {([['paper', 'Sobre el papel'], ['real', 'Con rendimiento real']] as const).map(([m, label]) => (
+                {([['paper', 'Capacidad nominal'], ['real', 'Capacidad efectiva']] as const).map(([m, label]) => (
                   <button key={m} onClick={() => setMode(m)} aria-pressed={mode === m} className={`px-3 py-1.5 rounded-full cursor-pointer ${mode === m ? 'bg-slate-950 text-white' : 'text-slate-600'}`}>{label}</button>
                 ))}
               </div>
@@ -196,13 +198,13 @@ export function CrpView() {
               </div>
             </div>
             <p className="text-[10px] text-slate-500 mt-3">
-              {mode === 'paper' ? 'Porcentaje de las horas disponibles que pide el plan. Verde: cabe · amarillo: pasa del 100 % · naranja: pasa del 110 %.' : 'Probabilidad de que la semana alcance la carga con el rendimiento real de las líneas. «No cabe»: ya pasa el 100 % sobre el papel.'} La barra lila a la izquierda de un nombre marca una tripulación compartida entre dos líneas. Flechas del teclado para moverte entre semanas y tripulaciones.
+              {mode === 'paper' ? 'Porcentaje de las horas disponibles que pide el plan. Verde: dentro de capacidad · amarillo: supera el 100 % · naranja: supera el 110 %.' : 'Probabilidad de cubrir la carga de la semana con la capacidad efectiva de las líneas. «Sobrecapacidad»: ya supera el 100 % de la capacidad nominal.'} La barra lila a la izquierda de un nombre marca una tripulación compartida entre dos líneas. Flechas del teclado para moverte entre semanas y tripulaciones.
             </p>
           </section>
 
           {/* Horas en el horizonte */}
           {crew && (
-            <Card title={`Horas de ${crewName(sel.crewId)} en todo el horizonte`} hint="Donde la línea naranja pasa por encima de la azul, faltan horas esa semana. La verde es lo que realmente se espera lograr según el historial.">
+            <Card title={`Horas de ${crewName(sel.crewId)} en todo el horizonte`} hint="Donde la línea naranja pasa por encima de la azul, hay déficit de horas esa semana. La verde es lo que realmente se espera lograr según el historial.">
               <LineChart
                 labels={weeks.map(weekLabel)}
                 height={210}
@@ -219,7 +221,7 @@ export function CrpView() {
           <details className="glass-panel rounded-3xl p-5 text-xs">
             <summary className="cursor-pointer font-black text-sm">¿Cómo se calculó? y opciones</summary>
             <div className="mt-3 space-y-4">
-              <p className="text-slate-600">Horas que pide = necesidad neta (CEDI + Hard Discount + Exportaciones) × ritmo de cada línea ÷ horas netas del calendario. «Con rendimiento real» usa el historial de producción (sintético en este piloto): cuánto rinde cada línea de su ritmo nominal y cuánto varía.</p>
+              <p className="text-slate-600">Horas que pide = necesidad neta (CEDI + Hard Discount + Exportaciones) × ritmo de cada línea ÷ horas netas del calendario. «Capacidad efectiva» usa el historial de producción (sintético en este piloto): cuánto rinde cada línea de su ritmo nominal y cuánto varía.</p>
               <div>
                 <div className="font-bold mb-1.5">Si dos líneas comparten tripulación…</div>
                 <div className="inline-flex rounded-full bg-white/70 border border-white/80 p-0.5 font-bold">
@@ -227,7 +229,7 @@ export function CrpView() {
                     <button key={m} onClick={() => setCrewMode(m)} className={`px-3 py-1.5 rounded-full cursor-pointer ${crewMode === m ? 'bg-slate-950 text-white' : 'text-slate-600'}`}>{m === 'POOLED' ? 'Suman sus horas' : 'Cada línea responde sola'}</button>
                   ))}
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">«Suman sus horas» es un supuesto provisional pendiente de confirmar con Producción; la mesa de programación muestra la capacidad real cuando la tripulación va una línea por día.</p>
+                <p className="text-[11px] text-slate-500 mt-1">«Suman sus horas» es un supuesto provisional pendiente de confirmar con Producción; la programación diaria muestra la capacidad real cuando la tripulación va una línea por día.</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {dataset.lines.map((l) => {
@@ -254,8 +256,8 @@ export function CrpView() {
               <div className="text-[11px] font-black uppercase tracking-wider text-slate-500">{crewName(sel.crewId)} · semana del {weekLabel(sel.week)}</div>
               <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="text-3xl font-black font-mono">{fmtDec(crewLoad.saturationPct, 0)}%</span>
-                <span className={`text-xs font-black rounded-full px-2.5 py-1 ${crewLoad.excessHours > 0 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{crewLoad.excessHours > 0 ? `Faltan ${fmtDec(crewLoad.excessHours, 1)} h` : 'Cabe'}</span>
-                {crewConf && crewLoad.requiredHours > 0 && <span className="text-[11px] text-slate-600 flex items-center gap-1">con rendimiento real <ConfidenceChip p={crewConf.pCovers} over={crewLoad.requiredHours > crewLoad.availableHours + crewLoad.extraHours + 0.05} compact /></span>}
+                <span className={`text-xs font-black rounded-full px-2.5 py-1 ${crewLoad.excessHours > 0 ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>{crewLoad.excessHours > 0 ? `Déficit de ${fmtDec(crewLoad.excessHours, 1)} h` : 'Cabe'}</span>
+                {crewConf && crewLoad.requiredHours > 0 && <span className="text-[11px] text-slate-600 flex items-center gap-1">con capacidad efectiva <ConfidenceChip p={crewConf.pCovers} over={crewLoad.requiredHours > crewLoad.availableHours + crewLoad.extraHours + 0.05} compact /></span>}
               </div>
               <p className="text-xs text-slate-600">
                 {fmtDec(crewLoad.requiredHours, 1)} h pedidas de {fmtDec(crewLoad.availableHours, 1)} h disponibles{crewLoad.extraHours > 0 ? ` + ${fmtDec(crewLoad.extraHours, 1)} h extra` : ''}
@@ -308,7 +310,7 @@ export function CrpView() {
                 ) : chosen.metrics.unmetHours > 0 ? (
                   <p className="font-bold text-[#c2410c]">Quedan {fmtDec(chosen.metrics.unmetHours, 1)} h sin cubrir: hay que decidir qué hacer con ellas.</p>
                 ) : <p className="text-emerald-800 font-bold">No necesita horas extra.</p>}
-                <button onClick={() => setPinned(pinned === chosen.id ? null : chosen.id)} className="text-[11px] font-bold underline cursor-pointer">{pinned === chosen.id ? 'Quitar vista previa del mapa' : 'Dejar fija la vista previa en el mapa'}</button>
+                <button onClick={() => setPinned(pinned === chosen.id ? null : chosen.id)} className="text-[11px] font-bold underline cursor-pointer">{pinned === chosen.id ? 'Quitar vista previa del mapa' : 'Fijar la vista previa en el mapa'}</button>
               </>
             )}
           </AltPicker>

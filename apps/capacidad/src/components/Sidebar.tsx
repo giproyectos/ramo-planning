@@ -30,10 +30,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) =
 
   const navItems: { id: ProcessStep; code: string; name: string; icon: React.ElementType; badge: string; tone: Tone }[] = [
     { id: 'summary', code: 'Resumen', name: 'Vista general', icon: LayoutGrid, badge: '', tone: 'info' },
-    { id: 'crp', code: 'CRP', name: 'Capacidad por línea', icon: Cpu, badge: overloads > 0 ? `${overloads} en rojo` : 'Factible', tone: overloads > 0 ? 'bad' : 'ok' },
+    { id: 'crp', code: 'CRP', name: 'Capacidad por línea', icon: Cpu, badge: overloads > 0 ? `${overloads} con sobrecarga` : 'Factible', tone: overloads > 0 ? 'bad' : 'ok' },
     { id: 'mps', code: 'MPS', name: 'MPS final', icon: CalendarRange, badge: stageBadge, tone: stage === 'DRAFT' ? 'info' : stage === 'SENT_TO_MPS' ? 'warn' : 'ok' },
     { id: 'plants', code: 'Plantas', name: 'Confirmación de plantas', icon: Factory, badge: plantRows.length === 0 ? '—' : plantPending > 0 ? `${plantPending} por confirmar` : plantShort > 0 ? `${plantShort} bajo el plan` : 'Al día', tone: plantRows.length === 0 ? 'info' : plantPending > 0 ? 'info' : plantShort > 0 ? 'warn' : 'ok' },
-    { id: 'daily', code: 'Día a día', name: 'Mesa de programación', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. en rojo` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
+    { id: 'daily', code: 'Diaria', name: 'Programación diaria', icon: CalendarClock, badge: !daily ? '—' : dailyOver > 0 ? `${dailyOver} sem. con sobrecarga` : 'Factible', tone: !daily ? 'info' : dailyOver > 0 ? 'bad' : 'ok' },
     { id: 'release', code: 'Plan oficial', name: 'Liberar y descargar', icon: Send, badge: releases.length === 0 ? 'Sin liberar' : `Versión ${releases.length}`, tone: releases.length === 0 ? 'info' : 'ok' },
     { id: 'data', code: 'Datos', name: 'Bases SAP y esquemas', icon: Database, badge: baseline?.usable ? 'SAP' : 'Ejemplo', tone: baseline?.usable ? 'ok' : 'warn' },
   ];
@@ -70,7 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentStep, onSelectStep }) =
         </div>
 
         <div className="space-y-1">
-          <div className="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Del MPS al día a día</div>
+          <div className="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Del MPS a la programación diaria</div>
           <nav className="space-y-1.5">
             {navItems.map((item) => {
               const isActive = currentStep === item.id;

@@ -109,7 +109,7 @@ export function WeeklyAlternativesCard({ view }: { view: 'capacity' | 'mps' }) {
   return (
     <Card
       title="Alternativas para resolver la sobrecarga"
-      hint={`${overloaded} tripulación-semana(s) sobre capacidad, ${fmtDec(alts[0].plan.excessBefore, 1)} h por resolver. En vez de una sola sugerencia, tres formas de resolverlo con lo que cuesta cada una; una persona elige.`}
+      hint={`${overloaded} tripulación-semana(s) sobre capacidad, ${fmtDec(alts[0].plan.excessBefore, 1)} h por cubrir. En vez de una sola sugerencia, tres formas de resolverlo con lo que cuesta cada una; una persona elige.`}
       action={<AiTag kind="Optimización" />}
     >
       <AlternativeTiles alts={alts} selected={sel.id} onSelect={setPicked} unit="semana" />

@@ -39,8 +39,8 @@ export function ReleaseView({ onSelectStep }: { onSelectStep: (s: ProcessStep) =
   const checks: { ok: boolean; label: string; value: string; detail: string; go: ProcessStep }[] = [
     { ok: closed, label: 'MPS', value: closed ? 'Cerrado' : 'Abierto', detail: closed ? 'Distribución lo cerró.' : 'Todavía puede cambiar.', go: 'mps' },
     { ok: plantsOk, label: 'Plantas', value: sum.pending > 0 ? `${sum.pending} por confirmar` : sum.planChanged > 0 ? `${sum.planChanged} viejas` : sum.shortfall > 0 ? `faltan ${fmtInt(sum.shortfall)}` : 'Al día', detail: sum.coverage !== null ? `Lo confirmado cubre ${Math.round(sum.coverage * 100)} % de lo pedido.` : 'Nada confirmado todavía.', go: 'plants' },
-    { ok: redWeeks === 0, label: 'Capacidad', value: redWeeks === 0 ? 'Resuelta' : `${redWeeks} sem. en rojo`, detail: redWeeks === 0 ? 'Todo cabe por tripulación.' : 'Siguen faltando horas.', go: 'crp' },
-    { ok: dailyRedWeeks === 0 && violations === 0, label: 'Día a día', value: dailyRedWeeks === 0 && violations === 0 ? 'Sin alertas' : `${dailyRedWeeks} sem. en rojo${violations ? ` · ${violations} regla(s)` : ''}`, detail: 'Días sobre su capacidad o reglas de planta violadas.', go: 'daily' },
+    { ok: redWeeks === 0, label: 'Capacidad', value: redWeeks === 0 ? 'Resuelta' : `${redWeeks} sem. con sobrecarga`, detail: redWeeks === 0 ? 'Carga dentro de capacidad en todas las tripulaciones.' : 'Siguen faltando horas.', go: 'crp' },
+    { ok: dailyRedWeeks === 0 && violations === 0, label: 'Programación diaria', value: dailyRedWeeks === 0 && violations === 0 ? 'Sin alertas' : `${dailyRedWeeks} sem. con sobrecarga${violations ? ` · ${violations} regla(s)` : ''}`, detail: 'Días sobre su capacidad o reglas de planta violadas.', go: 'daily' },
   ];
   const pendingCount = checks.filter((c) => !c.ok).length;
   const needJustify = pendingCount > 0;
@@ -160,7 +160,7 @@ export function ReleaseView({ onSelectStep }: { onSelectStep: (s: ProcessStep) =
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <div className="min-w-[180px]">
             <div className="text-[11px] font-black uppercase tracking-wider text-[#7AFFA1]">Versión {nextVersion}</div>
-            <div className="text-sm font-black">{needJustify ? `${pendingCount} pendiente(s) por revisar` : 'Todo en orden para liberar'}</div>
+            <div className="text-sm font-black">{needJustify ? `${pendingCount} pendiente(s) por revisar` : 'Listo para liberar'}</div>
           </div>
           {needJustify && (
             <label className="flex items-center gap-2 text-xs cursor-pointer">

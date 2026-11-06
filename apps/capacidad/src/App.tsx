@@ -60,7 +60,7 @@ function AppContent() {
             <span className="w-2 h-2 rounded-full bg-[#7AFFA1]"></span>
             <span className="font-extrabold text-black">Ramo · Programación de capacidad</span>
             <span className="text-slate-300">·</span>
-            <span>CRP ⇄ MPS → Plantas → Día a día → Plan oficial</span>
+            <span>CRP ⇄ MPS → Plantas → Programación diaria → Plan oficial</span>
           </div>
           <div className="text-slate-500 font-mono text-[11px]">Piloto GI Proyectos</div>
         </footer>

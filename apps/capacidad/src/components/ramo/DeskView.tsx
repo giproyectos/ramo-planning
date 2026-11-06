@@ -11,8 +11,8 @@ import { CAUSES, CalendarForm, RulesPanel, SequenceMenu, causeLabel } from './De
 import { ScenarioCompare, ScenarioList, ScenarioColumn } from './DeskScenarios';
 
 /**
- * Mesa de programación: el tablero de la semana de una línea, con cambios en borrador (se prueban antes de aplicarse),
- * arrastrar y soltar para mover producción, y un panel que explica qué falla y propone cómo arreglarlo.
+ * Programación diaria: la vista de la semana de una línea, con cambios en borrador (se prueban antes de aplicarse),
+ * arrastrar y soltar para mover producción, y un panel que explica qué falla y propone cómo corregirlo.
  */
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -212,7 +212,7 @@ export function DeskView() {
     const days: Days = JSON.parse(JSON.stringify(wLive.template.days));
     const shifts: Shifts = { ...wLive.template.shifts };
     fn(days, shifts);
-    setScheme(days, shifts, 'Cambio manual en la mesa');
+    setScheme(days, shifts, 'Cambio manual en la programación diaria');
   };
   const setShiftsOf = (wd: number, n: number) => editScheme((_, sh) => { sh[wd] = Math.max(0, Math.min(4, n)); });
   const toggleSku = (wd: number, skuId: string) => editScheme((d) => {
@@ -225,7 +225,7 @@ export function DeskView() {
     push({ ...draft, calendar: [...draft.calendar, { ...e, id: `cal${++moveSeq}` }] });
     setCalOpen(false);
   };
-  // Cambiar la secuencia de un golpe (siempre al borrador).
+  // Cambiar la secuencia en bloque (siempre al borrador).
   const swapDays = (a: number, b: number) => editScheme((d) => {
     const x = d[a];
     const y = d[b];
@@ -365,7 +365,7 @@ export function DeskView() {
     return { state: pct > 100.05 ? ('over' as const) : ('fit' as const), pct, over: Math.max(0, req - avail) };
   };
 
-  /** Cuántas cajas conviene mover al soltar: lo que sobra en el día de origen, sin pasar de lo que cabe en el destino; si el origen no está en rojo, todo el bloque. */
+  /** Cuántas cajas conviene mover al soltar: lo que sobra en el día de origen, sin superar la capacidad del destino; si el origen no tiene sobrecarga, todo el bloque. */
   const smartQty = (lineId: string, fromDate: string, toDate: string, skuId: string, qty: number) => {
     const src = cellOf(wLive, lineId, fromDate);
     const hpc = hoursOf(skuId, 1);
@@ -381,7 +381,7 @@ export function DeskView() {
   const alertsHere = (live?.alerts ?? []).filter((a) => a.weekStart === week && a.templateId === currentTid);
   const lineName = (id: string) => lineById.get(id)?.name.replace('Línea ', '') ?? id;
   const alertText = (a: (typeof alertsHere)[number]): { text: string; date?: string; lineId?: string } => {
-    if (a.code === 'OVER_CAPACITY') return { text: `${dayShort(a.date!)} · ${lineName(a.lineId!)}: faltan ${fmtDec(a.value, 1)} h`, date: a.date, lineId: a.lineId };
+    if (a.code === 'OVER_CAPACITY') return { text: `${dayShort(a.date!)} · ${lineName(a.lineId!)}: déficit de ${fmtDec(a.value, 1)} h`, date: a.date, lineId: a.lineId };
     if (a.code === 'CREW_CONFLICT') return { text: `${dayShort(a.date!)}: la tripulación está en ${a.value} líneas a la vez`, date: a.date };
     if (a.code === 'RULE_VIOLATION') return { text: a.detail ?? 'Regla de planta violada', date: a.date };
     if (a.code === 'NO_PRODUCTION_DAY') return { text: `${skuName(a.skuId!)}: ${fmtInt(a.value)} cajas sin día para producirse (días cerrados)` };
@@ -405,8 +405,8 @@ export function DeskView() {
   // ---- Paleta de comandos ----------------------------------------------------------------------------------------------
   const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const commands: { label: string; hint?: string; run: () => void }[] = [
-    ...weeks.map((wk, i) => ({ label: `Ir a la semana del ${weekLabel(wk)}`, hint: redWeek(currentTid, wk) ? 'en rojo' : '', run: () => setWeekIdx(i) })),
-    ...templates.map((t) => ({ label: `Ver ${t.name.split(' (')[0]}`, hint: redCount(t.id) > 0 ? `${redCount(t.id)} sem. en rojo` : '', run: () => { setTid(t.id); setSelected(null); } })),
+    ...weeks.map((wk, i) => ({ label: `Ir a la semana del ${weekLabel(wk)}`, hint: redWeek(currentTid, wk) ? 'sobrecarga' : '', run: () => setWeekIdx(i) })),
+    ...templates.map((t) => ({ label: `Ver ${t.name.split(' (')[0]}`, hint: redCount(t.id) > 0 ? `${redCount(t.id)} sem. con sobrecarga` : '', run: () => { setTid(t.id); setSelected(null); } })),
     ...(bestProposal ? [{ label: `Probar: ${bestProposal.title}`, run: () => tryProposal(bestProposal) }] : []),
     ...(canEdit ? [{ label: 'Registrar parada o festivo', run: () => setCalOpen(true) }, { label: 'Invertir la secuencia de la semana', run: invertWeek }] : []),
     ...(hasDraft && canEdit ? [{ label: 'Guardar el borrador como escenario', run: () => setSavingScenario(true) }] : []),
@@ -422,7 +422,7 @@ export function DeskView() {
       {/* Encabezado */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black tracking-tight">Mesa de programación</h1>
+          <h1 className="text-2xl font-black tracking-tight">Programación diaria</h1>
           <p className="text-sm text-slate-600">Qué se fabrica cada día de la semana. Prueba cambios en un borrador y aplícalos al plan cuando te convenzan.</p>
         </div>
         <button onClick={() => { setPalette(true); setQuery(''); }} className="glass-pill rounded-full px-4 py-2 text-xs font-bold text-slate-700 cursor-pointer flex items-center gap-2">
@@ -459,7 +459,7 @@ export function DeskView() {
             const on = i === idx;
             const sat = weekMaxSat(currentTid, wk);
             return (
-              <button key={wk} role="tab" aria-selected={on} onClick={() => { setWeekIdx(i); setSelected(null); }} title={`Semana del ${weekLabel(wk)}: ${redWeek(currentTid, wk) ? 'hay días en rojo' : 'alcanza'}`}
+              <button key={wk} role="tab" aria-selected={on} onClick={() => { setWeekIdx(i); setSelected(null); }} title={`Semana del ${weekLabel(wk)}: ${redWeek(currentTid, wk) ? 'hay días con sobrecarga' : 'dentro de capacidad'}`}
                 className={`shrink-0 w-[58px] rounded-2xl px-1.5 pt-1.5 pb-1 text-center cursor-pointer transition-all ${on ? 'bg-white shadow-md ring-2 ring-slate-950' : 'bg-white/50 hover:bg-white/80'}`}>
                 <div className="h-8 flex items-end justify-center">
                   <div className="w-5 rounded-t-md" style={{ height: `${Math.max(12, Math.min(100, (sat / 130) * 100))}%`, background: heatColor(sat) }} />
@@ -478,7 +478,7 @@ export function DeskView() {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span className="text-xs font-black flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#7AFFA1] animate-pulse" /> Borrador · {draft.moves.length + draft.schemes.length + draft.calendar.length} cambio{draft.moves.length + draft.schemes.length + draft.calendar.length === 1 ? '' : 's'}</span>
             <span className="text-xs">
-              Horas que faltan en el horizonte: <b className="font-mono">{fmtDec(excessSaved, 1)}</b> → <b className={`font-mono ${excessLive < excessSaved - 0.05 ? 'text-[#7AFFA1]' : excessLive > excessSaved + 0.05 ? 'text-[#FFA27D]' : ''}`}>{fmtDec(excessLive, 1)}</b> h
+              Déficit de horas en el horizonte: <b className="font-mono">{fmtDec(excessSaved, 1)}</b> → <b className={`font-mono ${excessLive < excessSaved - 0.05 ? 'text-[#7AFFA1]' : excessLive > excessSaved + 0.05 ? 'text-[#FFA27D]' : ''}`}>{fmtDec(excessLive, 1)}</b> h
             </span>
             {draft.schemes.length > 0 && (
               <span className="text-xs flex items-center gap-1.5">
@@ -545,7 +545,7 @@ export function DeskView() {
                   <button onClick={() => { setCalOpen(!calOpen); setSeqOpen(false); }} aria-expanded={calOpen} className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/80 border border-black/10 cursor-pointer">＋ Parada o festivo</button>
                 </>
               )}
-              {w.excessHours > 0.05 ? <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#FFA27D]">Faltan {fmtDec(w.excessHours, 1)} h</span> : <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#7AFFA1]">Todo cabe</span>}
+              {w.excessHours > 0.05 ? <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#FFA27D]">Déficit de {fmtDec(w.excessHours, 1)} h</span> : <span className="rounded-full px-3 py-1 text-[11px] font-black bg-[#7AFFA1]">Todo cabe</span>}
             </div>
           </div>
 
@@ -604,7 +604,7 @@ export function DeskView() {
                     )}
                     {dragging && f && d.date !== dragging.date && (
                       <div title={f.why} className={`mt-1 text-[10px] font-black rounded-full px-1.5 py-0.5 ${f.state === 'closed' || f.state === 'rule' ? 'bg-slate-200 text-slate-600' : f.state === 'over' ? 'bg-[#FFA27D]' : 'bg-[#7AFFA1]'}`}>
-                        {f.state === 'closed' ? 'cerrado' : f.state === 'rule' ? 'regla: no permitido' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `cabe · ${fmtDec(f.pct, 0)} %`}
+                        {f.state === 'closed' ? 'cerrado' : f.state === 'rule' ? 'regla: no permitido' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `dentro de capacidad · ${fmtDec(f.pct, 0)} %`}
                         <div className="font-mono font-bold opacity-70">{f.state !== 'closed' && f.state !== 'rule' ? `${fmtInt(dq)} cajas` : ''}</div>
                       </div>
                     )}
@@ -678,7 +678,7 @@ export function DeskView() {
                         </div>
                         <div className="flex items-center justify-between mt-1">
                           <span className={`font-mono text-[10px] font-bold ${pct > 100 ? 'text-[#c2410c]' : 'text-slate-600'}`}>{c.saturationPct > 900 ? 'sin horas' : `${fmtDec(pct, 0)} %`}</span>
-                          {p !== null && c.requiredHours > 0.01 && <ConfidenceChip p={p} over={pct > 100} compact title="Probabilidad de que el día alcance con el rendimiento real de la línea" />}
+                          {p !== null && c.requiredHours > 0.01 && <ConfidenceChip p={p} over={pct > 100} compact title="Probabilidad de que el día alcance con la capacidad efectiva de la línea" />}
                         </div>
                       </button>
                     );
@@ -713,7 +713,7 @@ export function DeskView() {
                       return (
                         <button key={d.date} disabled={f.state === 'closed' || f.state === 'rule'} title={f.why} onClick={() => addMove(sel.skuId!, sel.date, d.date, q)}
                           className={`px-3 py-1.5 rounded-full font-bold cursor-pointer disabled:opacity-40 border border-black/5 ${f.state === 'over' ? 'bg-[#FFA27D]/60' : f.state === 'fit' ? 'bg-[#7AFFA1]/60' : 'bg-slate-200'}`}>
-                          {dayShort(d.date)} · {f.state === 'closed' ? 'cerrado' : f.state === 'rule' ? 'regla: no permitido' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `cabe ${fmtDec(f.pct, 0)} %`}
+                          {dayShort(d.date)} · {f.state === 'closed' ? 'cerrado' : f.state === 'rule' ? 'regla: no permitido' : f.state === 'over' ? `excede ${fmtDec(f.over, 1)} h` : `dentro de capacidad ${fmtDec(f.pct, 0)} %`}
                         </button>
                       );
                     })}
@@ -746,7 +746,7 @@ export function DeskView() {
           <section className="glass-panel rounded-3xl p-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Atención</h2>
             {alertsHere.length === 0 ? (
-              <p className="text-xs font-bold text-emerald-800">Todo cabe esta semana en {tpl.name.split(' (')[0].toLowerCase()}.</p>
+              <p className="text-xs font-bold text-emerald-800">Sin sobrecarga esta semana en {tpl.name.split(' (')[0].toLowerCase()}.</p>
             ) : (
               <ul className="space-y-1.5">
                 {alertsHere.slice(0, 6).map((a, i) => {
@@ -768,7 +768,7 @@ export function DeskView() {
               <span className="text-[10px] font-black rounded-full px-2 py-0.5 bg-[#DDCBF5]" title="Cálculo de optimización con simulación; no usa un modelo de lenguaje. Sugiere: una persona decide.">✦ Asistente</span>
             </div>
             {dayProposals.length + schemeProposals.length === 0 ? (
-              <p className="text-xs text-slate-600">{w.excessHours > 0.05 ? 'No hay una forma de moverlo que reduzca el exceso. Prueba horas extra o cambia turnos.' : 'Nada que arreglar: el esquema vigente alcanza para estas semanas.'}</p>
+              <p className="text-xs text-slate-600">{w.excessHours > 0.05 ? 'No hay una forma de moverlo que reduzca el exceso. Prueba horas extra o cambia turnos.' : 'Sin acciones pendientes: el esquema vigente cubre estas semanas.'}</p>
             ) : (
               <div className="space-y-2">
                 {[...dayProposals.slice(0, 1), ...schemeProposals.slice(0, 1), ...dayProposals.slice(1), ...schemeProposals.slice(1)].map((p, i) => (
@@ -786,7 +786,7 @@ export function DeskView() {
                     })()}
                   </div>
                 ))}
-                <p className="text-[10px] text-slate-500">Pasa el cursor por una propuesta para verla en el tablero sin aplicarla.</p>
+                <p className="text-[10px] text-slate-500">Coloca el cursor por una propuesta para verla en la programación diaria sin aplicarla.</p>
               </div>
             )}
           </section>
